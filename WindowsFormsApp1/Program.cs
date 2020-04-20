@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp1
+namespace BouncingBall
 {
 	static class Program
 	{
@@ -19,7 +19,8 @@ namespace WindowsFormsApp1
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			var thread = new Thread(mapView);
-			Application.Run(new MapView());
+			thread.Start();
+			Application.Run(new TabletteView());
 		}
 
 		private static void mapView()

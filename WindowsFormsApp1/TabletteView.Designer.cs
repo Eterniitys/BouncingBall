@@ -1,16 +1,16 @@
-﻿namespace WindowsFormsApp1
+﻿namespace BouncingBall
 {
-	partial class Form1
+	partial class TabletteView
 	{
 		/// <summary>
-		/// Required designer variable.
+		/// Variable nécessaire au concepteur.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 
 		/// <summary>
-		/// Clean up any resources being used.
+		/// Nettoyage des ressources utilisées.
 		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		/// <param name="disposing">true si les ressources managées doivent être supprimées ; sinon, false.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && (components != null))
@@ -20,25 +20,24 @@
 			base.Dispose(disposing);
 		}
 
-		#region Windows Form Designer generated code
+		#region Code généré par le Concepteur Windows Form
 
 		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
+		/// Méthode requise pour la prise en charge du concepteur - ne modifiez pas
+		/// le contenu de cette méthode avec l'éditeur de code.
 		/// </summary>
 		private void InitializeComponent()
 		{
 			this.SuspendLayout();
 			// 
-			// Form1
+			// TabletteView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(524, 321);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-			this.Name = "Form1";
-			this.Text = "Map";
+			this.Name = "TabletteView";
+			this.Text = "TabView";
 			this.ResumeLayout(false);
 
 		}
@@ -46,3 +45,4 @@
 		#endregion
 	}
 }
+
