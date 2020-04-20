@@ -12,7 +12,9 @@ namespace BouncingBall
 {
 	public partial class MapView : Form
 	{
-		public MapView()
+		private Tablette[] lst_tab;
+
+		public MapView(Tablette t)
 		{
 			InitializeComponent();
 		}

@@ -17,15 +17,18 @@ namespace BouncingBall
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			
+			TabletteView tablette = new TabletteView();
 
-			var thread = new Thread(mapView);
-			thread.Start();
-			Application.Run(new TabletteView());
+			MapView map = new MapView(tablette.getTablette());
+			Thread t = new Thread(() => runTabView(tablette));
+			t.Start();
+			Application.Run(map);
 		}
 
-		private static void mapView()
+		private static void runTabView(TabletteView t)
 		{
-			Application.Run(new MapView());
+			Application.Run(t);
 		}
 	}
 }
