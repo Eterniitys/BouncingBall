@@ -14,26 +14,26 @@ namespace BouncingBall
 	{
 		public TabletteView()
 		{
-			this.tab = new Tablette(0,0,0);
+			this.tab = new Tablet(0,0,0);
 
 			InitializeComponent();
 		}
 
 		private void spin_btn_x_ValueChanged(object sender, EventArgs e)
 		{
-			System.Console.Write(e);
+			this.tab.setPosX((int)this.spin_btn_x.Value);
 		}
 
 		private void spin_btn_y_ValueChanged(object sender, EventArgs e)
 		{
-
+			this.tab.setPosY((int)this.spin_btn_y.Value);
 		}
 		private void spin_btn_angle_ValueChanged(object sender, EventArgs e)
 		{
-
+			this.tab.setAngle(this.spin_btn_angle.Value);
 		}
 
-		public Tablette getTablette()
+		public Tablet getTablette()
 		{
 			return this.tab;
 		}

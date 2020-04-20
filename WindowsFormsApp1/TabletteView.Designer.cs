@@ -5,7 +5,7 @@
 		/// <summary>
 		/// Variables nécessaire au développer
 		/// </summary>
-		private Tablette tab;
+		private Tablet tab;
 
 		/// <summary>
 		/// Variable nécessaire au concepteur.
@@ -95,6 +95,16 @@
 			this.spin_btn_x.Cursor = System.Windows.Forms.Cursors.Default;
 			this.spin_btn_x.InterceptArrowKeys = false;
 			this.spin_btn_x.Location = new System.Drawing.Point(62, 6);
+			this.spin_btn_x.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+			this.spin_btn_x.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
 			this.spin_btn_x.Name = "spin_btn_x";
 			this.spin_btn_x.Size = new System.Drawing.Size(94, 20);
 			this.spin_btn_x.TabIndex = 4;
@@ -118,6 +128,16 @@
 			this.spin_btn_y.Cursor = System.Windows.Forms.Cursors.Default;
 			this.spin_btn_y.InterceptArrowKeys = false;
 			this.spin_btn_y.Location = new System.Drawing.Point(62, 39);
+			this.spin_btn_y.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+			this.spin_btn_y.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
 			this.spin_btn_y.Name = "spin_btn_y";
 			this.spin_btn_y.Size = new System.Drawing.Size(94, 20);
 			this.spin_btn_y.TabIndex = 11;
@@ -130,6 +150,16 @@
 			this.spin_btn_angle.Cursor = System.Windows.Forms.Cursors.Default;
 			this.spin_btn_angle.InterceptArrowKeys = false;
 			this.spin_btn_angle.Location = new System.Drawing.Point(62, 73);
+			this.spin_btn_angle.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+			this.spin_btn_angle.Minimum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            -2147483648});
 			this.spin_btn_angle.Name = "spin_btn_angle";
 			this.spin_btn_angle.Size = new System.Drawing.Size(94, 20);
 			this.spin_btn_angle.TabIndex = 10;
