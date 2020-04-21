@@ -34,7 +34,7 @@ namespace BouncingBall
 			// - - - - - - - - - -
 			lst_tab = new Tablet[1];
 			lst_tab[0] = t;
-			this.ball = new Ball(room_width, room_long, 10);
+			this.ball = new Ball(room_width, room_long, 40);
 			InitializeComponent();
 		}
 
@@ -47,7 +47,7 @@ namespace BouncingBall
 		{
 			this.pictureBox1.Invalidate();
 			this.ball.move();
-			this.lbl_angle.Text = String.Format("{0}", this.ball.direction);
+			this.lbl_angle.Text = String.Format("{0} | {1}", this.ball.center.X, this.ball.center.Y);
 		}
 
 		private void pictureBox1_Paint(object sender, PaintEventArgs e)

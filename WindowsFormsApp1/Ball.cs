@@ -19,7 +19,7 @@ namespace BouncingBall
 				Properties.Resources.ballCATCH
 			};
 
-		private Point center;
+		public Point center; //TODO set private
 		private int room_width;
 		private int room_long;
 		private Size size;
@@ -30,7 +30,7 @@ namespace BouncingBall
 		// - - - - - - - - - - - - - - 
 		public Ball(int room_width, int room_long , decimal scale = 1)
 		{
-			this.size = new Size((int)(10 * scale), (int)(10 * scale));
+			this.size = new Size(100, 100);
 			this.room_width = room_width;
 			this.room_long = room_long;
 			this.scale = scale;
@@ -41,20 +41,22 @@ namespace BouncingBall
 				rnd.Next(room_width - this.size.Width) + this.size.Width/2,
 				rnd.Next(room_long - this.size.Height) + this.size.Height/2
 				);
-			this.direction = rnd.Next(180);
+			this.direction = rnd.Next(-180, 180);
 		}
 
 		public void draw(Graphics gfx, int window_width, int window_height)
 		{
-
+			Size scaled_size = new Size(
+				this.size.Width * window_width / room_width,
+				this.size.Height * window_height / room_long
+				);
 			Point scaled_pos = new Point(
 				(this.center.X - this.size.Width / 2) * window_width / room_width,
 				(this.center.Y - this.size.Height / 2) * window_height / room_long
 				);
-			Rectangle rect = new Rectangle(scaled_pos, this.size);
-			// TODO remove circle
+			Rectangle rect = new Rectangle(scaled_pos, scaled_size);
 			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 1);
-			gfx.DrawArc(bluePen, rect, 0, 360);
+			//gfx.DrawArc(bluePen, rect, 0, 360);
 			//
 			gfx.DrawImage(lst_img[(int)this.state], rect);
 		}
@@ -78,12 +80,12 @@ namespace BouncingBall
 		private void borderBounce()
 		{
 			int radius = this.size.Width / 2;
-			if (center.Y < 0 || center.Y > room_long)
+			if (center.Y - radius < 0 || center.Y + radius > room_long)
 			{
 				direction = -direction;
 			}
 
-			if (center.X < 0 || center.X > room_width)
+			if (center.X - radius < 0 || center.X + radius > room_width)
 			{
 				direction = 180-direction;
 			}
