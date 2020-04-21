@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{79859D59-017F-40DA-AE27-540B5C31EDC0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>WindowsFormsApp1</RootNamespace>
-    <AssemblyName>WindowsFormsApp1</AssemblyName>
+    <RootNamespace>BouncingBall</RootNamespace>
+    <AssemblyName>BouncingBall</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ball.cs" />
     <Compile Include="EnumFormat.cs" />
     <Compile Include="Tablette.cs" />
     <Compile Include="MapView.cs">
@@ -91,6 +92,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -116,6 +118,24 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BallBounce.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ballBOUNCE.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\ballBOUNCE.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\ballCATCH.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\TrapBall_Icone.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\TrapBallNet.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

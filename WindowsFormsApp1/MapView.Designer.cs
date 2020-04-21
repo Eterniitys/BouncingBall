@@ -31,6 +31,7 @@
 			this.components = new System.ComponentModel.Container();
 			this.timer = new System.Windows.Forms.Timer(this.components);
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.lbl_angle = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -50,17 +51,28 @@
 			this.pictureBox1.TabStop = false;
 			this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
 			// 
+			// lbl_angle
+			// 
+			this.lbl_angle.AutoSize = true;
+			this.lbl_angle.Location = new System.Drawing.Point(12, 9);
+			this.lbl_angle.Name = "lbl_angle";
+			this.lbl_angle.Size = new System.Drawing.Size(35, 13);
+			this.lbl_angle.TabIndex = 1;
+			this.lbl_angle.Text = "label1";
+			// 
 			// MapView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(524, 321);
+			this.Controls.Add(this.lbl_angle);
 			this.Controls.Add(this.pictureBox1);
 			this.Name = "MapView";
 			this.Text = "Map";
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -68,5 +80,6 @@
 
 		private System.Windows.Forms.Timer timer;
 		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.Label lbl_angle;
 	}
 }
