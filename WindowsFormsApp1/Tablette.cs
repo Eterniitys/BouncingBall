@@ -13,12 +13,15 @@ namespace BouncingBall
 		private int pos_y;
 		private decimal angle;
 
-		public Tablet(int pos_x, int pos_y, decimal angle)
+		private ScreenFormat format;
+
+		public Tablet(int pos_x, int pos_y, decimal angle, ScreenFormat format)
 		{
 			// TODO Une tablette a des dimensions
 			this.pos_x = pos_x;
 			this.pos_y = pos_y;
 			this.angle = angle;
+			this.format = format;
 		}
 
 		#region Ascesseurs
@@ -35,6 +38,16 @@ namespace BouncingBall
 		public decimal getAngle()
 		{
 			return this.angle;
+		}
+
+		public int getWidth()
+		{
+			return Format.GetFormat(this.format)[0];
+		}
+
+		public int getHeight()
+		{
+			return Format.GetFormat(this.format)[1];
 		}
 
 		public void setPosX(int pos_x)

@@ -57,7 +57,6 @@
 			this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.ClientSize = new System.Drawing.Size(524, 321);
 			this.Controls.Add(this.pictureBox1);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "MapView";
 			this.Text = "Map";
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -21,14 +21,6 @@ namespace BouncingBall
 		/// </summary>
 		private int room_depth;
 		/// <summary>
-		/// 
-		/// </summary>
-		private int screen_width;
-		/// <summary>
-		/// 
-		/// </summary>
-		private int screen_higth;
-		/// <summary>
 		/// List of all tablets in the game
 		/// </summary>
 		private Tablet[] lst_tab;
@@ -36,8 +28,9 @@ namespace BouncingBall
 		public MapView(Tablet t)
 		{
 			//hardcoded TODO add a way to tweak them
-			room_width = 8000;
-			room_depth = 6000;
+			room_width = 1600;
+			room_depth = 900;
+			// - - - - - - - - - -
 			lst_tab = new Tablet[1];
 			lst_tab[0] = t;
 
@@ -58,16 +51,22 @@ namespace BouncingBall
 		{
 			foreach(Tablet t in lst_tab)
 			{
+				int dim_x = (this.lst_tab[0].getWidth() * e.ClipRectangle.Width ) / room_width;
+				int dim_y = (this.lst_tab[0].getHeight() * e.ClipRectangle.Height) / room_depth;
+				int x = (t.getPosX() * e.ClipRectangle.Width) / room_width;
+				int y = (t.getPosY() * e.ClipRectangle.Height) / room_depth;
 				Pen blackPen = new Pen(Color.FromArgb(255, 0, 0, 0), 2);
 				Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
-				e.Graphics.DrawLine(redPen, 0, 0, t.getPosX(), t.getPosY());
-				e.Graphics.DrawRectangle(redPen, t.getPosX(), t.getPosY(), 100, 50);
-				//définition du point de rotation (origine) TODO tourner autour du centre
-				//e.Graphics.TranslateTransform(0, 0);
+				Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
+				e.Graphics.DrawLine(redPen, 0, 0, x, y);
+				e.Graphics.DrawRectangle(redPen, x, y, dim_x, dim_y);
+				// définition du point de rotation (origine) TODO tourner autour du centre
+				e.Graphics.TranslateTransform(x + dim_x / 2, y + dim_y / 2);
 				// fait tourner le futur dessin
-				e.Graphics.TranslateTransform(t.getPosX(), t.getPosY());
 				e.Graphics.RotateTransform(-Convert.ToSingle(t.getAngle()));
-				e.Graphics.DrawRectangle(blackPen, 0, 0, 100, 50);
+
+				//Dimmension en X
+				e.Graphics.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
 			}
 		}
 	}

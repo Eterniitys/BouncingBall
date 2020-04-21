@@ -14,9 +14,10 @@ namespace BouncingBall
 	{
 		public TabletteView()
 		{
-			this.tab = new Tablet(0,0,0);
-
+			Tablet tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
+			this.tab = tab;
 			InitializeComponent();
+			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tab.getWidth(), tab.getHeight());
 		}
 
 		private void spin_btn_x_ValueChanged(object sender, EventArgs e)
