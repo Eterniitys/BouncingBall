@@ -19,46 +19,48 @@ namespace BouncingBall
 				Properties.Resources.ballCATCH
 			};
 
-		public Point center; //TODO set private
+		public PointF center; //TODO set private
 		private int room_width;
 		private int room_long;
-		private Size size;
-		private decimal scale;
+		private SizeF size;
+		private float scale;
 		private ImageID state;
 		public int direction; //TODO set private
 		private int speed;
 		// - - - - - - - - - - - - - - 
-		public Ball(int room_width, int room_long , decimal scale = 1)
+		public Ball(int room_width, int room_long , float scale = 1)
 		{
 			this.size = new Size(100, 100);
 			this.room_width = room_width;
 			this.room_long = room_long;
 			this.scale = scale;
 			this.state = ImageID.CATCH;
-			this.speed = 10;
+			this.speed = 2;
 			Random rnd = new Random();
-			this.center = new Point(
-				rnd.Next(room_width - this.size.Width) + this.size.Width/2,
-				rnd.Next(room_long - this.size.Height) + this.size.Height/2
+			this.center = new PointF(
+				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width/2,
+				(float)rnd.NextDouble() * (room_long - this.size.Height) + this.size.Height/2
 				);
 			this.direction = rnd.Next(-180, 180);
 		}
 
 		public void draw(Graphics gfx, int window_width, int window_height)
 		{
-			Size scaled_size = new Size(
-				this.size.Width * window_width / room_width,
-				this.size.Height * window_height / room_long
+			SizeF scaled_size = new SizeF(
+				(int)this.scale * this.size.Width * window_width / room_width,
+				(int)this.scale * this.size.Height * window_height / room_long
 				);
-			Point scaled_pos = new Point(
+			PointF scaled_pos = new PointF(
 				(this.center.X - this.size.Width / 2) * window_width / room_width,
 				(this.center.Y - this.size.Height / 2) * window_height / room_long
 				);
-			Rectangle rect = new Rectangle(scaled_pos, scaled_size);
-			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 1);
-			//gfx.DrawArc(bluePen, rect, 0, 360);
-			//
+			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
 			gfx.DrawImage(lst_img[(int)this.state], rect);
+			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 1);
+			gfx.DrawArc(bluePen, rect, 0, 360);
+			PointF tmp_p = new PointF(scaled_pos.X + scaled_size.Width, scaled_pos.Y + scaled_size.Height);
+			gfx.DrawLine(bluePen, scaled_pos, tmp_p);
+			//
 		}
 
 		#region Movement / Bouncing
@@ -67,10 +69,9 @@ namespace BouncingBall
 		/// </summary>
 		public void move()
 		{
-			int radius = this.size.Width / 2;
 			double radDir = (this.direction+90) * (Math.PI / 180);
-			center.X += (int)(Math.Sin(radDir) * speed);
-			center.Y += (int)(Math.Cos(radDir) * speed);
+			center.X += (float)(Math.Sin(radDir) * speed);
+			center.Y += (float)(Math.Cos(radDir) * speed);
 			borderBounce();
 		}
 
@@ -79,7 +80,7 @@ namespace BouncingBall
 		/// </summary>
 		private void borderBounce()
 		{
-			int radius = this.size.Width / 2;
+			float radius = scale * (this.size.Width / 2);
 			if (center.Y - radius < 0 || center.Y + radius > room_long)
 			{
 				direction = -direction;

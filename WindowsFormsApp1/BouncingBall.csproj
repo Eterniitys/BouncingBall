@@ -123,9 +123,6 @@
     <None Include="Resources\BallBounce.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ballBOUNCE.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="img\ballBOUNCE.png" />
   </ItemGroup>
   <ItemGroup>
