@@ -9,50 +9,93 @@ namespace BouncingBall
 {
 	public class Ball
 	{
+		#region Properties of a ball
+		/// <summary>
+		/// All possible value of <see cref="state"/></see>
+		/// </summary>
 		public enum ImageID : int {
 			BOUNCE,
 			CATCH
 		}
+		/// <summary>
+		/// Use in drawing function to draw the right picture depending on its value.
+		/// </summary>
+		private ImageID state;
 
+		/// <summary>
+		/// Use in drawing function to draw the right picture depending on <see cref="state"/></see> value.
+		/// </summary>
 		private readonly static Bitmap[] lst_img = {
 				Properties.Resources.ballBOUNCE,
 				Properties.Resources.ballCATCH
 			};
 
+		/// <summary>
+		/// The center of the ball
+		/// </summary>
 		public PointF center; //TODO set private
+		/// <summary>
+		/// The room width
+		/// </summary>
 		private int room_width;
-		private int room_long;
+		/// <summary>
+		/// The room lenght
+		/// </summary>
+		private int room_lenght;
+		/// <summary>
+		/// The size of the ball
+		/// </summary>
 		private SizeF size;
-		private float scale;
-		private ImageID state;
+		/// <summary>
+		/// The angle which the ball is moving with
+		/// </summary>
 		public int direction; //TODO set private
+		/// <summary>
+		/// The speed which the ball is moving with
+		/// </summary>
 		private int speed;
-		// - - - - - - - - - - - - - - 
-		public Ball(int room_width, int room_long , float scale = 1)
+		#endregion
+
+		#region Constructor
+		/// <summary>
+		/// Create a Ball in a defined room with a scale factor
+		/// </summary>
+		/// <param name="room_width">The width of the represented room in millimeters</param>
+		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
+		/// <param name="scale">Used to scale the ball size</param>
+		public Ball(int room_width, int room_lenght , float scale = 1)
 		{
-			this.size = new Size(100, 100);
+			this.size = new SizeF(scale * 100F, scale * 100F); // a 10 centimeter diameter ball
 			this.room_width = room_width;
-			this.room_long = room_long;
-			this.scale = scale;
+			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = 2;
+			this.speed = 2; // TODO this value does need to not be hardcoded
 			Random rnd = new Random();
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width/2,
-				(float)rnd.NextDouble() * (room_long - this.size.Height) + this.size.Height/2
+				(float)rnd.NextDouble() * (room_lenght - this.size.Height) + this.size.Height/2
 				);
 			this.direction = rnd.Next(-180, 180);
 		}
 
+		#endregion
+
+		#region Drawing function
+		/// <summary>
+		/// Draw the referenced ball correctly scaled depending on the area and the room where the ball evolving.
+		/// </summary>
+		/// <param name="gfx">The Graphics of the component drawing the ball</param>
+		/// <param name="window_width">The drawing component width</param>
+		/// <param name="window_height">The drawing component height</param>
 		public void draw(Graphics gfx, int window_width, int window_height)
 		{
 			SizeF scaled_size = new SizeF(
-				(int)this.scale * this.size.Width * window_width / room_width,
-				(int)this.scale * this.size.Height * window_height / room_long
+				this.size.Width * window_width / room_width,
+				this.size.Height * window_height / room_lenght
 				);
 			PointF scaled_pos = new PointF(
 				(this.center.X - this.size.Width / 2) * window_width / room_width,
-				(this.center.Y - this.size.Height / 2) * window_height / room_long
+				(this.center.Y - this.size.Height / 2) * window_height / room_lenght
 				);
 			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
 			gfx.DrawImage(lst_img[(int)this.state], rect);
@@ -62,6 +105,7 @@ namespace BouncingBall
 			gfx.DrawLine(bluePen, scaled_pos, tmp_p);
 			//
 		}
+		#endregion
 
 		#region Movement / Bouncing
 		/// <summary>
@@ -80,8 +124,8 @@ namespace BouncingBall
 		/// </summary>
 		private void borderBounce()
 		{
-			float radius = scale * (this.size.Width / 2);
-			if (center.Y - radius < 0 || center.Y + radius > room_long)
+			float radius =  this.size.Width / 2;
+			if (center.Y - radius < 0 || center.Y + radius > room_lenght)
 			{
 				direction = -direction;
 			}
@@ -95,6 +139,7 @@ namespace BouncingBall
 			direction = direction > 180 ? direction - 360 : direction;
 		}
 
+		#region fonctions not use yet
 		/// <summary>
 		/// Bounce the ball on the bars in the field.
 		/// </summary>
@@ -135,6 +180,7 @@ namespace BouncingBall
 				bar.duration--;
 			}
 		}*/
+		#endregion
 
 		#endregion
 	}

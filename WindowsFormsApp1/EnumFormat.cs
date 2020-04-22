@@ -1,5 +1,8 @@
 ﻿namespace BouncingBall
 {
+	/// <summary>
+	/// Sreen format available in <see cref="Format"/>
+	/// </summary>
 	public enum ScreenFormat : int
 	{
 		// 16/9
@@ -21,7 +24,7 @@
 	}
 
 	/// <summary>
-	/// Class <c>Format</c>
+	/// A classe use to get the real size of a screen
 	/// </summary>
 	public class Format
 	{
@@ -48,7 +51,7 @@
 		/// <summary> 
 		/// Return the dimension of a screen in a 2 members Array
 		/// </summary>
-		/// <param name="scf">A value available in <c>Enum</c> <see cref="ScreenFormat"/></param>
+		/// <param name="scf">A value available in <see cref="ScreenFormat"/></param>
 		/// <returns>IntArray containing {width, hight} of a screen</returns>
 		public static int[] GetFormat(ScreenFormat scf)
 		{
