@@ -34,22 +34,25 @@
 		private void InitializeComponent()
 		{
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.lbl_1 = new System.Windows.Forms.Label();
+			this.lbl_format = new System.Windows.Forms.Label();
 			this.lbl_angle = new System.Windows.Forms.Label();
 			this.lbl_y = new System.Windows.Forms.Label();
 			this.spin_btn_x = new System.Windows.Forms.NumericUpDown();
 			this.lbl_x = new System.Windows.Forms.Label();
 			this.spin_btn_y = new System.Windows.Forms.NumericUpDown();
 			this.spin_btn_angle = new System.Windows.Forms.NumericUpDown();
-			this.lbl_format = new System.Windows.Forms.Label();
-			this.lbl_1 = new System.Windows.Forms.Label();
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_x)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_y)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_angle)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tableLayoutPanel1
 			// 
+			this.tableLayoutPanel1.BackColor = System.Drawing.Color.White;
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.45038F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 88.54962F));
@@ -61,8 +64,9 @@
 			this.tableLayoutPanel1.Controls.Add(this.lbl_x, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.spin_btn_y, 1, 1);
 			this.tableLayoutPanel1.Controls.Add(this.spin_btn_angle, 1, 2);
-			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 321);
+			this.tableLayoutPanel1.MaximumSize = new System.Drawing.Size(0, 100);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 4;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
@@ -71,6 +75,28 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(524, 100);
 			this.tableLayoutPanel1.TabIndex = 0;
+			// 
+			// lbl_1
+			// 
+			this.lbl_1.AutoSize = true;
+			this.lbl_1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lbl_1.Location = new System.Drawing.Point(3, 78);
+			this.lbl_1.Name = "lbl_1";
+			this.lbl_1.Size = new System.Drawing.Size(53, 22);
+			this.lbl_1.TabIndex = 13;
+			this.lbl_1.Text = "Format";
+			this.lbl_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lbl_format
+			// 
+			this.lbl_format.AutoSize = true;
+			this.lbl_format.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lbl_format.Location = new System.Drawing.Point(62, 78);
+			this.lbl_format.Name = "lbl_format";
+			this.lbl_format.Size = new System.Drawing.Size(459, 22);
+			this.lbl_format.TabIndex = 12;
+			this.lbl_format.Text = "largeur : {}, hauteur {}";
+			this.lbl_format.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// lbl_angle
 			// 
@@ -171,33 +197,22 @@
 			this.spin_btn_angle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.spin_btn_angle.ValueChanged += new System.EventHandler(this.spin_btn_angle_ValueChanged);
 			// 
-			// lbl_format
+			// pictureBox1
 			// 
-			this.lbl_format.AutoSize = true;
-			this.lbl_format.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lbl_format.Location = new System.Drawing.Point(62, 78);
-			this.lbl_format.Name = "lbl_format";
-			this.lbl_format.Size = new System.Drawing.Size(459, 22);
-			this.lbl_format.TabIndex = 12;
-			this.lbl_format.Text = "largeur : {}, hauteur {}";
-			this.lbl_format.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// lbl_1
-			// 
-			this.lbl_1.AutoSize = true;
-			this.lbl_1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lbl_1.Location = new System.Drawing.Point(3, 78);
-			this.lbl_1.Name = "lbl_1";
-			this.lbl_1.Size = new System.Drawing.Size(53, 22);
-			this.lbl_1.TabIndex = 13;
-			this.lbl_1.Text = "Format";
-			this.lbl_1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.pictureBox1.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size(524, 321);
+			this.pictureBox1.TabIndex = 1;
+			this.pictureBox1.TabStop = false;
 			// 
 			// TabletteView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(524, 321);
+			this.ClientSize = new System.Drawing.Size(524, 421);
+			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "TabletteView";
@@ -207,6 +222,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_x)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_y)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_angle)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -222,6 +238,7 @@
 		private System.Windows.Forms.NumericUpDown spin_btn_angle;
 		private System.Windows.Forms.Label lbl_1;
 		private System.Windows.Forms.Label lbl_format;
+		private System.Windows.Forms.PictureBox pictureBox1;
 	}
 }
 
