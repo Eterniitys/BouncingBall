@@ -43,6 +43,7 @@ namespace BouncingBall
 			lst_tab = new Tablet[1];
 			lst_tab[0] = t;
 			this.ball = new Ball(room_width, room_lenght, 1);
+			t.ball = this.ball;
 			InitializeComponent();
 		}
 
@@ -55,6 +56,10 @@ namespace BouncingBall
 		{
 			this.pictureBox1.Invalidate();
 			this.ball.move();
+			foreach (Tablet t in lst_tab)
+			{
+				t.refreshBall(this.ball.getPosition(), this.ball.getID());
+			}
 			this.lbl_angle.Text = String.Format("{0:#.#} | {1:#.#}", this.ball.center.X, this.ball.center.Y);
 		}
 
@@ -78,15 +83,15 @@ namespace BouncingBall
 				Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
 				//
 				gfx.DrawLine(redPen, 0, 0, x, y);
-				gfx.DrawRectangle(redPen, x, y, dim_x, dim_y);
-				// définition de l'orgine de rotation
-				gfx.TranslateTransform(x + dim_x / 2, y + dim_y / 2);
-				gfx.RotateTransform(-Convert.ToSingle(t.getAngle()));
+				gfx.DrawRectangle(redPen, x-dim_x/2, y-dim_y/2, dim_x, dim_y);
+				// définition de l'origine de rotation
+				gfx.TranslateTransform(x, y);
+				gfx.RotateTransform(t.getAngle());
 				//dessine
 				gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
 				//rétablie la position/rotation d'origine
-				gfx.RotateTransform(Convert.ToSingle(t.getAngle()));
-				gfx.TranslateTransform(-(x + dim_x / 2) , -(y + dim_y / 2));
+				gfx.RotateTransform(-t.getAngle());
+				gfx.TranslateTransform(-x , -y);
 			}
 			this.ball.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height);
 		}

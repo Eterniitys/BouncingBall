@@ -33,6 +33,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.lbl_1 = new System.Windows.Forms.Label();
 			this.lbl_format = new System.Windows.Forms.Label();
@@ -43,6 +44,8 @@
 			this.spin_btn_y = new System.Windows.Forms.NumericUpDown();
 			this.spin_btn_angle = new System.Windows.Forms.NumericUpDown();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.timer = new System.Windows.Forms.Timer(this.components);
+			this.lbl = new System.Windows.Forms.Label();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_x)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_y)).BeginInit();
@@ -206,15 +209,31 @@
 			this.pictureBox1.Size = new System.Drawing.Size(524, 321);
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
+			this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+			// 
+			// timer
+			// 
+			this.timer.Enabled = true;
+			this.timer.Interval = 20;
+			this.timer.Tick += new System.EventHandler(this.timer_Tick);
+			// 
+			// lbl
+			// 
+			this.lbl.AutoSize = true;
+			this.lbl.Location = new System.Drawing.Point(3, 0);
+			this.lbl.Name = "lbl";
+			this.lbl.Size = new System.Drawing.Size(35, 13);
+			this.lbl.TabIndex = 2;
+			this.lbl.Text = "label1";
 			// 
 			// TabletteView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(524, 421);
+			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.tableLayoutPanel1);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "TabletteView";
 			this.Text = "TabView";
 			this.tableLayoutPanel1.ResumeLayout(false);
@@ -224,6 +243,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.spin_btn_angle)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -239,6 +259,8 @@
 		private System.Windows.Forms.Label lbl_1;
 		private System.Windows.Forms.Label lbl_format;
 		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.Timer timer;
+		private System.Windows.Forms.Label lbl;
 	}
 }
 

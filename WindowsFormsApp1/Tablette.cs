@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,12 +10,26 @@ namespace BouncingBall
 {
 	public class Tablet
 	{
-
+		/// <summary>
+		/// tablet position in the room along the x axis
+		/// </summary>
 		private int pos_x;
+		/// <summary>
+		/// tablet position in the room along the y axis
+		/// </summary>
 		private int pos_y;
-		private decimal angle;
-
+		/// <summary>
+		/// The orientation on the talette
+		/// </summary>
+		private float angle;
+		/// <summary>
+		/// 
+		/// </summary>
 		private ScreenFormat format;
+
+		private Matrix matrix;
+
+		public Ball ball;
 
 		/// <summary>
 		/// Create a tablet simple representation 
@@ -22,12 +38,29 @@ namespace BouncingBall
 		/// <param name="pos_y">The position in the room along the y axis</param>
 		/// <param name="angle">The orientation on the tablet</param>
 		/// <param name="format">Define the format use to represent this tablet in the room</param>
-		public Tablet(int pos_x, int pos_y, decimal angle, ScreenFormat format)
+		public Tablet(int pos_x, int pos_y, float angle, ScreenFormat format)
 		{
 			this.pos_x = pos_x;
 			this.pos_y = pos_y;
 			this.angle = angle;
 			this.format = format;
+			this.matrix = new Matrix();
+		}
+
+		internal void refreshBall(PointF position, Ball.ImageID imageID)
+		{
+			if (this.ball != null)
+			{
+				//lock (this.ball)
+				//{
+					this.ball.setPosition(position);
+					this.ball.setID(imageID);
+				//}
+			}
+			else
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 		#region Ascesseurs
@@ -53,7 +86,7 @@ namespace BouncingBall
 		/// Get the orientation in the room
 		/// </summary>
 		/// <returns></returns>
-		public decimal getAngle()
+		public float getAngle()
 		{
 			return this.angle;
 		}
@@ -74,6 +107,11 @@ namespace BouncingBall
 		public int getHeight()
 		{
 			return Format.GetFormat(this.format)[1];
+		}
+
+		public Matrix getTMatrix()
+		{
+			return this.matrix;
 		}
 
 		/// <summary>
@@ -98,7 +136,7 @@ namespace BouncingBall
 		/// Set the orientation in the room
 		/// </summary>
 		/// <param name="angle">In degree</param>
-		public void setAngle(decimal angle)
+		public void setAngle(float angle)
 		{
 			this.angle = angle;
 		}
