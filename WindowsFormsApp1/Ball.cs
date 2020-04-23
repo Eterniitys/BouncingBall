@@ -1,14 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BouncingBall
-{
-	public class Ball
-	{
+namespace BouncingBall {
+	public class Ball : GameObject {
 		#region Properties of a ball
 		/// <summary>
 		/// All possible value of <see cref="state"/></see>
@@ -33,10 +31,11 @@ namespace BouncingBall
 		/// <summary>
 		/// The center of the ball
 		/// </summary>
-		public PointF center; //TODO set private
-							  /// <summary>
-							  /// The room width
-							  /// </summary>
+		//TODO set private
+		public PointF center;
+		/// <summary>
+		/// The room width
+		/// </summary>
 		private int room_width;
 		/// <summary>
 		/// The room lenght
@@ -49,10 +48,11 @@ namespace BouncingBall
 		/// <summary>
 		/// The angle which the ball is moving with
 		/// </summary>
-		public int direction; //TODO set private
-							  /// <summary>
-							  /// The speed which the ball is moving with
-							  /// </summary>
+		//TODO set private
+		public int direction;
+		/// <summary>
+		/// The speed which the ball is moving with
+		/// </summary>
 		private int speed;
 		#endregion
 
@@ -113,8 +113,7 @@ namespace BouncingBall
 		/// <param name="gfx">The Graphics of the component drawing the ball</param>
 		/// <param name="window_width">The drawing component width</param>
 		/// <param name="window_height">The drawing component height</param>
-		public void draw(Graphics gfx, int window_width, int window_height)
-		{
+		public override void draw(Graphics gfx, int window_width, int window_height) {
 			SizeF scaled_size = new SizeF(
 				this.size.Width * window_width / room_width,
 				this.size.Height * window_height / room_lenght
@@ -139,9 +138,8 @@ namespace BouncingBall
 		/// <summary>
 		/// Move the ball in the field and manage its boucing on borders and bars.
 		/// </summary>
-		public void move()
-		{
-			double radDir = (this.direction+90) * (Math.PI / 180);
+		public override void move() {
+			double radDir = (this.direction + 90) * (Math.PI / 180);
 			center.X += (float)(Math.Sin(radDir) * speed);
 			center.Y += (float)(Math.Cos(radDir) * speed);
 			borderBounce();

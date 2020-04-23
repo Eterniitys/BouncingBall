@@ -89,6 +89,13 @@ namespace BouncingBall {
 				gfx.TranslateTransform(-x, -y);
 			}
 			this.ball.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height);
+			foreach (Wall w in lstWall) {
+				w.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height);
+			}
+		}
+
+		public void addWall(Wall wall) {
+			this.lstWall.Add(wall);
 		}
 	}
 }

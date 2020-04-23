@@ -15,7 +15,9 @@ namespace BouncingBall {
 		private int room_width;
 		private int room_lenght;
 
-		public TabletteView(int room_width , int room_lenght) {
+		private GameObject preBuilt;
+
+		public TabletteView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			Tablet tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
@@ -55,10 +57,16 @@ namespace BouncingBall {
 			m1.Rotate(this.tab.getAngle());
 			*/
 
+			// preBuild
+			if (this.preBuilt != null) {
+				this.preBuilt.draw(gfx, this.room_width, this.room_lenght);
+			}
+
 			// Rectangle rouge englobant au format de la tablette
 			gfx.DrawRectangle(redPen, 0, 0, dim_x, dim_y);
 			// place le centre de l'image au centre de la tablette
 			gfx.TranslateTransform(-(x - dim_x / 2), -(y - dim_y / 2));
+
 
 			// rotation par le centre de la tablette
 			gfx.TranslateTransform(x, y);
@@ -73,12 +81,18 @@ namespace BouncingBall {
 
 			// balle
 			this.tab.ball.draw(gfx, room_width, room_lenght);
+
 		}
 		#endregion Painting
 
 		public Tablet getTablette() {
 			return this.tab;
 		}
+
+		private int prev_x = 0;
+		private int prev_y = 0;
+
+		private bool clickIsDown = false;
 
 		#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
 
@@ -91,41 +105,12 @@ namespace BouncingBall {
 
 		public void labelToMousePos(MouseEventArgs e) {
 			Invoke(new Action(() => {
-				this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", this.tab.ball.center.X, this.tab.ball.center.Y);
+				this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", e.X - this.tab.getWidth() / 2, e.Y - this.tab.getHeight() / 2);
 			}));
 		}
 
-		private int prev_x = 0;
-		private int prev_y = 0;
-
-		private bool clickIsDown = false;
 		private void onMouseWheel(object sender, MouseEventArgs e) {
 			this.tab.setAngle(this.tab.getAngle() + e.Delta / 10);
-			Invoke(new Action(() => {
-				this.lbl.Text = String.Format("{0:#.#}", e.Delta / 10);
-			}));
-		}
-
-		private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
-			if (mode == Mode.moving) {
-				clickIsDown = false;
-			}
-		}
-
-		private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
-			if (clickIsDown && mode == Mode.moving) {
-				this.tab.moveBy((e.X - this.tab.getWidth() / 2) - prev_x, (e.Y - this.tab.getHeight() / 2) - prev_y);
-				prev_x = e.X - this.tab.getWidth() / 2;
-				prev_y = e.Y - this.tab.getHeight() / 2;
-			}
-		}
-
-		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
-			if (mode == Mode.moving) {
-				prev_x = e.X - this.tab.getWidth() / 2;
-				prev_y = e.Y - this.tab.getHeight() / 2;
-				clickIsDown = true;
-			}
 		}
 
 		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
@@ -134,7 +119,53 @@ namespace BouncingBall {
 			}
 		}
 
-		#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
+		#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+
+		private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
+			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
+			if (mode == Mode.moving) {
+			}
+			else {
+			#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+				if (this.preBuilt is Wall) {
+					((Wall)this.preBuilt).setBuilt();
+					//this.preBuilt = null;
+				}
+			}
+			clickIsDown = false;
+
+		}
+
+		private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
+			labelToMousePos(e);
+			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
+			if (clickIsDown && mode == Mode.moving) {
+				this.tab.moveBy((e.X - this.tab.getWidth() / 2) - prev_x, (e.Y - this.tab.getHeight() / 2) - prev_y);
+				prev_x = e.X - this.tab.getWidth() / 2;
+				prev_y = e.Y - this.tab.getHeight() / 2;
+			}
+			else {
+			#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+				if (this.preBuilt is Wall) {
+					((Wall)this.preBuilt).setEnd(e.X, e.Y);
+				}
+			}
+		}
+
+		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
+			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
+			if (mode == Mode.moving) {
+				prev_x = e.X - this.tab.getWidth() / 2;
+				prev_y = e.Y - this.tab.getHeight() / 2;
+			}
+			else {
+			#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y);
+			}
+			clickIsDown = true;
+		}
+
+
 
 	}
 }

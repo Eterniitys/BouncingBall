@@ -18,8 +18,8 @@ namespace BouncingBall
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			int room_width = 1000;
-			int room_lenght = 1000;
+			int room_width = 1600;
+			int room_lenght = 900;
 
 			// Tablette principale
 			TabletteView tablette = new TabletteView(room_width, room_lenght);
