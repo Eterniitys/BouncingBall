@@ -63,6 +63,12 @@ namespace BouncingBall
 			}
 		}
 
+		internal void moveBy(int delta_x, int delta_y)
+		{
+			this.pos_x -= delta_x;
+			this.pos_y -= delta_y;
+		}
+
 		#region Ascesseurs
 		/// <summary>
 		/// Get position in the room along the x axis
@@ -140,6 +146,7 @@ namespace BouncingBall
 		{
 			this.angle = angle;
 		}
+
 
 		#endregion
 	}
