@@ -8,10 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BouncingBall
-{
-	public partial class MapView : Form
-	{
+namespace BouncingBall {
+	public partial class MapView : Form {
 		/// <summary>
 		/// Width of the playing area in millimeters
 		/// </summary>
@@ -53,12 +51,10 @@ namespace BouncingBall
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void timer_Tick(object sender, EventArgs e)
-		{
+		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			this.ball.move();
-			foreach (Tablet t in lst_tab)
-			{
+			foreach (Tablet t in lst_tab) {
 				t.refreshBall(this.ball.getPosition(), this.ball.getID());
 			}
 			this.lbl_angle.Text = String.Format("{0:#.#} | {1:#.#}", this.ball.center.X, this.ball.center.Y);
@@ -69,12 +65,10 @@ namespace BouncingBall
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void pictureBox1_Paint(object sender, PaintEventArgs e)
-		{
+		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 			Graphics gfx = e.Graphics;
-			foreach (Tablet t in lst_tab)
-			{
-				int dim_x = (this.lst_tab[0].getWidth() * e.ClipRectangle.Width ) / room_width;
+			foreach (Tablet t in lst_tab) {
+				int dim_x = (this.lst_tab[0].getWidth() * e.ClipRectangle.Width) / room_width;
 				int dim_y = (this.lst_tab[0].getHeight() * e.ClipRectangle.Height) / room_lenght;
 				int x = t.getPosX() * e.ClipRectangle.Width / room_width;
 				int y = t.getPosY() * e.ClipRectangle.Height / room_lenght;
@@ -84,7 +78,7 @@ namespace BouncingBall
 				Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
 				//
 				gfx.DrawLine(redPen, 0, 0, x, y);
-				gfx.DrawRectangle(redPen, x-dim_x/2, y-dim_y/2, dim_x, dim_y);
+				gfx.DrawRectangle(redPen, x - dim_x / 2, y - dim_y / 2, dim_x, dim_y);
 				// définition de l'origine de rotation
 				gfx.TranslateTransform(x, y);
 				gfx.RotateTransform(t.getAngle());
@@ -92,7 +86,7 @@ namespace BouncingBall
 				gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
 				//rétablie la position/rotation d'origine
 				gfx.RotateTransform(-t.getAngle());
-				gfx.TranslateTransform(-x , -y);
+				gfx.TranslateTransform(-x, -y);
 			}
 			this.ball.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height);
 		}

@@ -6,10 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BouncingBall
-{
-	public class Tablet
-	{
+namespace BouncingBall {
+	public class Tablet {
 		/// <summary>
 		/// tablet position in the room along the x axis
 		/// </summary>
@@ -38,8 +36,7 @@ namespace BouncingBall
 		/// <param name="pos_y">The position in the room along the y axis</param>
 		/// <param name="angle">The orientation on the tablet</param>
 		/// <param name="format">Define the format use to represent this tablet in the room</param>
-		public Tablet(int pos_x, int pos_y, float angle, ScreenFormat format)
-		{
+		public Tablet(int pos_x, int pos_y, float angle, ScreenFormat format) {
 			this.pos_x = pos_x;
 			this.pos_y = pos_y;
 			this.angle = angle;
@@ -47,24 +44,19 @@ namespace BouncingBall
 			this.matrix = new Matrix();
 		}
 
-		internal void refreshBall(PointF position, Ball.ImageID imageID)
-		{
-			if (this.ball != null)
-			{
+		internal void refreshBall(PointF position, Ball.ImageID imageID) {
+			if (this.ball != null) {
 				//lock (this.ball)
 				//{
-					this.ball.setPosition(position);
-					this.ball.setID(imageID);
+				this.ball.setPosition(position);
+				this.ball.setID(imageID);
 				//}
-			}
-			else
-			{
+			} else {
 				throw new NotImplementedException();
 			}
 		}
 
-		internal void moveBy(int delta_x, int delta_y)
-		{
+		internal void moveBy(int delta_x, int delta_y) {
 			this.pos_x -= delta_x;
 			this.pos_y -= delta_y;
 		}
@@ -74,8 +66,7 @@ namespace BouncingBall
 		/// Get position in the room along the x axis
 		/// </summary>
 		/// <returns></returns>
-		public int getPosX()
-		{
+		public int getPosX() {
 			return this.pos_x;
 		}
 
@@ -83,8 +74,7 @@ namespace BouncingBall
 		/// Get position in the room along the y axis
 		/// </summary>
 		/// <returns></returns>
-		public int getPosY()
-		{
+		public int getPosY() {
 			return this.pos_y;
 		}
 
@@ -92,8 +82,7 @@ namespace BouncingBall
 		/// Get the orientation in the room
 		/// </summary>
 		/// <returns></returns>
-		public float getAngle()
-		{
+		public float getAngle() {
 			return this.angle;
 		}
 
@@ -101,8 +90,7 @@ namespace BouncingBall
 		/// Get the width of the sreen depending on the <see cref="format"/>
 		/// </summary>
 		/// <returns></returns>
-		public int getWidth()
-		{
+		public int getWidth() {
 			return Format.GetFormat(this.format)[0];
 		}
 
@@ -110,13 +98,11 @@ namespace BouncingBall
 		/// Get the height of the sreen depending on the <see cref="format"/>
 		/// </summary>
 		/// <returns></returns>
-		public int getHeight()
-		{
+		public int getHeight() {
 			return Format.GetFormat(this.format)[1];
 		}
 
-		public Matrix getTMatrix()
-		{
+		public Matrix getTMatrix() {
 			return this.matrix;
 		}
 
@@ -124,8 +110,7 @@ namespace BouncingBall
 		/// set position in the room along the x axis
 		/// </summary>
 		/// <param name="pos_x"></param>
-		public void setPosX(int pos_x)
-		{
+		public void setPosX(int pos_x) {
 			this.pos_x = pos_x;
 		}
 
@@ -133,8 +118,7 @@ namespace BouncingBall
 		/// set position in the room along the y axis
 		/// </summary>
 		/// <param name="pos_y"></param>
-		public void setPosY(int pos_y)
-		{
+		public void setPosY(int pos_y) {
 			this.pos_y = pos_y;
 		}
 
@@ -142,8 +126,7 @@ namespace BouncingBall
 		/// Set the orientation in the room
 		/// </summary>
 		/// <param name="angle">In degree</param>
-		public void setAngle(float angle)
-		{
+		public void setAngle(float angle) {
 			this.angle = angle;
 		}
 

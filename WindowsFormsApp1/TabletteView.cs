@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -27,8 +27,7 @@ namespace BouncingBall {
 
 
 		#region Painting
-		private void timer_Tick(object sender, EventArgs e)
-		{
+		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			/*Invoke(new Action(() =>
 			{
@@ -77,8 +76,7 @@ namespace BouncingBall {
 		}
 		#endregion Painting
 
-		public Tablet getTablette()
-		{
+		public Tablet getTablette() {
 			return this.tab;
 		}
 
@@ -91,54 +89,48 @@ namespace BouncingBall {
 
 		private Mode mode = Mode.moving;
 
-		public void labelToMousePos(MouseEventArgs e)
-		{
-			Invoke(new Action(() =>
-				{
-					this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", this.tab.ball.center.X, this.tab.ball.center.Y);
-				}));
+		public void labelToMousePos(MouseEventArgs e) {
+			Invoke(new Action(() => {
+				this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", this.tab.ball.center.X, this.tab.ball.center.Y);
+			}));
 		}
 
 		private int prev_x = 0;
 		private int prev_y = 0;
+
 		private bool clickIsDown = false;
-		private void onMouseWheel(object sender, MouseEventArgs e)
-		{
-			this.tab.setAngle(this.tab.getAngle() + e.Delta/10);
-			Invoke(new Action(() =>
-			{
-				this.lbl.Text = String.Format("{0:#.#}", e.Delta/10);
+		private void onMouseWheel(object sender, MouseEventArgs e) {
+			this.tab.setAngle(this.tab.getAngle() + e.Delta / 10);
+			Invoke(new Action(() => {
+				this.lbl.Text = String.Format("{0:#.#}", e.Delta / 10);
 			}));
 		}
 
-		private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-		{
-			clickIsDown = false;
+		private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
+			if (mode == Mode.moving) {
+				clickIsDown = false;
+			}
 		}
 
-		private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (clickIsDown)
-			{
-				//labelToMousePos(e);
+		private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
+			if (clickIsDown && mode == Mode.moving) {
 				this.tab.moveBy((e.X - this.tab.getWidth() / 2) - prev_x, (e.Y - this.tab.getHeight() / 2) - prev_y);
 				prev_x = e.X - this.tab.getWidth() / 2;
 				prev_y = e.Y - this.tab.getHeight() / 2;
 			}
 		}
 
-		private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
-		{
-			prev_x = e.X - this.tab.getWidth() / 2;
-			prev_y = e.Y - this.tab.getHeight() / 2;
-			clickIsDown = true;
+		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
+			if (mode == Mode.moving) {
+				prev_x = e.X - this.tab.getWidth() / 2;
+				prev_y = e.Y - this.tab.getHeight() / 2;
+				clickIsDown = true;
+			}
 		}
 
-		private void TabletteView_KeyUp(object sender, KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.T)
-			{
-				mode = mode == Mode.moving ? Mode.drawing : Mode.moving ;
+		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
+			if (e.KeyCode == Keys.T) {
+				mode = mode == Mode.moving ? Mode.drawing : Mode.moving;
 			}
 		}
 

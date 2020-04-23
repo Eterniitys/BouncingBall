@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -34,9 +34,9 @@ namespace BouncingBall
 		/// The center of the ball
 		/// </summary>
 		public PointF center; //TODO set private
-		/// <summary>
-		/// The room width
-		/// </summary>
+							  /// <summary>
+							  /// The room width
+							  /// </summary>
 		private int room_width;
 		/// <summary>
 		/// The room lenght
@@ -50,9 +50,9 @@ namespace BouncingBall
 		/// The angle which the ball is moving with
 		/// </summary>
 		public int direction; //TODO set private
-		/// <summary>
-		/// The speed which the ball is moving with
-		/// </summary>
+							  /// <summary>
+							  /// The speed which the ball is moving with
+							  /// </summary>
 		private int speed;
 		#endregion
 
@@ -63,8 +63,7 @@ namespace BouncingBall
 		/// <param name="room_width">The width of the represented room in millimeters</param>
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
-		public Ball(int room_width, int room_lenght , float scale = 1)
-		{
+		public Ball(int room_width, int room_lenght, float scale = 1) {
 			this.size = new SizeF(scale * 100F, scale * 100F); // a 10 centimeter diameter ball
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
@@ -72,8 +71,8 @@ namespace BouncingBall
 			this.speed = 10; // TODO this value does need to not be hardcoded
 			Random rnd = new Random(108); //103
 			this.center = new PointF(
-				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width/2,
-				(float)rnd.NextDouble() * (room_lenght - this.size.Height) + this.size.Height/2
+				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,
+				(float)rnd.NextDouble() * (room_lenght - this.size.Height) + this.size.Height / 2
 				);
 			this.direction = rnd.Next(-180, 180);
 		}
@@ -86,8 +85,7 @@ namespace BouncingBall
 		/// Get the center position of the ball
 		/// </summary>
 		/// <returns></returns>
-		public PointF getPosition()
-		{
+		public PointF getPosition() {
 			return this.center;
 		}
 
@@ -95,18 +93,15 @@ namespace BouncingBall
 		/// Get the ID to use to draw the ball
 		/// </summary>
 		/// <returns></returns>
-		public ImageID getID()
-		{
+		public ImageID getID() {
 			return this.state;
 		}
 
-		public void setPosition(PointF pos)
-		{
+		public void setPosition(PointF pos) {
 			this.center = pos;
 		}
 
-		public void setID(ImageID id)
-		{
+		public void setID(ImageID id) {
 			this.state = id;
 		}
 		#endregion
@@ -129,8 +124,7 @@ namespace BouncingBall
 				(this.center.Y - this.size.Height / 2) * window_height / room_lenght
 				);
 			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
-			lock (this)
-			{
+			lock (this) {
 				gfx.DrawImage(lst_img[(int)this.state], rect);
 			}
 			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 1);
@@ -156,17 +150,14 @@ namespace BouncingBall
 		/// <summary>
 		/// Bounce the ball on the borders
 		/// </summary>
-		private void borderBounce()
-		{
-			float radius =  this.size.Width / 2;
-			if (center.Y - radius < 0 || center.Y + radius > room_lenght)
-			{
+		private void borderBounce() {
+			float radius = this.size.Width / 2;
+			if (center.Y - radius < 0 || center.Y + radius > room_lenght) {
 				direction = -direction;
 			}
 
-			if (center.X - radius < 0 || center.X + radius > room_width)
-			{
-				direction = 180-direction;
+			if (center.X - radius < 0 || center.X + radius > room_width) {
+				direction = 180 - direction;
 			}
 
 			direction = direction < -180 ? direction + 360 : direction;
