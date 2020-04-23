@@ -17,11 +17,14 @@ namespace BouncingBall
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			
+
+			int room_width = 1000;
+			int room_lenght = 1000;
+
 			// Tablette principale
-			TabletteView tablette = new TabletteView();
+			TabletteView tablette = new TabletteView(room_width, room_lenght);
 			// Map de jeu (prend une référence à la tablette principale)
-			MapView map = new MapView(tablette.getTablette());
+			MapView map = new MapView(tablette.getTablette(), room_width, room_lenght);
 			// Fenêtre de la premiére tablette instanciée/lancée
 			Thread t = new Thread(() => RunTabView(tablette));
 			t.Start();

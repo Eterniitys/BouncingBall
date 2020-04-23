@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,14 +9,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BouncingBall
-{
-	public partial class TabletteView : Form
-	{
-		public TabletteView()
-		{
+namespace BouncingBall {
+	public partial class TabletteView : Form {
+
+		private int room_width;
+		private int room_lenght;
+
+		public TabletteView(int room_width , int room_lenght) {
+			this.room_width = room_width;
+			this.room_lenght = room_lenght;
 			Tablet tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
-			//TODO la valeur du format ne semble pas etre prise en compte partout
 			this.tab = tab;
 			InitializeComponent();
 			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tab.getWidth(), tab.getHeight());
@@ -34,12 +36,7 @@ namespace BouncingBall
 			}));*/
 		}
 
-		private void pictureBox1_Paint(object sender, PaintEventArgs e)
-		{
-			//TODO
-			int room_width = 1600;
-			int room_lenght = 900;
-			// - - - - - - - -
+		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 			Graphics gfx = e.Graphics;
 			// drawing pen
 			Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);

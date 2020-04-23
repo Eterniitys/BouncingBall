@@ -24,26 +24,27 @@ namespace BouncingBall
 		/// List of all tablets in the game
 		/// </summary>
 		private Tablet[] lst_tab;
-
 		/// <summary>
 		/// The ball
 		/// </summary>
 		private Ball ball;
 
+		private List<Wall> lstWall;
+
 		/// <summary>
 		/// Set a Map where a ball evolve, TODO handle connection of new tablet
 		/// </summary>
 		/// <param name="t"></param>
-		public MapView(Tablet t)
-		{
-			//hardcoded TODO add a way to tweak them
-			room_width = 1600;
-			room_lenght = 900;
+		public MapView(Tablet t, int room_width, int room_lenght) {
+			this.room_width = room_width;
+			this.room_lenght = room_lenght;
 			// - - - - - - - - - -
 			lst_tab = new Tablet[1];
 			lst_tab[0] = t;
 			this.ball = new Ball(room_width, room_lenght, 1);
 			t.ball = this.ball;
+
+			this.lstWall = new List<Wall>();
 			InitializeComponent();
 		}
 
