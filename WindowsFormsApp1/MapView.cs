@@ -70,10 +70,10 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="pos"></param>
 		public void onBallMoved(PointF pos) {
-			string topic1 = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X];
-			string topic2 = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_Y];
-			MqttWrapper.SendMqttMessageTo(this.client, topic1, String.Format("{0:#.##}", pos.X));
-			MqttWrapper.SendMqttMessageTo(this.client, topic2, String.Format("{0:#.##}", pos.Y));
+			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS];
+			//MqttWrapper.SendMqttMessageTo(this.client, topic1, String.Format("{0:#.##}", pos.X));
+			//MqttWrapper.SendMqttMessageTo(this.client, topic2, String.Format("{0:#.##}", pos.Y));
+			MqttWrapper.SendMqttMessageTo(this.client, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
 
 		/// <summary>
@@ -84,9 +84,6 @@ namespace BouncingBall {
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			this.ball.move();
-			/*foreach (Tablet t in lst_tab) {
-				t.refreshBall(this.ball.getPosition(), this.ball.getID());
-			}*/
 		}
 
 		/// <summary>

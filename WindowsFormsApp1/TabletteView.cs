@@ -42,10 +42,10 @@ namespace BouncingBall {
 		}
 
 		private void onPositionChanged(Point position) {
-			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X];
+			//string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X];
 			Invoke(new Action(() => {
 				//this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", position.X, position.Y);
-				this.lbl.Text = String.Format("{0}", topic);
+				//this.lbl.Text = String.Format("{0}", topic);
 			}));
 		}
 
@@ -66,10 +66,11 @@ namespace BouncingBall {
 					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.QualityOfServiceLevel);
 					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Retain);*/
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X])) {
-						this.tab.ball.center.X = (float.Parse(message));
-					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_Y])) {
-						this.tab.ball.center.Y = (float.Parse(message));
+					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS])) {
+						this.lbl.Text = message;
+						string[] coord = message.Split(';');
+						this.tab.ball.center.X = (float.Parse(coord[0]));
+						this.tab.ball.center.Y = (float.Parse(coord[1]));
 					} else {
 						Invoke(new Action(() => {
 							this.lbl.Text = "Can't handle message";
