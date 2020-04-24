@@ -77,6 +77,13 @@ namespace BouncingBall {
 					}
 				}));
 			});
+
+			this.client.UseDisconnectedHandler(async e =>
+			{
+				Invoke(new Action(() => {
+					this.lbl.Text = "Disconnected";
+				}));
+			});
 		}
 
 
