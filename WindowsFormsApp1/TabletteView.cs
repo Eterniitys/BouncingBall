@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Options;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,19 +15,68 @@ using System.Windows.Forms;
 namespace BouncingBall {
 	public partial class TabletteView : Form {
 
+		private Tablet tab;
+
+		public delegate void TabletPositionChangedHandler(Point newPosition);
+		event TabletPositionChangedHandler TabletPositionChanged;
+
 		private int room_width;
 		private int room_lenght;
+
+		private IMqttClient client;
 
 		private GameObject preBuilt;
 
 		public TabletteView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
-			Tablet tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
-			this.tab = tab;
+			this.tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
+			this.tab.ball = new Ball(room_width, room_lenght);
+			// - - - - - - - - - -
+			initMqttClientAsync("Client1", "broker.hivemq.com");
+			// - - - - - - - - - -
 			InitializeComponent();
 			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tab.getWidth(), tab.getHeight());
 			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
+			this.TabletPositionChanged += new TabletPositionChangedHandler(this.onPositionChanged);
+		}
+
+		private void onPositionChanged(Point position) {
+			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X];
+			Invoke(new Action(() => {
+				//this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", position.X, position.Y);
+				this.lbl.Text = String.Format("{0}", topic);
+			}));
+		}
+
+		private async void initMqttClientAsync(string username, string url) {
+			this.client = MqttWrapper.CreateClient();
+			MqttWrapper.SetClientSubs(this.client);
+
+			var options = new MqttClientOptionsBuilder()
+				.WithClientId(username)
+				.WithTcpServer(url)
+				.Build();
+			await this.client.ConnectAsync(options, System.Threading.CancellationToken.None);
+
+			this.client.UseApplicationMessageReceivedHandler(e => {
+				Invoke(new Action(() => {
+					/*this.lbl_angle.Text = "Message received";
+					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Topic);
+					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.QualityOfServiceLevel);
+					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Retain);*/
+					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X])) {
+						this.tab.ball.center.X = (float.Parse(message));
+					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_Y])) {
+						this.tab.ball.center.Y = (float.Parse(message));
+					} else {
+						Invoke(new Action(() => {
+							this.lbl.Text = "Can't handle message";
+						}));
+					}
+				}));
+			});
 		}
 
 
@@ -104,9 +156,9 @@ namespace BouncingBall {
 		private Mode mode = Mode.moving;
 
 		public void labelToMousePos(MouseEventArgs e) {
-			Invoke(new Action(() => {
+			/*Invoke(new Action(() => {
 				this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", e.X - this.tab.getWidth() / 2, e.Y - this.tab.getHeight() / 2);
-			}));
+			}));*/
 		}
 
 		private void onMouseWheel(object sender, MouseEventArgs e) {
@@ -124,12 +176,11 @@ namespace BouncingBall {
 		private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
 			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
 			if (mode == Mode.moving) {
-			}
-			else {
-			#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+			} else {
+				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
 				if (this.preBuilt is Wall) {
 					((Wall)this.preBuilt).setBuilt();
-					//this.preBuilt = null;
+					this.preBuilt = null;
 				}
 			}
 			clickIsDown = false;
@@ -143,9 +194,9 @@ namespace BouncingBall {
 				this.tab.moveBy((e.X - this.tab.getWidth() / 2) - prev_x, (e.Y - this.tab.getHeight() / 2) - prev_y);
 				prev_x = e.X - this.tab.getWidth() / 2;
 				prev_y = e.Y - this.tab.getHeight() / 2;
-			}
-			else {
-			#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+				TabletPositionChanged(this.tab.getPosition());
+			} else {
+				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
 				if (this.preBuilt is Wall) {
 					((Wall)this.preBuilt).setEnd(e.X, e.Y);
 				}
@@ -157,9 +208,9 @@ namespace BouncingBall {
 			if (mode == Mode.moving) {
 				prev_x = e.X - this.tab.getWidth() / 2;
 				prev_y = e.Y - this.tab.getHeight() / 2;
-			}
-			else {
-			#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+
+			} else {
+				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
 				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y);
 			}
 			clickIsDown = true;

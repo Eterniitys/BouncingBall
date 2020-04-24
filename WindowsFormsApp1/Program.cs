@@ -22,10 +22,10 @@ namespace BouncingBall
 			int room_lenght = 900;
 
 			// Tablette principale
-			TabletteView tablette = new TabletteView(room_width, room_lenght);
-			// Map de jeu (prend une référence à la tablette principale)
-			MapView map = new MapView(tablette.getTablette(), room_width, room_lenght);
+			// Map de jeu
+			MapView map = new MapView(room_width, room_lenght);
 			// Fenêtre de la premiére tablette instanciée/lancée
+			TabletteView tablette = new TabletteView(room_width, room_lenght);
 			Thread t = new Thread(() => RunTabView(tablette));
 			t.Start();
 			// Serveur lancé

@@ -1,3 +1,7 @@
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Options;
+using MQTTnet.Server;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +25,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// List of all tablets in the game
 		/// </summary>
-		private Tablet[] lst_tab;
+		private List<Tablet> lst_tab;
 		/// <summary>
 		/// The ball
 		/// </summary>
@@ -29,21 +33,47 @@ namespace BouncingBall {
 
 		private List<Wall> lstWall;
 
+		private IMqttServer broker;
+		private IMqttClient client;
+		private async void initMqttClientAsync(string username, string url) {
+			this.client = MqttWrapper.CreateClient();
+			MqttWrapper.SetClientSubs(this.client);
+			var options = new MqttClientOptionsBuilder()
+				.WithClientId(username)
+				.WithTcpServer(url)
+				.Build();
+			await this.client.ConnectAsync(options, System.Threading.CancellationToken.None);
+		}
+
 		/// <summary>
 		/// Set a Map where a ball evolve, TODO handle connection of new tablet
 		/// </summary>
 		/// <param name="t"></param>
-		public MapView(Tablet t, int room_width, int room_lenght) {
+		public MapView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			// - - - - - - - - - -
-			lst_tab = new Tablet[1];
-			lst_tab[0] = t;
+			//this.broker = MqttWrapper.CreateBroker();
+			//MqttWrapper.StartMqttBroker(this.broker);
+			initMqttClientAsync("NextBroker", "broker.hivemq.com");
+			// - - - - - - - - - -
 			this.ball = new Ball(room_width, room_lenght, 1);
-			t.ball = this.ball;
-
+			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
+			lst_tab = new List<Tablet>();
 			this.lstWall = new List<Wall>();
+			// - - - - - - - - - -
 			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Call when the ball move
+		/// </summary>
+		/// <param name="pos"></param>
+		public void onBallMoved(PointF pos) {
+			string topic1 = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X];
+			string topic2 = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_Y];
+			MqttWrapper.SendMqttMessageTo(this.client, topic1, String.Format("{0:#.##}", pos.X));
+			MqttWrapper.SendMqttMessageTo(this.client, topic2, String.Format("{0:#.##}", pos.Y));
 		}
 
 		/// <summary>
@@ -54,10 +84,9 @@ namespace BouncingBall {
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			this.ball.move();
-			foreach (Tablet t in lst_tab) {
+			/*foreach (Tablet t in lst_tab) {
 				t.refreshBall(this.ball.getPosition(), this.ball.getID());
-			}
-			this.lbl_angle.Text = String.Format("{0:#.#} | {1:#.#}", this.ball.center.X, this.ball.center.Y);
+			}*/
 		}
 
 		/// <summary>
@@ -97,5 +126,7 @@ namespace BouncingBall {
 		public void addWall(Wall wall) {
 			this.lstWall.Add(wall);
 		}
+
+
 	}
 }

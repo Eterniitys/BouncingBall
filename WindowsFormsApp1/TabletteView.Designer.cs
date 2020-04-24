@@ -1,9 +1,5 @@
 ﻿namespace BouncingBall {
 	partial class TabletteView {
-		/// <summary>
-		/// Variables nécessaire au développer
-		/// </summary>
-		private Tablet tab;
 
 		/// <summary>
 		/// Variable nécessaire au concepteur.

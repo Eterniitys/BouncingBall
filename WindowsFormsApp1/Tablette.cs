@@ -9,13 +9,9 @@ using System.Threading.Tasks;
 namespace BouncingBall {
 	public class Tablet {
 		/// <summary>
-		/// tablet position in the room along the x axis
+		/// tablet position in the room along the x axis and the y axis
 		/// </summary>
-		private int pos_x;
-		/// <summary>
-		/// tablet position in the room along the y axis
-		/// </summary>
-		private int pos_y;
+		private Point position;
 		/// <summary>
 		/// The orientation on the talette
 		/// </summary>
@@ -32,13 +28,10 @@ namespace BouncingBall {
 		/// <summary>
 		/// Create a tablet simple representation 
 		/// </summary>
-		/// <param name="pos_x">The position in the room along the x axis</param>
-		/// <param name="pos_y">The position in the room along the y axis</param>
 		/// <param name="angle">The orientation on the tablet</param>
 		/// <param name="format">Define the format use to represent this tablet in the room</param>
 		public Tablet(int pos_x, int pos_y, float angle, ScreenFormat format) {
-			this.pos_x = pos_x;
-			this.pos_y = pos_y;
+			this.position = new Point(pos_x, pos_y);
 			this.angle = angle;
 			this.format = format;
 			this.matrix = new Matrix();
@@ -46,28 +39,29 @@ namespace BouncingBall {
 
 		internal void refreshBall(PointF position, Ball.ImageID imageID) {
 			if (this.ball != null) {
-				//lock (this.ball)
-				//{
 				this.ball.setPosition(position);
 				this.ball.setID(imageID);
-				//}
 			} else {
 				throw new NotImplementedException();
 			}
 		}
 
 		internal void moveBy(int delta_x, int delta_y) {
-			this.pos_x -= delta_x;
-			this.pos_y -= delta_y;
+			this.position.X -= delta_x;
+			this.position.Y -= delta_y;
 		}
 
 		#region Ascesseurs
+		public Point getPosition() {
+			return this.position;
+		}
+
 		/// <summary>
 		/// Get position in the room along the x axis
 		/// </summary>
 		/// <returns></returns>
 		public int getPosX() {
-			return this.pos_x;
+			return this.position.X;
 		}
 
 		/// <summary>
@@ -75,7 +69,7 @@ namespace BouncingBall {
 		/// </summary>
 		/// <returns></returns>
 		public int getPosY() {
-			return this.pos_y;
+			return this.position.Y;
 		}
 
 		/// <summary>
@@ -111,7 +105,7 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="pos_x"></param>
 		public void setPosX(int pos_x) {
-			this.pos_x = pos_x;
+			this.position.X = pos_x;
 		}
 
 		/// <summary>
@@ -119,7 +113,7 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="pos_y"></param>
 		public void setPosY(int pos_y) {
-			this.pos_y = pos_y;
+			this.position.Y = pos_y;
 		}
 
 		/// <summary>
