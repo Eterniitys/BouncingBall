@@ -28,7 +28,7 @@ namespace BouncingBall {
 			this.p2 = new PointF(float.Parse(coord[2]), float.Parse(coord[3]));
 		}
 
-		public override void draw(Graphics gfx, int window_width, int window_height) {
+		public override void draw(Graphics gfx, int window_width, int window_height, PointF scale) {
 			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 5);
 			if (!built) {
 				bluePen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;

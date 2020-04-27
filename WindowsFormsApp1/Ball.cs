@@ -117,14 +117,14 @@ namespace BouncingBall {
 		/// <param name="gfx">The Graphics of the component drawing the ball</param>
 		/// <param name="window_width">The drawing component width</param>
 		/// <param name="window_height">The drawing component height</param>
-		public override void draw(Graphics gfx, int window_width, int window_height) {
+		public override void draw(Graphics gfx, int window_width, int window_height, PointF scale) {
 			SizeF scaled_size = new SizeF(
-				this.size.Width * window_width / room_width,
-				this.size.Height * window_height / room_lenght
+				this.size.Width * scale.X,
+				this.size.Height * scale.Y
 				);
 			PointF scaled_pos = new PointF(
-				(this.center.X - this.size.Width / 2) * window_width / room_width,
-				(this.center.Y - this.size.Height / 2) * window_height / room_lenght
+				(this.center.X - this.size.Width / 2) * scale.X,
+				(this.center.Y - this.size.Height / 2) * scale.Y
 				);
 			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
 			lock (lst_img) {

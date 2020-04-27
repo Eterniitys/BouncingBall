@@ -38,6 +38,12 @@ namespace BouncingBall {
 
 		private IMqttServer broker;
 		private IMqttClient client;
+
+		/// <summary>
+		/// Initilize MQTT client
+		/// </summary>
+		/// <param name="username"></param>
+		/// <param name="url"></param>
 		private async void initMqttClientAsync(string username, string url) {
 			this.client = MqttWrapper.CreateClient();
 			MqttWrapper.SetClientSubs(this.client);
@@ -147,9 +153,9 @@ namespace BouncingBall {
 				gfx.RotateTransform(-t.getAngle());
 				gfx.TranslateTransform(-x, -y);
 			}
-			this.ball.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height);
+			this.ball.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height, scale);
 			foreach (Wall w in lstWall) {
-				w.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height);
+				w.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height, scale);
 			}
 			Invoke(new Action(() => {
 				this.lbl_angle.Text = string.Format("{0}", ((float)e.ClipRectangle.Width / room_width));

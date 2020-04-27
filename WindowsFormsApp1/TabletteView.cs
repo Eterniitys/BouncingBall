@@ -96,69 +96,57 @@ namespace BouncingBall {
 		#region Painting
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
-			/*Invoke(new Action(() =>
-			{
-				this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", this.tab.getPosX(), this.tab.getPosY());
-			}));*/
 		}
 
 		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
+
+			#region Setting up drawing vars
 			Graphics gfx = e.Graphics;
 			this.matrix.Reset();
-			this.scale.X = (float)room_width / e.ClipRectangle.Width;
-			this.scale.Y = (float)room_lenght /e.ClipRectangle.Height;
+			this.scale.X = 1 / ((float)this.tab.getWidth() / e.ClipRectangle.Width);
+			this.scale.Y = 1 / ((float)this.tab.getHeight() / e.ClipRectangle.Height);
 			// drawing pen
 			Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
 			//
-			int dim_x = this.tab.getWidth();
-			int dim_y = this.tab.getHeight();
-			int x = this.tab.getPosX();
-			int y = this.tab.getPosY();
+			int dim_x = (int)(this.tab.getWidth() * scale.X);
+			int dim_y = (int)(this.tab.getHeight() * scale.Y);
+			int x = (int)(this.tab.getPosX() * scale.X);
+			int y = (int)(this.tab.getPosY() * scale.Y);
 
+
+			// rotate arround tablet center
+			this.matrix.Translate(-(x - dim_x / 2), -(y - dim_y / 2));
+			this.matrix.Translate(x, y);
+			this.matrix.Rotate(-this.tab.getAngle());
+			this.matrix.Translate(-x, -y);
+			gfx.Transform = this.matrix;
+			#endregion Setting up drawing vars
+
+			#region Drawing room content
+			gfx.FillRectangle(Brushes.White, 0, 0, room_width * scale.X, room_lenght * scale.Y);
+
+			// ball
+			this.tab.ball.draw(gfx, room_width, room_lenght, scale);
+			// walls
+			foreach (Wall w in this.lstWall) {
+				w.draw(gfx, room_width, room_lenght, scale);
+			}
+
+			#endregion Drawing room content
+
+			#region Drawing screen relative content
+			this.matrix.Invert();
+			gfx.Transform = this.matrix;
+			gfx.TranslateTransform(-(x - dim_x / 2), -(y - dim_y / 2));
+			// preBuild
+			if (this.preBuilt != null) {
+				this.preBuilt.draw(gfx, this.room_width, this.room_lenght, scale);
+			}
 			// Cross at the center screen
 			gfx.DrawLine(Pens.Black, (dim_x / 2) - 5, dim_y / 2, (dim_x / 2) + 5, dim_y / 2);
 			gfx.DrawLine(Pens.Black, dim_x / 2, (dim_y / 2) - 5, dim_x / 2, (dim_y / 2) + 5);
+			#endregion Drawing screen relative content
 
-			/*
-			Matrix m1 = new Matrix();
-			m1.Translate(dim_x / 2, dim_y/2);
-			m1.Rotate(this.tab.getAngle());
-			*/
-
-			// preBuild
-			if (this.preBuilt != null) {
-				this.preBuilt.draw(gfx, this.room_width, this.room_lenght);
-			}
-
-			// Rectangle rouge englobant au format de la tablette
-			gfx.DrawRectangle(redPen, 0, 0, dim_x, dim_y);
-			// place le centre de l'image au centre de la tablette
-			gfx.TranslateTransform(-(x - dim_x / 2), -(y - dim_y / 2));
-			this.matrix.Translate(-(x - dim_x / 2), -(y - dim_y / 2));
-
-
-			// rotation par le centre de la tablette
-			gfx.TranslateTransform(x, y);
-			this.matrix.Translate(x, y);
-			gfx.RotateTransform(-this.tab.getAngle());
-			this.matrix.Rotate(-this.tab.getAngle());
-			gfx.TranslateTransform(-x, -y);
-			this.matrix.Translate(-x, -y);
-
-
-			// cadre entourant la salle de jeux
-			gfx.DrawLine(Pens.Blue, 0, 0, room_width, 0);
-			gfx.DrawLine(Pens.Blue, 0, room_lenght, room_width, room_lenght);
-			gfx.DrawLine(Pens.Blue, 0, 0, 0, room_lenght);
-			gfx.DrawLine(Pens.Blue, room_width, 0, room_width, room_lenght);
-
-			// balle
-			this.tab.ball.draw(gfx, room_width, room_lenght);
-			foreach (Wall w in this.lstWall) {
-				w.draw(gfx, room_width, room_lenght);
-			}
-
-			this.matrix.Invert();
 		}
 		#endregion Painting
 
