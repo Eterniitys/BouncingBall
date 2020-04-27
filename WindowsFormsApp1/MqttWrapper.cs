@@ -12,12 +12,16 @@ using System.Threading.Tasks;
 namespace BouncingBall {
 	class MqttWrapper {
 		public enum Topic {
-			POS
+			BALL_POS,
+			NEW_WALL,
+			BUILD_WALL
 		}
 
 		internal static string[] getTopicList() {
 			string[] lstTopics = {
-				"ball/pos"
+				"ball/pos",
+				"wall/new",
+				"wall/build"
 			};
 			return lstTopics;
 		}

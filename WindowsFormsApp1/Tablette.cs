@@ -21,8 +21,6 @@ namespace BouncingBall {
 		/// </summary>
 		private ScreenFormat format;
 
-		private Matrix matrix;
-
 		public Ball ball;
 
 		/// <summary>
@@ -34,7 +32,6 @@ namespace BouncingBall {
 			this.position = new Point(pos_x, pos_y);
 			this.angle = angle;
 			this.format = format;
-			this.matrix = new Matrix();
 		}
 
 		internal void refreshBall(PointF position, Ball.ImageID imageID) {
@@ -94,10 +91,6 @@ namespace BouncingBall {
 		/// <returns></returns>
 		public int getHeight() {
 			return Format.GetFormat(this.format)[1];
-		}
-
-		public Matrix getTMatrix() {
-			return this.matrix;
 		}
 
 		/// <summary>

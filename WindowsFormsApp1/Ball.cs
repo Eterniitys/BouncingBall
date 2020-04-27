@@ -127,7 +127,9 @@ namespace BouncingBall {
 				(this.center.Y - this.size.Height / 2) * window_height / room_lenght
 				);
 			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
-			gfx.DrawImage(lst_img[(int)this.state], rect);
+			lock (lst_img) {
+				gfx.DrawImage(lst_img[(int)this.state],rect);
+			}
 			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 1);
 			gfx.DrawArc(bluePen, rect, 0, 360);
 			PointF tmp_p = new PointF(scaled_pos.X + scaled_size.Width, scaled_pos.Y + scaled_size.Height);

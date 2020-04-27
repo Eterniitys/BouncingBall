@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,16 +22,36 @@ namespace BouncingBall {
 			this.p2 = new PointF(p2_x, p2_y);
 		}
 
+		public Wall(string message) {
+			string[] coord = message.Split(';');
+			this.p1 = new PointF(float.Parse(coord[0]), float.Parse(coord[1]));
+			this.p2 = new PointF(float.Parse(coord[2]), float.Parse(coord[3]));
+		}
+
 		public override void draw(Graphics gfx, int window_width, int window_height) {
-			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
+			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 5);
 			if (!built) {
 				bluePen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
 			}
 			gfx.DrawLine(bluePen, p1, p2);
 		}
+		internal void tranform(Matrix matrix) {
+			PointF[] pts = { this.p1 , this.p2};
+			matrix.TransformPoints(pts);
+			this.p1 = pts[0];
+			this.p2 = pts[1];
+		}
 
 		public override void move() {
 			// A wall do not move
+		}
+
+		public PointF getOrigine() {
+			return this.p1;
+		}
+
+		public PointF getEnd() {
+			return this.p2;
 		}
 
 		public void setOrigine(PointF p) {

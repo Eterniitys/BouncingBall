@@ -22,16 +22,23 @@ namespace BouncingBall {
 
 		private int room_width;
 		private int room_lenght;
+		private Matrix matrix;
+		private PointF scale;
 
 		private IMqttClient client;
 
 		private GameObject preBuilt;
+
+		private List<Wall> lstWall;
 
 		public TabletteView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
 			this.tab.ball = new Ball(room_width, room_lenght);
+			this.lstWall = new List<Wall>();
+			this.matrix = new Matrix();
+			this.scale = new PointF();
 			// - - - - - - - - - -
 			initMqttClientAsync("Client1", "broker.hivemq.com");
 			// - - - - - - - - - -
@@ -42,11 +49,7 @@ namespace BouncingBall {
 		}
 
 		private void onPositionChanged(Point position) {
-			//string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS_X];
-			Invoke(new Action(() => {
-				//this.lbl.Text = String.Format("{0:#.#} | {1:#.#}", position.X, position.Y);
-				//this.lbl.Text = String.Format("{0}", topic);
-			}));
+
 		}
 
 		private async void initMqttClientAsync(string username, string url) {
@@ -61,17 +64,19 @@ namespace BouncingBall {
 
 			this.client.UseApplicationMessageReceivedHandler(e => {
 				Invoke(new Action(() => {
-					/*this.lbl_angle.Text = "Message received";
-					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Topic);
-					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.QualityOfServiceLevel);
-					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Retain);*/
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.POS])) {
-						this.lbl.Text = message;
+					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 						string[] coord = message.Split(';');
 						this.tab.ball.center.X = (float.Parse(coord[0]));
 						this.tab.ball.center.Y = (float.Parse(coord[1]));
+					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
+						// nothing
+					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
+						Wall w = new Wall(message);
+						w.setBuilt();
+						this.lstWall.Add(w);
 					} else {
+						//this.lbl.Text = message;
 						Invoke(new Action(() => {
 							this.lbl.Text = "Can't handle message";
 						}));
@@ -79,11 +84,11 @@ namespace BouncingBall {
 				}));
 			});
 
-			this.client.UseDisconnectedHandler(async e =>
-			{
+			this.client.UseDisconnectedHandler(async e => {
 				Invoke(new Action(() => {
 					this.lbl.Text = "Disconnected";
 				}));
+				MqttWrapper.connectClient(this.client, "Client1", "broker.hivemq.com");
 			});
 		}
 
@@ -99,6 +104,9 @@ namespace BouncingBall {
 
 		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 			Graphics gfx = e.Graphics;
+			this.matrix.Reset();
+			this.scale.X = (float)room_width / e.ClipRectangle.Width;
+			this.scale.Y = (float)room_lenght /e.ClipRectangle.Height;
 			// drawing pen
 			Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
 			//
@@ -126,12 +134,17 @@ namespace BouncingBall {
 			gfx.DrawRectangle(redPen, 0, 0, dim_x, dim_y);
 			// place le centre de l'image au centre de la tablette
 			gfx.TranslateTransform(-(x - dim_x / 2), -(y - dim_y / 2));
+			this.matrix.Translate(-(x - dim_x / 2), -(y - dim_y / 2));
 
 
 			// rotation par le centre de la tablette
 			gfx.TranslateTransform(x, y);
+			this.matrix.Translate(x, y);
 			gfx.RotateTransform(-this.tab.getAngle());
+			this.matrix.Rotate(-this.tab.getAngle());
 			gfx.TranslateTransform(-x, -y);
+			this.matrix.Translate(-x, -y);
+
 
 			// cadre entourant la salle de jeux
 			gfx.DrawLine(Pens.Blue, 0, 0, room_width, 0);
@@ -141,7 +154,11 @@ namespace BouncingBall {
 
 			// balle
 			this.tab.ball.draw(gfx, room_width, room_lenght);
+			foreach (Wall w in this.lstWall) {
+				w.draw(gfx, room_width, room_lenght);
+			}
 
+			this.matrix.Invert();
 		}
 		#endregion Painting
 
@@ -186,9 +203,16 @@ namespace BouncingBall {
 			if (mode == Mode.moving) {
 			} else {
 				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				if (this.preBuilt is Wall) {
-					((Wall)this.preBuilt).setBuilt();
+				if (this.preBuilt is Wall wall) {
 					this.preBuilt = null;
+					wall.tranform(this.matrix);
+					Invoke(new Action(() => {
+						this.lbl.Text = String.Format("{0} | {1}", wall.getOrigine(), wall.getEnd());
+					}));
+					MqttWrapper.SendMqttMessageTo(this.client,
+						MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
+						String.Format("{0};{1};{2};{3}", wall.getOrigine().X, wall.getOrigine().Y, wall.getEnd().X, wall.getEnd().Y)
+						);
 				}
 			}
 			clickIsDown = false;
@@ -209,6 +233,7 @@ namespace BouncingBall {
 					((Wall)this.preBuilt).setEnd(e.X, e.Y);
 				}
 			}
+
 		}
 
 		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
