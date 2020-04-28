@@ -64,14 +64,14 @@ namespace BouncingBall {
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 						// TODO checké si le mur n'est pas sur la balle
 						Wall w = new Wall(message);
-						PointF p = w.getOrigine();
+						/*PointF p = w.getOrigine();
 						p.X *= scale.X;
 						p.Y *= scale.Y;
 						w.setOrigine(p);
 						p = w.getEnd();
 						p.X *= scale.X;
 						p.Y *= scale.Y;
-						w.setEnd(p);
+						w.setEnd(p);*/
 						this.lstWall.Add(w);
 						w.setBuilt();
 						MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL], message);
@@ -136,7 +136,6 @@ namespace BouncingBall {
 				int dim_y = (int)(this.scale.Y * this.lst_tab[0].getHeight());
 				int x = (int)(this.scale.X * t.getPosX());
 				int y = (int)(this.scale.Y * t.getPosY());
-
 				//
 				Pen blackPen = new Pen(Color.FromArgb(255, 0, 0, 0), 2);
 				Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
@@ -153,12 +152,14 @@ namespace BouncingBall {
 				gfx.RotateTransform(-t.getAngle());
 				gfx.TranslateTransform(-x, -y);
 			}
-			this.ball.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height, scale);
+			this.ball.draw(gfx, scale);
 			foreach (Wall w in lstWall) {
-				w.draw(gfx, e.ClipRectangle.Width, e.ClipRectangle.Height, scale);
+				w.draw(gfx, scale);
 			}
 			Invoke(new Action(() => {
-				this.lbl_angle.Text = string.Format("{0}", ((float)e.ClipRectangle.Width / room_width));
+				if (lstWall.Count != 0) {
+				this.lbl_angle.Text = string.Format("{0}", lstWall[lstWall.Count-1].getOrigine());
+				}
 			}));
 		}
 

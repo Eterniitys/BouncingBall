@@ -1,4 +1,4 @@
-﻿using MQTTnet;
+using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using System;
@@ -85,9 +85,6 @@ namespace BouncingBall {
 			});
 
 			this.client.UseDisconnectedHandler(async e => {
-				Invoke(new Action(() => {
-					this.lbl.Text = "Disconnected";
-				}));
 				MqttWrapper.connectClient(this.client, "Client1", "broker.hivemq.com");
 			});
 		}
@@ -123,28 +120,29 @@ namespace BouncingBall {
 			#endregion Setting up drawing vars
 
 			#region Drawing room content
-			gfx.FillRectangle(Brushes.White, 0, 0, room_width * scale.X, room_lenght * scale.Y);
-
+			// Background
+			gfx.FillRectangle(Brushes.Bisque, 0, 0, room_width * scale.X, room_lenght * scale.Y);
 			// ball
-			this.tab.ball.draw(gfx, room_width, room_lenght, scale);
+			this.tab.ball.draw(gfx, scale);
 			// walls
 			foreach (Wall w in this.lstWall) {
-				w.draw(gfx, room_width, room_lenght, scale);
+				w.draw(gfx, scale);
 			}
-
 			#endregion Drawing room content
 
 			#region Drawing screen relative content
 			this.matrix.Invert();
-			gfx.Transform = this.matrix;
-			gfx.TranslateTransform(-(x - dim_x / 2), -(y - dim_y / 2));
-			// preBuild
-			if (this.preBuilt != null) {
-				this.preBuilt.draw(gfx, this.room_width, this.room_lenght, scale);
-			}
+			Matrix m = new Matrix();
+			gfx.Transform = m;
+
 			// Cross at the center screen
 			gfx.DrawLine(Pens.Black, (dim_x / 2) - 5, dim_y / 2, (dim_x / 2) + 5, dim_y / 2);
 			gfx.DrawLine(Pens.Black, dim_x / 2, (dim_y / 2) - 5, dim_x / 2, (dim_y / 2) + 5);
+
+			// preBuild
+			if (this.preBuilt != null) {
+				this.preBuilt.draw(gfx, scale);
+			}
 			#endregion Drawing screen relative content
 
 		}
@@ -194,13 +192,12 @@ namespace BouncingBall {
 				if (this.preBuilt is Wall wall) {
 					this.preBuilt = null;
 					wall.tranform(this.matrix);
-					Invoke(new Action(() => {
-						this.lbl.Text = String.Format("{0} | {1}", wall.getOrigine(), wall.getEnd());
-					}));
+					//wall.tranform(this.matrix, scale);
 					MqttWrapper.SendMqttMessageTo(this.client,
 						MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
-						String.Format("{0};{1};{2};{3}", wall.getOrigine().X, wall.getOrigine().Y, wall.getEnd().X, wall.getEnd().Y)
+						String.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
 						);
+
 				}
 			}
 			clickIsDown = false;

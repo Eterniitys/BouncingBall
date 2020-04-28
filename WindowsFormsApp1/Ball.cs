@@ -68,12 +68,12 @@ namespace BouncingBall {
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
 		public Ball(int room_width, int room_lenght, float scale = 1) {
-			this.size = new SizeF(scale * 100F, scale * 100F); // a 10 centimeter diameter ball
+			this.size = new SizeF(scale * 25F, scale * 25F); // a 10 centimeter diameter ball
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = 10; // TODO this value does need to not be hardcoded
-			Random rnd = new Random(108); //103
+			this.speed = 5; // TODO this value does need to not be hardcoded
+			Random rnd = new Random(); // 103 108
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,
 				(float)rnd.NextDouble() * (room_lenght - this.size.Height) + this.size.Height / 2
@@ -117,7 +117,7 @@ namespace BouncingBall {
 		/// <param name="gfx">The Graphics of the component drawing the ball</param>
 		/// <param name="window_width">The drawing component width</param>
 		/// <param name="window_height">The drawing component height</param>
-		public override void draw(Graphics gfx, int window_width, int window_height, PointF scale) {
+		public override void draw(Graphics gfx, PointF scale) {
 			SizeF scaled_size = new SizeF(
 				this.size.Width * scale.X,
 				this.size.Height * scale.Y
