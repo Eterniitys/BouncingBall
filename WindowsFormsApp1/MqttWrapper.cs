@@ -14,14 +14,20 @@ namespace BouncingBall {
 		public enum Topic {
 			BALL_POS,
 			NEW_WALL,
-			BUILD_WALL
+			BUILD_WALL,
+			TABS_IDS,
+			TABS_ID_POS,
+			TABS_ID_ANG
 		}
 
 		internal static string[] getTopicList() {
 			string[] lstTopics = {
 				"ball/pos",
 				"wall/new",
-				"wall/build"
+				"wall/build",
+				"tablet/id",
+				"tablet/id/+/pos",
+				"tablet/id/+/angle",
 			};
 			return lstTopics;
 		}
@@ -83,12 +89,12 @@ namespace BouncingBall {
 			await mqttClient.ConnectAsync(options, System.Threading.CancellationToken.None);
 		}
 
-		public static async void SendMqttMessageTo(IMqttClient mqttClient, string topic, string text) {
+		public static async void SendMqttMessageTo(IMqttClient mqttClient, string topic, string text, bool retainFlag = false) {
 			var message = new MqttApplicationMessageBuilder()
 				.WithTopic(topic)
 				.WithPayload(text)
 				.WithExactlyOnceQoS()
-				//.WithRetainFlag()
+				.WithRetainFlag(retainFlag)
 				.Build();
 			if (mqttClient.IsConnected) {
 				await mqttClient.PublishAsync(message, System.Threading.CancellationToken.None);

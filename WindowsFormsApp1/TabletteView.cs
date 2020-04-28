@@ -16,9 +16,14 @@ namespace BouncingBall {
 	public partial class TabletteView : Form {
 
 		private Tablet tab;
+		private String id = "";
+		private string preferredTopic;
 
 		public delegate void TabletPositionChangedHandler(Point newPosition);
 		event TabletPositionChangedHandler TabletPositionChanged;
+
+		public delegate void TabletAngleChangedHandler(float newAngle);
+		event TabletAngleChangedHandler TabletAngleChanged;
 
 		private int room_width;
 		private int room_lenght;
@@ -46,10 +51,21 @@ namespace BouncingBall {
 			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tab.getWidth(), tab.getHeight());
 			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
 			this.TabletPositionChanged += new TabletPositionChangedHandler(this.onPositionChanged);
+			this.TabletAngleChanged += new TabletAngleChangedHandler(this.onAngleChanged);
 		}
 
 		private void onPositionChanged(Point position) {
+			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
+			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 
+			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tab.format));
+		}
+
+		private void onAngleChanged(float angle) {
+			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_ID_ANG];
+			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
+
+			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0}", angle));
 		}
 
 		private async void initMqttClientAsync(string username, string url) {
@@ -75,10 +91,18 @@ namespace BouncingBall {
 						Wall w = new Wall(message);
 						w.setBuilt();
 						this.lstWall.Add(w);
+					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS])) {
+						string[] ids = message.Split(';');
+						if (this.id.Length == 0 && ids.Length > 1) {
+							this.id = ids[1];
+							Invoke(new Action(() => {
+								this.lbl.Text = this.id;
+							}));
+						}
 					} else {
 						//this.lbl.Text = message;
 						Invoke(new Action(() => {
-							this.lbl.Text = "Can't handle message";
+							this.lbl.Text = "Can't handle message from "+ e.ApplicationMessage.Topic;
 						}));
 					}
 				}));
@@ -174,6 +198,7 @@ namespace BouncingBall {
 
 		private void onMouseWheel(object sender, MouseEventArgs e) {
 			this.tab.setAngle(this.tab.getAngle() + e.Delta / 10);
+			TabletAngleChanged?.Invoke(this.tab.getAngle());
 		}
 
 		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
@@ -192,16 +217,13 @@ namespace BouncingBall {
 				if (this.preBuilt is Wall wall) {
 					this.preBuilt = null;
 					wall.tranform(this.matrix);
-					//wall.tranform(this.matrix, scale);
 					MqttWrapper.SendMqttMessageTo(this.client,
 						MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
 						String.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
 						);
-
 				}
 			}
 			clickIsDown = false;
-
 		}
 
 		private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
@@ -218,7 +240,6 @@ namespace BouncingBall {
 					((Wall)this.preBuilt).setEnd(e.X, e.Y);
 				}
 			}
-
 		}
 
 		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
@@ -233,8 +254,5 @@ namespace BouncingBall {
 			}
 			clickIsDown = true;
 		}
-
-
-
 	}
 }

@@ -52,8 +52,8 @@ namespace BouncingBall {
 					gfx.RotateTransform(-angle);
 					gfx.TranslateTransform(-scaledP1.X, -scaledP1.Y);
 				}
-				gfx.FillEllipse(Brushes.LightPink, scaledP1.X-5, scaledP1.Y-5, 10, 10);
-				gfx.FillEllipse(Brushes.DeepPink, scaledP2.X-5, scaledP2.Y-5, 10, 10);
+				//gfx.FillEllipse(Brushes.LightPink, scaledP1.X-5, scaledP1.Y-5, 10, 10);
+				//gfx.FillEllipse(Brushes.DeepPink, scaledP2.X-5, scaledP2.Y-5, 10, 10);
 			}
 
 		}

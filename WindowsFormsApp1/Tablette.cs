@@ -19,7 +19,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// 
 		/// </summary>
-		private ScreenFormat format;
+		public ScreenFormat format { get; }
 
 		public Ball ball;
 

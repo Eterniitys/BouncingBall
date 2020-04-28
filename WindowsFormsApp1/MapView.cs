@@ -26,7 +26,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// List of all tablets in the game
 		/// </summary>
-		private List<Tablet> lst_tab;
+		private Dictionary<String, Tablet> lst_tab;
 		/// <summary>
 		/// The ball
 		/// </summary>
@@ -38,6 +38,8 @@ namespace BouncingBall {
 
 		private IMqttServer broker;
 		private IMqttClient client;
+
+		private static string availableId = "!;1;2;3;!";
 
 		/// <summary>
 		/// Initilize MQTT client
@@ -53,32 +55,44 @@ namespace BouncingBall {
 				.Build();
 			await this.client.ConnectAsync(options, System.Threading.CancellationToken.None);
 
+			MqttWrapper.SendMqttMessageTo(
+				this.client,
+				MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS],
+				"!;1;2;3;!",
+				true);
+
 			this.client.UseApplicationMessageReceivedHandler(e => {
-				Invoke(new Action(() => {
-					/*this.lbl_angle.Text = "Message received";
-						this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Topic);
-						this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.QualityOfServiceLevel);
-						this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Retain);*/
-					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
-					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
-						// TODO checké si le mur n'est pas sur la balle
-						Wall w = new Wall(message);
-						/*PointF p = w.getOrigine();
-						p.X *= scale.X;
-						p.Y *= scale.Y;
-						w.setOrigine(p);
-						p = w.getEnd();
-						p.X *= scale.X;
-						p.Y *= scale.Y;
-						w.setEnd(p);*/
-						this.lstWall.Add(w);
-						w.setBuilt();
-						MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL], message);
-					} else {
-						this.lbl_angle.Text = message;
+				/*this.lbl_angle.Text = "Message received";
+					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Topic);
+					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.QualityOfServiceLevel);
+					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Retain);*/
+				string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+				string topic = e.ApplicationMessage.Topic;
+				if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+				} else if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
+					// TODO checké si le mur n'est pas sur la balle
+					Wall w = new Wall(message);
+					this.lstWall.Add(w);
+					w.setBuilt();
+					MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL], message);
+				} else if (topic.StartsWith("tablet/id/")) {
+					string id = topic.Split('/')[2];
+					string[] datas = message.Split(';');
+					if (!this.lst_tab.ContainsKey(id)) {
+						Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (ScreenFormat)int.Parse(datas[2]));
+						this.lst_tab.Add(id, t);
+					} else if (topic.EndsWith("pos")) {
+						this.lst_tab[id].setPosX(int.Parse(datas[0]));
+						this.lst_tab[id].setPosY(int.Parse(datas[1]));
+					} else if (topic.EndsWith("angle")) {
+						this.lst_tab[id].setAngle(float.Parse(datas[0]));
 					}
-				}));
+					/*
+					Invoke(new Action(() => {
+						this.lbl_angle.Text = message;
+					}));*/
+				}
+				
 			});
 		}
 
@@ -97,7 +111,7 @@ namespace BouncingBall {
 			// - - - - - - - - - -
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
-			lst_tab = new List<Tablet>();
+			lst_tab = new Dictionary<String, Tablet>();
 			this.lstWall = new List<Wall>();
 			// - - - - - - - - - -
 			InitializeComponent();
@@ -131,11 +145,11 @@ namespace BouncingBall {
 			Graphics gfx = e.Graphics;
 			this.scale.X = (float)e.ClipRectangle.Width / room_width;
 			this.scale.Y = (float)e.ClipRectangle.Height / room_lenght;
-			foreach (Tablet t in lst_tab) {
-				int dim_x = (int)(this.scale.X * this.lst_tab[0].getWidth());
-				int dim_y = (int)(this.scale.Y * this.lst_tab[0].getHeight());
-				int x = (int)(this.scale.X * t.getPosX());
-				int y = (int)(this.scale.Y * t.getPosY());
+			foreach (KeyValuePair<string, Tablet> kvp in lst_tab) {
+				int dim_x = (int)(this.scale.X * kvp.Value.getWidth());
+				int dim_y = (int)(this.scale.Y * kvp.Value.getHeight());
+				int x = (int)(this.scale.X * kvp.Value.getPosX());
+				int y = (int)(this.scale.Y * kvp.Value.getPosY());
 				//
 				Pen blackPen = new Pen(Color.FromArgb(255, 0, 0, 0), 2);
 				Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
@@ -145,11 +159,11 @@ namespace BouncingBall {
 				gfx.DrawRectangle(redPen, x - dim_x / 2, y - dim_y / 2, dim_x, dim_y);
 				// définition de l'origine de rotation
 				gfx.TranslateTransform(x, y);
-				gfx.RotateTransform(t.getAngle());
+				gfx.RotateTransform(kvp.Value.getAngle());
 				// dessine
 				gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
 				// rétablie la position/rotation d'origine
-				gfx.RotateTransform(-t.getAngle());
+				gfx.RotateTransform(-kvp.Value.getAngle());
 				gfx.TranslateTransform(-x, -y);
 			}
 			this.ball.draw(gfx, scale);
@@ -158,7 +172,7 @@ namespace BouncingBall {
 			}
 			Invoke(new Action(() => {
 				if (lstWall.Count != 0) {
-				this.lbl_angle.Text = string.Format("{0}", lstWall[lstWall.Count-1].getOrigine());
+					this.lbl_angle.Text = string.Format("{0}", lstWall[lstWall.Count - 1].getOrigine());
 				}
 			}));
 		}
