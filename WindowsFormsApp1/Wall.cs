@@ -42,20 +42,24 @@ namespace BouncingBall {
 				int scaledDist = (int)Math.Sqrt(Math.Pow((double)(scaledP1.X - scaledP2.X), 2) + Math.Pow((double)(scaledP1.Y - scaledP2.Y), 2));
 				if (scaledDist != 0) {
 					this.rectangle.Size = new Size(scaledDist, (int)(10 * scale.X));
-					double sinus = (double)(scaledP1.Y - scaledP2.Y) / scaledDist;
-					sinus = sinus > 1 ? 1 : sinus < -1 ? -1 : sinus;
-					float angle = -(float)(Math.Asin(sinus) * 180 / Math.PI);
-					angle = scaledP1.X < scaledP2.X ? angle : -angle + 180;
 					gfx.TranslateTransform(scaledP1.X, scaledP1.Y);
-					gfx.RotateTransform(angle);
+					gfx.RotateTransform(getAngle());
 					gfx.FillRectangle(Brushes.Maroon, this.rectangle);
-					gfx.RotateTransform(-angle);
+					gfx.RotateTransform(-getAngle());
 					gfx.TranslateTransform(-scaledP1.X, -scaledP1.Y);
 				}
-				//gfx.FillEllipse(Brushes.LightPink, scaledP1.X-5, scaledP1.Y-5, 10, 10);
+				gfx.FillEllipse(Brushes.LightPink, scaledP1.X-5, scaledP1.Y-5, 10, 10);
 				//gfx.FillEllipse(Brushes.DeepPink, scaledP2.X-5, scaledP2.Y-5, 10, 10);
 			}
 
+		}
+
+		public float getAngle() {
+			int dist = (int)Math.Sqrt(Math.Pow((double)(p1.X - p2.X), 2) + Math.Pow((double)(p1.Y - p2.Y), 2));
+			double sinus = (double)(p1.Y - p2.Y) / dist;
+			sinus = sinus > 1 ? 1 : sinus < -1 ? -1 : sinus;
+			float angle = -(float)(Math.Asin(sinus) * 180 / Math.PI);
+			return p1.X < p2.X ? angle : -angle + 180;
 		}
 		internal void tranform(Matrix matrix) {
 			PointF[] pts = { this.p1, this.p2 };
@@ -64,7 +68,7 @@ namespace BouncingBall {
 			this.p2 = pts[1];
 		}
 
-		public override void move() {
+		public override void move(GameObject[] colliders) {
 			// A wall do not move
 		}
 

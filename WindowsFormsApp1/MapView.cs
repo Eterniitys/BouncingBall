@@ -58,7 +58,7 @@ namespace BouncingBall {
 			MqttWrapper.SendMqttMessageTo(
 				this.client,
 				MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS],
-				"!;1;2;3;!",
+				availableId,
 				true);
 
 			this.client.UseApplicationMessageReceivedHandler(e => {
@@ -92,7 +92,7 @@ namespace BouncingBall {
 						this.lbl_angle.Text = message;
 					}));*/
 				}
-				
+
 			});
 		}
 
@@ -133,7 +133,7 @@ namespace BouncingBall {
 		/// <param name="e"></param>
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
-			this.ball.move();
+			this.ball.move(lstWall.ToArray());
 		}
 
 		/// <summary>
@@ -170,9 +170,30 @@ namespace BouncingBall {
 			foreach (Wall w in lstWall) {
 				w.draw(gfx, scale);
 			}
+			if (lstWall.Count != 0) {
+				Wall w = lstWall[lstWall.Count - 1];
+				Func<PointF, PointF, PointF> fuck = (PointF p, PointF s) => new PointF(p.X * s.X, p.Y * s.Y);
+				PointF A = fuck(w.getOrigine(), scale);
+				PointF I = fuck(this.ball.center, scale);
+				gfx.DrawLine(Pens.Black, A, I);
+			}
 			Invoke(new Action(() => {
 				if (lstWall.Count != 0) {
-					this.lbl_angle.Text = string.Format("{0}", lstWall[lstWall.Count - 1].getOrigine());
+					Wall w = lstWall[lstWall.Count - 1];
+					PointF A = w.getOrigine();
+					PointF B = w.getEnd();
+					PointF C = this.ball.center;
+
+					PointF u = new PointF(A.X - B.X, A.Y - B.Y);
+					PointF AC = new PointF(A.X - C.X, A.Y - C.Y);
+
+					float numerateur = u.X * AC.Y - u.Y * AC.X;   // norme du vecteur v
+					float denominateur = (float)Math.Sqrt(u.X * u.X + u.Y * u.Y);  // norme de u
+					float CI = numerateur / denominateur;
+
+					numerateur = numerateur < 0 ? -numerateur : numerateur;
+					int dist = (int)Math.Sqrt(Math.Pow((double)(A.X - C.X), 2) + Math.Pow((double)(A.Y - C.Y), 2));
+					this.lbl_angle.Text = string.Format("{0}", CI);
 				}
 			}));
 		}

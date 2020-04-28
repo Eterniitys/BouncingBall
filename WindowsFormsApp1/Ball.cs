@@ -128,7 +128,7 @@ namespace BouncingBall {
 				);
 			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
 			lock (lst_img) {
-				gfx.DrawImage(lst_img[(int)this.state],rect);
+				gfx.DrawImage(lst_img[(int)this.state], rect);
 			}
 			Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 1);
 			gfx.DrawArc(bluePen, rect, 0, 360);
@@ -142,11 +142,12 @@ namespace BouncingBall {
 		/// <summary>
 		/// Move the ball in the field and manage its boucing on borders and bars.
 		/// </summary>
-		public override void move() {
+		public override void move(GameObject[] colliders) {
 			double radDir = (this.direction + 90) * (Math.PI / 180);
 			center.X += (float)(Math.Sin(radDir) * speed);
 			center.Y += (float)(Math.Cos(radDir) * speed);
 			borderBounce();
+			wallBounce(colliders);
 		}
 
 		/// <summary>
@@ -172,43 +173,69 @@ namespace BouncingBall {
 		/// <summary>
 		/// Bounce the ball on the bars in the field.
 		/// </summary>
-		/*private void barBounce()
-		{
-			#region Delete "obsolete" bars
-			for (int i = 0; i < bars.Count; i++)
-			{
-				if (bars[i].duration == 0)
-				{
-					bars.RemoveAt(i);
-					i--;
+		private void wallBounce(GameObject[] colliders) {
+				bool isColliding = false;
+			foreach (GameObject gameObject in colliders) {
+				if (gameObject is Wall w) {
+
+					isColliding |= CollisionSegment(w.getOrigine(), w.getEnd(), (this.size.Width + w.rectangle.Size.Height)/2);
+
+					/*PointF rC = bar.rotatePoint(center);    // Rotate ball center by A with theta angle
+
+					if (((A.X <= rC.X && rC.X <= bar.rB.X) || (bar.rB.X <= rC.X && rC.X <= A.X))                    // If ball aligned between A and B
+						&& (rC.Y + radius > A.Y - bar.duration / 12) && (rC.Y - radius < A.Y + bar.duration / barDivider))    // And distance to bar lower than radius (collision)
+					{
+						int tmpDir = (int)(direction + bar.theta * 180 / Math.PI) % 360;    // Rotated direction of ball
+						if (tmpDir < 180)           // 0<->180 degree
+						{
+							rC.Y = rC.Y - 2 * (radius - Math.Abs(A.Y - rC.Y - bar.duration / barDivider));
+						} else if (tmpDir > 180)      // 180<->360 degree
+						  {
+							rC.Y = rC.Y + 2 * (radius - Math.Abs(rC.Y - A.Y - bar.duration / barDivider));
+						}
+						tmpDir = 360 - tmpDir;
+						setDirection((int)(tmpDir - bar.theta * 180 / Math.PI));    // Set the new direction
+						center = bar.rotatePointReverse(rC);                           // Rotate back the center
+					}*/
 				}
 			}
-			#endregion
-			foreach (BounceBar bar in bars)
-			{
-				Point A = bar.A;
-				PointF rC = bar.rotatePoint(center);    // Rotate ball center by A with theta angle
+				this.setID(isColliding ? ImageID.BOUNCE : ImageID.CATCH);
 
-				if (((A.X <= rC.X && rC.X <= bar.rB.X) || (bar.rB.X <= rC.X && rC.X <= A.X))                    // If ball aligned between A and B
-					&& (rC.Y + radius > A.Y - bar.duration / 12) && (rC.Y - radius < A.Y + bar.duration / barDivider))    // And distance to bar lower than radius (collision)
-				{
-					int tmpDir = (int)(direction + bar.theta * 180 / Math.PI) % 360;    // Rotated direction of ball
-					if (tmpDir < 180)           // 0<->180 degree
-					{
-						rC.Y = rC.Y - 2 * (radius - Math.Abs(A.Y - rC.Y - bar.duration / barDivider));
-					}
-					else if (tmpDir > 180)      // 180<->360 degree
-					{
-						rC.Y = rC.Y + 2 * (radius - Math.Abs(rC.Y - A.Y - bar.duration / barDivider));
-					}
-					tmpDir = 360 - tmpDir;
-					setDirection((int)(tmpDir - bar.theta * 180 / Math.PI));    // Set the new direction
-					center = bar.rotatePointReverse(rC);                           // Rotate back the center
-				}
 
-				bar.duration--;
-			}
-		}*/
+		}
+
+		bool CollisionDroite(PointF A, PointF B, float gap) {
+			PointF u = new PointF(A.X - B.X, A.Y - B.Y);
+			PointF AC = new PointF(A.X - this.center.X, A.Y - this.center.Y);
+
+			float numerateur = u.X * AC.Y - u.Y * AC.X;
+			numerateur = numerateur < 0 ? -numerateur : numerateur;
+			float denominateur = (float)Math.Sqrt(u.X * u.X + u.Y * u.Y);  // norme de u
+			float CI = numerateur / denominateur;
+
+			return CI < gap;
+		}
+
+		bool CollisionSegment(PointF A, PointF B, float gap) {
+			if (CollisionDroite(A, B, gap) == false)
+				return false;  // si on ne touche pas la droite, on ne touchera jamais le segment
+
+			PointF AB = new PointF(B.X - A.X, B.Y - A.Y);
+			PointF AC = new PointF(this.center.X - A.X, this.center.Y - A.Y);
+			PointF BC = new PointF(this.center.X - B.X, this.center.Y - B.Y);
+			float pscal1 = AB.X * AC.X + AB.Y * AC.Y;  // produit scalaire
+			float pscal2 = (-AB.X) * BC.X + (-AB.Y) * BC.Y;  // produit scalaire
+			if (pscal1 >= 0 && pscal2 >= 0)
+				return true;   // I entre A et B, ok.
+							   // dernière possibilité, A ou B dans le cercle
+			/*if (CollisionPointCercle(A, C))
+				return true;
+			if (CollisionPointCercle(B, C))
+				return true;*/
+			return false;
+		}
+
+
 		#endregion
 
 		#endregion
