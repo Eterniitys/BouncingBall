@@ -45,7 +45,7 @@ namespace BouncingBall {
 			this.matrix = new Matrix();
 			this.scale = new PointF();
 			// - - - - - - - - - -
-			initMqttClientAsync("Client1", "broker.hivemq.com");
+			initMqttClientAsync("Client1", "localhost");
 			// - - - - - - - - - -
 			InitializeComponent();
 			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tab.getWidth(), tab.getHeight());
@@ -109,7 +109,10 @@ namespace BouncingBall {
 			});
 
 			this.client.UseDisconnectedHandler(async e => {
-				MqttWrapper.connectClient(this.client, "Client1", "broker.hivemq.com");
+				Invoke(new Action(() => {
+					this.lbl.Text = "Disconnected from Broker";
+				}));
+				MqttWrapper.connectClient(this.client, "Client1", "localhost");
 			});
 		}
 

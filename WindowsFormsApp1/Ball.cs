@@ -178,13 +178,13 @@ namespace BouncingBall {
 			foreach (GameObject gameObject in colliders) {
 				if (gameObject is Wall w) {
 
-					isColliding |= CollisionSegment(w.getOrigine(), w.getEnd(), (this.size.Width + w.rectangle.Size.Height)/2);
+					//isColliding |= CollisionSegment(w.getOrigine(), w.getEnd(), (this.size.Width + w.rectangle.Size.Height)/2);
 
-					/*PointF rC = bar.rotatePoint(center);    // Rotate ball center by A with theta angle
+					//PointF rC = bar.rotatePoint(center);    // Rotate ball center by A with theta angle
 
-					if (((A.X <= rC.X && rC.X <= bar.rB.X) || (bar.rB.X <= rC.X && rC.X <= A.X))                    // If ball aligned between A and B
+					/*if (((A.X <= rC.X && rC.X <= bar.rB.X) || (bar.rB.X <= rC.X && rC.X <= A.X))                    // If ball aligned between A and B
 						&& (rC.Y + radius > A.Y - bar.duration / 12) && (rC.Y - radius < A.Y + bar.duration / barDivider))    // And distance to bar lower than radius (collision)
-					{
+					/*{
 						int tmpDir = (int)(direction + bar.theta * 180 / Math.PI) % 360;    // Rotated direction of ball
 						if (tmpDir < 180)           // 0<->180 degree
 						{
@@ -196,7 +196,7 @@ namespace BouncingBall {
 						tmpDir = 360 - tmpDir;
 						setDirection((int)(tmpDir - bar.theta * 180 / Math.PI));    // Set the new direction
 						center = bar.rotatePointReverse(rC);                           // Rotate back the center
-					}*/
+					}/**/
 				}
 			}
 				this.setID(isColliding ? ImageID.BOUNCE : ImageID.CATCH);

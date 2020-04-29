@@ -100,6 +100,16 @@ namespace BouncingBall {
 				await mqttClient.PublishAsync(message, System.Threading.CancellationToken.None);
 			}
 		}
+
+		public static async void SendMqttMessageTo(IMqttServer mqttBroker, string topic, string text, bool retainFlag = false) {
+			var message = new MqttApplicationMessageBuilder()
+				.WithTopic(topic)
+				.WithPayload(text)
+				.WithExactlyOnceQoS()
+				.WithRetainFlag(retainFlag)
+				.Build();
+				await mqttBroker.PublishAsync(message, System.Threading.CancellationToken.None);
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
+using MQTTnet.Client.Receiving;
 using MQTTnet.Server;
 using System;
 using System.Collections.Generic;
@@ -37,63 +38,60 @@ namespace BouncingBall {
 		private List<Wall> lstWall;
 
 		private IMqttServer broker;
-		private IMqttClient client;
 
 		private static string availableId = "!;1;2;3;!";
 
-		/// <summary>
-		/// Initilize MQTT client
-		/// </summary>
-		/// <param name="username"></param>
-		/// <param name="url"></param>
-		private async void initMqttClientAsync(string username, string url) {
-			this.client = MqttWrapper.CreateClient();
-			MqttWrapper.SetClientSubs(this.client);
-			var options = new MqttClientOptionsBuilder()
-				.WithClientId(username)
-				.WithTcpServer(url)
-				.Build();
-			await this.client.ConnectAsync(options, System.Threading.CancellationToken.None);
+		private void initBroker() {
+			this.broker = MqttWrapper.CreateBroker();
+			MqttWrapper.StartMqttBroker(this.broker);
 
 			MqttWrapper.SendMqttMessageTo(
-				this.client,
+				this.broker,
 				MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS],
 				availableId,
 				true);
 
-			this.client.UseApplicationMessageReceivedHandler(e => {
-				/*this.lbl_angle.Text = "Message received";
-					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Topic);
-					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.QualityOfServiceLevel);
-					this.lbl_angle.Text = String.Format("{0}", e.ApplicationMessage.Retain);*/
-				string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-				string topic = e.ApplicationMessage.Topic;
-				if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
-				} else if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
-					// TODO checké si le mur n'est pas sur la balle
-					Wall w = new Wall(message);
-					this.lstWall.Add(w);
-					w.setBuilt();
-					MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL], message);
-				} else if (topic.StartsWith("tablet/id/")) {
-					string id = topic.Split('/')[2];
-					string[] datas = message.Split(';');
-					if (!this.lst_tab.ContainsKey(id)) {
-						Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (ScreenFormat)int.Parse(datas[2]));
-						this.lst_tab.Add(id, t);
-					} else if (topic.EndsWith("pos")) {
-						this.lst_tab[id].setPosX(int.Parse(datas[0]));
-						this.lst_tab[id].setPosY(int.Parse(datas[1]));
-					} else if (topic.EndsWith("angle")) {
-						this.lst_tab[id].setAngle(float.Parse(datas[0]));
+			// Quand un message est reçu
+			this.broker.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(
+				e => {
+					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+					string topic = e.ApplicationMessage.Topic;
+					if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+					} else if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
+						// TODO checké si le mur n'est pas sur la balle
+						Wall w = new Wall(message);
+						this.lstWall.Add(w);
+						w.setBuilt();
+						MqttWrapper.SendMqttMessageTo(this.broker, MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL], message);
+					} else if (topic.StartsWith("tablet/id/")) {
+						string id = topic.Split('/')[2];
+						string[] datas = message.Split(';');
+						if (!this.lst_tab.ContainsKey(id)) {
+							Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (ScreenFormat)int.Parse(datas[2]));
+							this.lst_tab.Add(id, t);
+						} else if (topic.EndsWith("pos")) {
+							this.lst_tab[id].setPosX(int.Parse(datas[0]));
+							this.lst_tab[id].setPosY(int.Parse(datas[1]));
+						} else if (topic.EndsWith("angle")) {
+							this.lst_tab[id].setAngle(float.Parse(datas[0]));
+						}
+						/*
+						Invoke(new Action(() => {
+							this.lbl_angle.Text = message;
+						}));*/
 					}
-					/*
-					Invoke(new Action(() => {
-						this.lbl_angle.Text = message;
-					}));*/
-				}
+				});
 
+			// Quand un client se connecte
+			this.broker.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(
+			e => {
+				/*
+				await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => {
+					//ConnectionStatus.Text = "Client disconnected fired";
+				});
+				*/
 			});
+
 		}
 
 		/// <summary>
@@ -105,9 +103,8 @@ namespace BouncingBall {
 			this.room_lenght = room_lenght;
 			this.scale = new PointF();
 			// - - - - - - - - - -
-			//this.broker = MqttWrapper.CreateBroker();
-			//MqttWrapper.StartMqttBroker(this.broker);
-			initMqttClientAsync("NextBroker", "broker.hivemq.com");
+			initBroker();
+			//initMqttClientAsync("NextBroker", "broker.hivemq.com");
 			// - - - - - - - - - -
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
@@ -123,7 +120,7 @@ namespace BouncingBall {
 		/// <param name="pos"></param>
 		public void onBallMoved(PointF pos) {
 			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS];
-			MqttWrapper.SendMqttMessageTo(this.client, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
+			MqttWrapper.SendMqttMessageTo(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
 
 		/// <summary>
@@ -184,6 +181,7 @@ namespace BouncingBall {
 					PointF B = w.getEnd();
 					PointF C = this.ball.center;
 
+					/*
 					PointF u = new PointF(A.X - B.X, A.Y - B.Y);
 					PointF AC = new PointF(A.X - C.X, A.Y - C.Y);
 
@@ -193,7 +191,8 @@ namespace BouncingBall {
 
 					numerateur = numerateur < 0 ? -numerateur : numerateur;
 					int dist = (int)Math.Sqrt(Math.Pow((double)(A.X - C.X), 2) + Math.Pow((double)(A.Y - C.Y), 2));
-					this.lbl_angle.Text = string.Format("{0}", CI);
+					*/
+					this.lbl_angle.Text = string.Format("{0}", w.getAngle());
 				}
 			}));
 		}
