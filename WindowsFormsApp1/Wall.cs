@@ -11,6 +11,7 @@ namespace BouncingBall {
 		private PointF p1;
 		private PointF p2;
 		public Rectangle rectangle;
+		public float angle { get; private set; }
 
 		private bool built = false;
 
@@ -22,6 +23,7 @@ namespace BouncingBall {
 			this.p1 = new PointF(p1_x, p1_y);
 			this.p2 = new PointF(p2_x, p2_y);
 			this.rectangle = new Rectangle(0, -5, 1, 1);
+			processAngle();
 		}
 
 		public Wall(string message) {
@@ -29,6 +31,7 @@ namespace BouncingBall {
 			this.p1 = new PointF(float.Parse(coord[0]), float.Parse(coord[1]));
 			this.p2 = new PointF(float.Parse(coord[2]), float.Parse(coord[3]));
 			this.rectangle = new Rectangle(0, -5, 1, 1);
+			processAngle();
 		}
 
 		public override void draw(Graphics gfx, PointF scale) {
@@ -43,23 +46,25 @@ namespace BouncingBall {
 				if (scaledDist != 0) {
 					this.rectangle.Size = new Size(scaledDist, (int)(10 * scale.X));
 					gfx.TranslateTransform(scaledP1.X, scaledP1.Y);
-					gfx.RotateTransform(getAngle());
+					gfx.RotateTransform(-angle);
 					gfx.FillRectangle(Brushes.Maroon, this.rectangle);
-					gfx.RotateTransform(-getAngle());
+					gfx.RotateTransform(angle);
 					gfx.TranslateTransform(-scaledP1.X, -scaledP1.Y);
 				}
-				gfx.FillEllipse(Brushes.LightPink, scaledP1.X-5, scaledP1.Y-5, 10, 10);
-				//gfx.FillEllipse(Brushes.DeepPink, scaledP2.X-5, scaledP2.Y-5, 10, 10);
+				gfx.FillEllipse(Brushes.Maroon, scaledP1.X - 5, scaledP1.Y - 5, 10, 10);
+				gfx.FillEllipse(Brushes.Maroon, scaledP2.X-5, scaledP2.Y-5, 10, 10);
 			}
 
 		}
 
-		public float getAngle() {
+		public void processAngle() {
 			int dist = (int)Math.Sqrt(Math.Pow((double)(p1.X - p2.X), 2) + Math.Pow((double)(p1.Y - p2.Y), 2));
 			double sinus = (double)(p1.Y - p2.Y) / dist;
 			sinus = sinus > 1 ? 1 : sinus < -1 ? -1 : sinus;
-			float angle = -(float)(Math.Asin(sinus) * 180 / Math.PI);
-			return p1.X < p2.X ? angle : -angle + 180;
+			float angle = (float)(Math.Asin(sinus) * 180 / Math.PI);
+			angle = p1.X > p2.X ? angle < 0 ? -angle - 180 : 180 - angle : angle;
+			this.angle = angle;
+
 		}
 		internal void tranform(Matrix matrix) {
 			PointF[] pts = { this.p1, this.p2 };

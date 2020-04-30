@@ -53,7 +53,7 @@ namespace BouncingBall {
 		/// The angle which the ball is moving with
 		/// </summary>
 		//TODO set private
-		public int direction;
+		public int direction { get; set; }
 		/// <summary>
 		/// The speed which the ball is moving with
 		/// </summary>
@@ -162,82 +162,81 @@ namespace BouncingBall {
 			if (center.X - radius < 0 || center.X + radius > room_width) {
 				direction = 180 - direction;
 			}
-
-			direction = direction < -180 ? direction + 360 : direction;
-			direction = direction > 180 ? direction - 360 : direction;
-
+			/*
+			direction += 180;
+			direction %= 360;
+			direction -= 180;
+			/**/
 			onBallMoved?.Invoke(center);
 		}
 
-		#region fonctions not use yet
 		/// <summary>
 		/// Bounce the ball on the bars in the field.
 		/// </summary>
 		private void wallBounce(GameObject[] colliders) {
-				bool isColliding = false;
+			bool hasCollided = false;
+
 			foreach (GameObject gameObject in colliders) {
-				if (gameObject is Wall w) {
-
-					//isColliding |= CollisionSegment(w.getOrigine(), w.getEnd(), (this.size.Width + w.rectangle.Size.Height)/2);
-
-					//PointF rC = bar.rotatePoint(center);    // Rotate ball center by A with theta angle
-
-					/*if (((A.X <= rC.X && rC.X <= bar.rB.X) || (bar.rB.X <= rC.X && rC.X <= A.X))                    // If ball aligned between A and B
-						&& (rC.Y + radius > A.Y - bar.duration / 12) && (rC.Y - radius < A.Y + bar.duration / barDivider))    // And distance to bar lower than radius (collision)
-					/*{
-						int tmpDir = (int)(direction + bar.theta * 180 / Math.PI) % 360;    // Rotated direction of ball
-						if (tmpDir < 180)           // 0<->180 degree
-						{
-							rC.Y = rC.Y - 2 * (radius - Math.Abs(A.Y - rC.Y - bar.duration / barDivider));
-						} else if (tmpDir > 180)      // 180<->360 degree
-						  {
-							rC.Y = rC.Y + 2 * (radius - Math.Abs(rC.Y - A.Y - bar.duration / barDivider));
+				bool isColliding = false;
+				if (gameObject is Wall wall) {
+					float minimalDist = (this.size.Width + wall.rectangle.Size.Height) / 2;
+					isColliding = wallCollision(wall , minimalDist);
+					if (isColliding) {
+						int alpha = direction;
+						int beta = (int)wall.angle;
+						direction = -(alpha - beta) + beta;
+					} else {
+						isColliding = sideCollision(wall.getOrigine(), minimalDist);
+						isColliding |= sideCollision(wall.getEnd(), minimalDist);
+						if (isColliding) {
+							direction += 180;
 						}
-						tmpDir = 360 - tmpDir;
-						setDirection((int)(tmpDir - bar.theta * 180 / Math.PI));    // Set the new direction
-						center = bar.rotatePointReverse(rC);                           // Rotate back the center
-					}/**/
+					}
+					hasCollided |= isColliding;
 				}
 			}
-				this.setID(isColliding ? ImageID.BOUNCE : ImageID.CATCH);
-
-
+			this.setID(hasCollided ? ImageID.BOUNCE : ImageID.CATCH);
 		}
 
-		bool CollisionDroite(PointF A, PointF B, float gap) {
+		private bool axisCollision(Wall wall, float gap) {
+			PointF A = wall.getOrigine();
+			PointF B = wall.getEnd();
+
 			PointF u = new PointF(A.X - B.X, A.Y - B.Y);
 			PointF AC = new PointF(A.X - this.center.X, A.Y - this.center.Y);
 
-			float numerateur = u.X * AC.Y - u.Y * AC.X;
-			numerateur = numerateur < 0 ? -numerateur : numerateur;
-			float denominateur = (float)Math.Sqrt(u.X * u.X + u.Y * u.Y);  // norme de u
-			float CI = numerateur / denominateur;
+			float numerator = u.X * AC.Y - u.Y * AC.X;
+			numerator = numerator < 0 ? -numerator : numerator;
+			float denominator = (float)Math.Sqrt(u.X * u.X + u.Y * u.Y);
+			float CI = numerator / denominator;
 
 			return CI < gap;
 		}
 
-		bool CollisionSegment(PointF A, PointF B, float gap) {
-			if (CollisionDroite(A, B, gap) == false)
+		private bool wallCollision(Wall wall, float gap) {
+			PointF A = wall.getOrigine();
+			PointF B = wall.getEnd();
+
+			if (axisCollision(wall, gap) == false)
 				return false;  // si on ne touche pas la droite, on ne touchera jamais le segment
 
 			PointF AB = new PointF(B.X - A.X, B.Y - A.Y);
 			PointF AC = new PointF(this.center.X - A.X, this.center.Y - A.Y);
 			PointF BC = new PointF(this.center.X - B.X, this.center.Y - B.Y);
+
 			float pscal1 = AB.X * AC.X + AB.Y * AC.Y;  // produit scalaire
 			float pscal2 = (-AB.X) * BC.X + (-AB.Y) * BC.Y;  // produit scalaire
 			if (pscal1 >= 0 && pscal2 >= 0)
 				return true;   // I entre A et B, ok.
 							   // dernière possibilité, A ou B dans le cercle
-			/*if (CollisionPointCercle(A, C))
-				return true;
-			if (CollisionPointCercle(B, C))
-				return true;*/
+
 			return false;
 		}
 
-
-		#endregion
-
+		private bool sideCollision(PointF A, float gap) {
+			float d = (A.X - center.X) * (A.X - center.X) + (A.Y - center.Y) * (A.Y - center.Y);
+			return d <= gap * gap;
+		}
 		#endregion
 	}
 }

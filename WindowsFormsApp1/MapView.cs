@@ -192,7 +192,7 @@ namespace BouncingBall {
 					numerateur = numerateur < 0 ? -numerateur : numerateur;
 					int dist = (int)Math.Sqrt(Math.Pow((double)(A.X - C.X), 2) + Math.Pow((double)(A.Y - C.Y), 2));
 					*/
-					this.lbl_angle.Text = string.Format("{0}", w.getAngle());
+					this.lbl_angle.Text = string.Format("{0}", this.ball.direction);
 				}
 			}));
 		}
