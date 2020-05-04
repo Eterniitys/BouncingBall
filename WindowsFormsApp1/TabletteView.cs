@@ -15,32 +15,77 @@ using System.Windows.Forms;
 namespace BouncingBall {
 	public partial class TabletteView : Form {
 
-		private Tablet tab;
+		#region Variables
+		/// <summary>
+		/// The tablet instance of this view
+		/// </summary>
+		private Tablet tablet { get; }
+		/// <summary>
+		/// The id of this player, used in MQTT
+		/// </summary>
 		private String id = "";
-		private string preferredTopic;
-
+		/// <summary>
+		/// The position event handler
+		/// </summary>
+		/// <param name="newPosition"></param>
 		public delegate void TabletPositionChangedHandler(Point newPosition);
+		/// <summary>
+		/// Thrown when the position change
+		/// </summary>
 		event TabletPositionChangedHandler TabletPositionChanged;
-
+		/// <summary>
+		/// Call when the  angle event handler
+		/// </summary>
+		/// <param name="newAngle"></param>
 		public delegate void TabletAngleChangedHandler(float newAngle);
+		/// <summary>
+		/// Thrown when the angle change
+		/// </summary>
 		event TabletAngleChangedHandler TabletAngleChanged;
-
+		/// <summary>
+		/// The width of the playing area / room
+		/// </summary>
 		private int room_width;
+		/// <summary>
+		/// The lenght of the playing area / room
+		/// </summary>
 		private int room_lenght;
+		/// <summary>
+		/// The transformation matrix of the view in the room
+		/// </summary>
 		private Matrix matrix;
+		/// <summary>
+		/// Contains the processed scale size of the table within the room
+		/// </summary>
+		/// <remarks>
+		/// (TODO) Must be (pre)processed in full screen
+		/// </remarks>
 		private PointF scale;
-
-		private IMqttClient client;
-
+		/// <summary>
+		/// Any object that could be built within the room by the player
+		/// </summary>
 		private GameObject preBuilt;
-
+		/// <summary>
+		/// A List of every wall that should be drawn
+		/// </summary>
 		private List<Wall> lstWall;
+		/// <summary>
+		/// The MQTT client
+		/// </summary>
+		private IMqttClient client;
+		#endregion Variables
 
+		#region Constructor
+		/// <summary>
+		/// Construct a Tablet view in a room
+		/// </summary>
+		/// <param name="room_width">The width of the playing area / room</param>
+		/// <param name="room_lenght">The lenght of the playing area / room</param>
 		public TabletteView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
-			this.tab = new Tablet(0, 0, 0, ScreenFormat._24PC);
-			this.tab.ball = new Ball(room_width, room_lenght);
+			this.tablet = new Tablet(0, 0, 0, ScreenFormat._24PC);
+			this.tablet.ball = new Ball(room_width, room_lenght);
 			this.lstWall = new List<Wall>();
 			this.matrix = new Matrix();
 			this.scale = new PointF();
@@ -48,17 +93,19 @@ namespace BouncingBall {
 			initMqttClientAsync("Client1", "localhost");
 			// - - - - - - - - - -
 			InitializeComponent();
-			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tab.getWidth(), tab.getHeight());
+			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
 			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
 			this.TabletPositionChanged += new TabletPositionChangedHandler(this.onPositionChanged);
 			this.TabletAngleChanged += new TabletAngleChangedHandler(this.onAngleChanged);
 		}
+		#endregion Constructor
 
+		#region MQTT protocol
 		private void onPositionChanged(Point position) {
 			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 
-			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tab.format));
+			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tablet.format));
 		}
 
 		private void onAngleChanged(float angle) {
@@ -83,8 +130,11 @@ namespace BouncingBall {
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 						string[] coord = message.Split(';');
-						this.tab.ball.center.X = (float.Parse(coord[0]));
-						this.tab.ball.center.Y = (float.Parse(coord[1]));
+						PointF p = new PointF(
+							float.Parse(coord[0]),
+							float.Parse(coord[1])
+							);
+						this.tablet.ball.center = p;
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 						// nothing
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
@@ -102,7 +152,7 @@ namespace BouncingBall {
 					} else {
 						//this.lbl.Text = message;
 						Invoke(new Action(() => {
-							this.lbl.Text = "Can't handle message from "+ e.ApplicationMessage.Topic;
+							this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
 						}));
 					}
 				}));
@@ -115,33 +165,38 @@ namespace BouncingBall {
 				MqttWrapper.connectClient(this.client, "Client1", "localhost");
 			});
 		}
+		#endregion
 
-
-		#region Painting
+		#region Painting / Drawing
+		// Launch drawing
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 		}
 
+		/// <summary>
+		/// Draw the scene
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 
 			#region Setting up drawing vars
 			Graphics gfx = e.Graphics;
 			this.matrix.Reset();
-			this.scale.X = 1 / ((float)this.tab.getWidth() / e.ClipRectangle.Width);
-			this.scale.Y = 1 / ((float)this.tab.getHeight() / e.ClipRectangle.Height);
+			this.scale.X = 1 / ((float)this.tablet.getWidth() / e.ClipRectangle.Width);
+			this.scale.Y = 1 / ((float)this.tablet.getHeight() / e.ClipRectangle.Height);
 			// drawing pen
-			Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
-			//
-			int dim_x = (int)(this.tab.getWidth() * scale.X);
-			int dim_y = (int)(this.tab.getHeight() * scale.Y);
-			int x = (int)(this.tab.getPosX() * scale.X);
-			int y = (int)(this.tab.getPosY() * scale.Y);
-
+			Pen pen = new Pen(Color.FromArgb(255, 150, 80, 120), 4);
+			// scaled pos / dimmension
+			int dim_x = (int)(this.tablet.getWidth() * scale.X);
+			int dim_y = (int)(this.tablet.getHeight() * scale.Y);
+			int x = (int)(this.tablet.getPosX() * scale.X);
+			int y = (int)(this.tablet.getPosY() * scale.Y);
 
 			// rotate arround tablet center
 			this.matrix.Translate(-(x - dim_x / 2), -(y - dim_y / 2));
 			this.matrix.Translate(x, y);
-			this.matrix.Rotate(-this.tab.getAngle());
+			this.matrix.Rotate(-this.tablet.getAngle());
 			this.matrix.Translate(-x, -y);
 			gfx.Transform = this.matrix;
 			#endregion Setting up drawing vars
@@ -149,8 +204,11 @@ namespace BouncingBall {
 			#region Drawing room content
 			// Background
 			gfx.FillRectangle(Brushes.Bisque, 0, 0, room_width * scale.X, room_lenght * scale.Y);
+			// Line between center screen end player
+			PointF relative_ball_pos = new PointF(this.tablet.ball.center.X, this.tablet.ball.center.Y);
+			gfx.DrawLine(pen, relative_ball_pos, new Point(x, y));
 			// ball
-			this.tab.ball.draw(gfx, scale);
+			this.tablet.ball.draw(gfx, scale);
 			// walls
 			foreach (Wall w in this.lstWall) {
 				w.draw(gfx, scale);
@@ -173,18 +231,14 @@ namespace BouncingBall {
 			#endregion Drawing screen relative content
 
 		}
-		#endregion Painting
+		#endregion Painting / Drawing
 
-		public Tablet getTablette() {
-			return this.tab;
-		}
+		#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (controle with mouse)
 
 		private int prev_x = 0;
 		private int prev_y = 0;
 
 		private bool clickIsDown = false;
-
-		#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
 
 		private enum Mode {
 			drawing,
@@ -200,8 +254,8 @@ namespace BouncingBall {
 		}
 
 		private void onMouseWheel(object sender, MouseEventArgs e) {
-			this.tab.setAngle(this.tab.getAngle() + e.Delta / 10);
-			TabletAngleChanged?.Invoke(this.tab.getAngle());
+			this.tablet.setAngle(this.tablet.getAngle() + e.Delta / 10);
+			TabletAngleChanged?.Invoke(this.tablet.getAngle());
 		}
 
 		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
@@ -210,7 +264,7 @@ namespace BouncingBall {
 			}
 		}
 
-		#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
+		#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (controle with mouse) (TODO)
 
 		private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
 			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
@@ -233,10 +287,10 @@ namespace BouncingBall {
 			labelToMousePos(e);
 			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
 			if (clickIsDown && mode == Mode.moving) {
-				this.tab.moveBy((e.X - this.tab.getWidth() / 2) - prev_x, (e.Y - this.tab.getHeight() / 2) - prev_y);
-				prev_x = e.X - this.tab.getWidth() / 2;
-				prev_y = e.Y - this.tab.getHeight() / 2;
-				TabletPositionChanged(this.tab.getPosition());
+				this.tablet.moveBy((e.X - this.tablet.getWidth() / 2) - prev_x, (e.Y - this.tablet.getHeight() / 2) - prev_y);
+				prev_x = e.X - this.tablet.getWidth() / 2;
+				prev_y = e.Y - this.tablet.getHeight() / 2;
+				TabletPositionChanged(this.tablet.getPosition());
 			} else {
 				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
 				if (this.preBuilt is Wall) {
@@ -248,8 +302,8 @@ namespace BouncingBall {
 		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
 			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
 			if (mode == Mode.moving) {
-				prev_x = e.X - this.tab.getWidth() / 2;
-				prev_y = e.Y - this.tab.getHeight() / 2;
+				prev_x = e.X - this.tablet.getWidth() / 2;
+				prev_y = e.Y - this.tablet.getHeight() / 2;
 
 			} else {
 				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)

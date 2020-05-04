@@ -16,6 +16,8 @@ using System.Windows.Forms;
 
 namespace BouncingBall {
 	public partial class MapView : Form {
+
+		#region Variables
 		/// <summary>
 		/// Width of the playing area in millimeters
 		/// </summary>
@@ -32,15 +34,46 @@ namespace BouncingBall {
 		/// The ball
 		/// </summary>
 		private Ball ball;
-
+		/// <summary>
+		/// The processed scale of the room
+		/// </summary>
 		private PointF scale;
-
+		/// <summary>
+		/// A List of wall
+		/// </summary>
 		private List<Wall> lstWall;
-
+		/// <summary>
+		/// The MQTT broker / server
+		/// </summary>
 		private IMqttServer broker;
-
+		/// <summary>
+		/// A formatted string containing already taken ids
+		/// </summary>
 		private static string availableId = "!;1;2;3;!";
+		#endregion Variables
 
+		#region Constructor
+		/// <summary>
+		/// Set a Map where a ball evolve, TODO try connection of new tablet
+		/// </summary>
+		/// <param name="t"></param>
+		public MapView(int room_width, int room_lenght) {
+			this.room_width = room_width;
+			this.room_lenght = room_lenght;
+			this.scale = new PointF();
+			// - - - - - - - - - -
+			initBroker();
+			// - - - - - - - - - -
+			this.ball = new Ball(room_width, room_lenght, 1);
+			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
+			lst_tab = new Dictionary<String, Tablet>();
+			this.lstWall = new List<Wall>();
+			// - - - - - - - - - -
+			InitializeComponent();
+		}
+		#endregion Constructor
+
+		#region MQTT protocol
 		private void initBroker() {
 			this.broker = MqttWrapper.CreateBroker();
 			MqttWrapper.StartMqttBroker(this.broker);
@@ -51,7 +84,7 @@ namespace BouncingBall {
 				availableId,
 				true);
 
-			// Quand un message est reçu
+			// Call when a new message is received
 			this.broker.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(
 				e => {
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
@@ -82,7 +115,7 @@ namespace BouncingBall {
 					}
 				});
 
-			// Quand un client se connecte
+			// Call when a client connect
 			this.broker.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(
 			e => {
 				/*
@@ -91,26 +124,6 @@ namespace BouncingBall {
 				});
 				*/
 			});
-
-		}
-
-		/// <summary>
-		/// Set a Map where a ball evolve, TODO try connection of new tablet
-		/// </summary>
-		/// <param name="t"></param>
-		public MapView(int room_width, int room_lenght) {
-			this.room_width = room_width;
-			this.room_lenght = room_lenght;
-			this.scale = new PointF();
-			// - - - - - - - - - -
-			initBroker();
-			// - - - - - - - - - -
-			this.ball = new Ball(room_width, room_lenght, 1);
-			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
-			lst_tab = new Dictionary<String, Tablet>();
-			this.lstWall = new List<Wall>();
-			// - - - - - - - - - -
-			InitializeComponent();
 		}
 
 		/// <summary>
@@ -121,6 +134,10 @@ namespace BouncingBall {
 			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS];
 			MqttWrapper.SendMqttMessageTo(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
+
+		#endregion MQTT protocol
+
+		#region Painting / Drawing
 
 		/// <summary>
 		/// Trigger a game loop
@@ -195,11 +212,10 @@ namespace BouncingBall {
 				}
 			}));
 		}
+		#endregion Painting / Drawing
 
 		public void addWall(Wall wall) {
 			this.lstWall.Add(wall);
 		}
-
-
 	}
 }

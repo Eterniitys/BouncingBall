@@ -36,7 +36,7 @@ namespace BouncingBall {
 		/// The center of the ball
 		/// </summary>
 		//TODO set private
-		public PointF center;
+		public PointF center { get; set; }
 		/// <summary>
 		/// The room width
 		/// </summary>
@@ -83,7 +83,7 @@ namespace BouncingBall {
 
 		#endregion
 
-		#region Ascesseurs
+		#region Accessors
 
 		/// <summary>
 		/// Get the center position of the ball
@@ -108,7 +108,7 @@ namespace BouncingBall {
 		public void setID(ImageID id) {
 			this.state = id;
 		}
-		#endregion
+		#endregion Accessors
 
 		#region Drawing function
 		/// <summary>
@@ -144,8 +144,11 @@ namespace BouncingBall {
 		/// </summary>
 		public override void move(GameObject[] colliders) {
 			double radDir = (this.direction + 90) * (Math.PI / 180);
-			center.X += (float)(Math.Sin(radDir) * speed);
-			center.Y += (float)(Math.Cos(radDir) * speed);
+			PointF p = new PointF(
+				this.center.X + (float)(Math.Sin(radDir) * speed),
+				this.center.Y + (float)(Math.Cos(radDir) * speed)
+				);
+			this.center = p;
 			borderBounce();
 			wallBounce(colliders);
 		}
@@ -162,11 +165,11 @@ namespace BouncingBall {
 			if (center.X - radius < 0 || center.X + radius > room_width) {
 				direction = 180 - direction;
 			}
-			
+
 			direction += 180;
 			direction %= 360;
 			direction -= 180;
-			
+
 			onBallMoved?.Invoke(center);
 		}
 
@@ -180,7 +183,7 @@ namespace BouncingBall {
 				bool isColliding = false;
 				if (gameObject is Wall wall) {
 					float minimalDist = (this.size.Width + wall.rectangle.Size.Height) / 2;
-					isColliding = wallCollision(wall , minimalDist);
+					isColliding = wallCollision(wall, minimalDist);
 					if (isColliding) {
 						int alpha = direction;
 						int beta = (int)wall.angle;
