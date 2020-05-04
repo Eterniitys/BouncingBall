@@ -138,9 +138,14 @@ namespace BouncingBall {
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 						// nothing
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
-						Wall w = new Wall(message);
-						w.setBuilt();
-						this.lstWall.Add(w);
+						this.lstWall.Clear();
+						string[] walls = message.Split('!');
+						int wall_count = int.Parse(walls[0]);
+						for (int i = 1; i <= wall_count; i++) {
+							Wall w = new Wall(walls[i]);
+							w.setBuilt();
+							lstWall.Add(w);
+						}
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS])) {
 						string[] ids = message.Split(';');
 						if (this.id.Length == 0 && ids.Length > 1) {
@@ -153,7 +158,7 @@ namespace BouncingBall {
 						//this.lbl.Text = message;
 						Invoke(new Action(() => {
 							this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
-						}));
+						}));/**/
 					}
 				}));
 			});
@@ -171,6 +176,9 @@ namespace BouncingBall {
 		// Launch drawing
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
+			foreach (Wall w in lstWall) {
+				w.tick(20);
+			}
 		}
 
 		/// <summary>
@@ -205,7 +213,7 @@ namespace BouncingBall {
 			// Background
 			gfx.FillRectangle(Brushes.Bisque, 0, 0, room_width * scale.X, room_lenght * scale.Y);
 			// Line between center screen end player
-			PointF relative_ball_pos = new PointF(this.tablet.ball.center.X, this.tablet.ball.center.Y);
+			PointF relative_ball_pos = new PointF(this.tablet.ball.center.X * scale.X, this.tablet.ball.center.Y * scale.Y);
 			gfx.DrawLine(pen, relative_ball_pos, new Point(x, y));
 			// ball
 			this.tablet.ball.draw(gfx, scale);

@@ -104,7 +104,6 @@ namespace BouncingBall {
 		public void setPosition(PointF pos) {
 			this.center = pos;
 		}
-
 		public void setID(ImageID id) {
 			this.state = id;
 		}
@@ -196,11 +195,44 @@ namespace BouncingBall {
 						}
 					}
 					hasCollided |= isColliding;
+					if (isColliding) {
+						wall.tick(1000);
+					}
 				}
 			}
 			this.setID(hasCollided ? ImageID.BOUNCE : ImageID.CATCH);
 		}
 
+		/// <summary>
+		/// Detects if the ball collide the wall
+		/// </summary>
+		/// <param name="wall">a Wall</param>
+		/// <param name="gap">the minimum collision distance</param>
+		/// <returns></returns>
+		private bool wallCollision(Wall wall, float gap) {
+			PointF A = wall.getOrigine();
+			PointF B = wall.getEnd();
+
+			if (axisCollision(wall, gap) == false)
+				return false;
+
+			PointF AB = new PointF(B.X - A.X, B.Y - A.Y);
+			PointF AC = new PointF(this.center.X - A.X, this.center.Y - A.Y);
+			PointF BC = new PointF(this.center.X - B.X, this.center.Y - B.Y);
+
+			float pscal1 = AB.X * AC.X + AB.Y * AC.Y;
+			float pscal2 = (-AB.X) * BC.X + (-AB.Y) * BC.Y;
+			if (pscal1 >= 0 && pscal2 >= 0)
+				return true;   // I entre A et B, ok.
+							   // dernière possibilité, A ou B dans le cercle
+			return false;
+		}
+		/// <summary>
+		/// Detects if the ball is in the same axe as the wall
+		/// </summary>
+		/// <param name="wall">a Wall</param>
+		/// <param name="gap">the minimum collision distance</param>
+		/// <returns></returns>
 		private bool axisCollision(Wall wall, float gap) {
 			PointF A = wall.getOrigine();
 			PointF B = wall.getEnd();
@@ -215,27 +247,12 @@ namespace BouncingBall {
 
 			return CI < gap;
 		}
-
-		private bool wallCollision(Wall wall, float gap) {
-			PointF A = wall.getOrigine();
-			PointF B = wall.getEnd();
-
-			if (axisCollision(wall, gap) == false)
-				return false;  // si on ne touche pas la droite, on ne touchera jamais le segment
-
-			PointF AB = new PointF(B.X - A.X, B.Y - A.Y);
-			PointF AC = new PointF(this.center.X - A.X, this.center.Y - A.Y);
-			PointF BC = new PointF(this.center.X - B.X, this.center.Y - B.Y);
-
-			float pscal1 = AB.X * AC.X + AB.Y * AC.Y;  // produit scalaire
-			float pscal2 = (-AB.X) * BC.X + (-AB.Y) * BC.Y;  // produit scalaire
-			if (pscal1 >= 0 && pscal2 >= 0)
-				return true;   // I entre A et B, ok.
-							   // dernière possibilité, A ou B dans le cercle
-
-			return false;
-		}
-
+		/// <summary>
+		/// Detects if the ball is under the distance "gap" from a dot
+		/// </summary>
+		/// <param name="A"></param>
+		/// <param name="gap">the minimum collision distance</param>
+		/// <returns></returns>
 		private bool sideCollision(PointF A, float gap) {
 			float d = (A.X - center.X) * (A.X - center.X) + (A.Y - center.Y) * (A.Y - center.Y);
 			return d <= gap * gap;

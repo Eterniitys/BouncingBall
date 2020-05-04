@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace BouncingBall {
 	public class Wall : GameObject {
+		/// <summary>
+		/// The default value of <see cref="timeToLive"/>
+		/// </summary>
+		private const float DEFAULT_TTL = 5F;
 
 		#region Variables
 		/// <summary>
@@ -30,6 +34,10 @@ namespace BouncingBall {
 		/// If false, the Wall is previsualize. Otherwise it is drawn normali
 		/// </summary>
 		private bool built = false;
+		/// <summary>
+		/// Remaining time before the wall vanish
+		/// </summary>
+		public float timeToLive { get; private set; }
 		#endregion Variables
 
 		#region Constructors
@@ -38,9 +46,11 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="origin">The Origin of a Wall</param>
 		/// <param name="end">The End of a Wall</param>
-		public Wall(PointF origin, PointF end) {
+		/// <param name="timeToLive">the remaining time before vanish</param>
+		public Wall(PointF origin, PointF end, float timeToLive = DEFAULT_TTL) {
 			this.origin = origin;
 			this.end = end;
+			this.timeToLive = timeToLive;
 			this.rectangle = new RectangleF();
 			processAngle();
 		}
@@ -51,9 +61,10 @@ namespace BouncingBall {
 		/// <param name="origin_y">The Y value of the origin</param>
 		/// <param name="end_x">The X value of the end</param>
 		/// <param name="end_y">The Y value of the end</param>
-		public Wall(float origin_x, float origin_y, float end_x, float end_y) {
+		public Wall(float origin_x, float origin_y, float end_x, float end_y, float timeToLive = DEFAULT_TTL) {
 			this.origin = new PointF(origin_x, origin_y);
 			this.end = new PointF(end_x, end_y);
+			this.timeToLive = timeToLive;
 			this.rectangle = new RectangleF();
 			processAngle();
 		}
@@ -65,6 +76,11 @@ namespace BouncingBall {
 			string[] coord = message.Split(';');
 			this.origin = new PointF(float.Parse(coord[0]), float.Parse(coord[1]));
 			this.end = new PointF(float.Parse(coord[2]), float.Parse(coord[3]));
+			if (coord.Length == 5) {
+				this.timeToLive = float.Parse(coord[4]);
+			} else {
+				this.timeToLive = DEFAULT_TTL;
+			}
 			this.rectangle = new RectangleF();
 			processAngle();
 		}
@@ -84,7 +100,8 @@ namespace BouncingBall {
 			} else {
 				PointF scaledP1 = new PointF(this.origin.X * scale.X, this.origin.Y * scale.Y);
 				PointF scaledP2 = new PointF(this.end.X * scale.X, this.end.Y * scale.Y);
-				float tickness = 10 * scale.Y;
+				float tickness = timeToLive * scale.Y;
+				tickness = tickness <= 1 ? 1 : tickness;
 				int scaledDist = (int)Math.Sqrt(Math.Pow((double)(scaledP1.X - scaledP2.X), 2) + Math.Pow((double)(scaledP1.Y - scaledP2.Y), 2));
 				if (scaledDist != 0) {
 					this.rectangle.Location = new PointF(0, -tickness / 2);
@@ -132,6 +149,10 @@ namespace BouncingBall {
 			// A wall do not move
 		}
 		#endregion Paint / draw
+
+		internal void tick(int time) {
+			this.timeToLive -= time / 1000F;
+		}
 
 		#region Accessors
 		/// <summary>
@@ -183,6 +204,10 @@ namespace BouncingBall {
 		/// </summary>
 		public void setBuilt() {
 			this.built = true;
+		}
+
+		public override string ToString() {
+			return String.Format("{0};{1};{2};{3};{4:#.###}", origin.X, origin.Y, end.X, end.Y, timeToLive);
 		}
 		#endregion Accessors
 	}

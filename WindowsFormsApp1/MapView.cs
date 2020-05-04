@@ -95,7 +95,7 @@ namespace BouncingBall {
 						Wall w = new Wall(message);
 						this.lstWall.Add(w);
 						w.setBuilt();
-						MqttWrapper.SendMqttMessageTo(this.broker, MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL], message);
+						sendWalls();
 					} else if (topic.StartsWith("tablet/id/")) {
 						string id = topic.Split('/')[2];
 						string[] datas = message.Split(';');
@@ -135,6 +135,19 @@ namespace BouncingBall {
 			MqttWrapper.SendMqttMessageTo(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
 
+		public void sendWalls() {
+			string message = "";
+			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL];
+			message += lstWall.Count;
+			foreach (Wall w in lstWall) {
+				message += "!" + w;
+			}
+			MqttWrapper.SendMqttMessageTo(this.broker, topic, message, true);
+			Invoke(new Action(() => {
+			this.lbl_angle.Text = message;
+			}));
+		}
+
 		#endregion MQTT protocol
 
 		#region Painting / Drawing
@@ -147,6 +160,19 @@ namespace BouncingBall {
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			this.ball.move(lstWall.ToArray());
+			List<Wall> tmp_lst = new List<Wall>();
+			foreach (Wall w in lstWall) {
+				w.tick(20);
+				if (w.timeToLive <= 0) {
+					tmp_lst.Add(w);
+				}
+			}
+			foreach (Wall w in tmp_lst) {
+				this.lstWall.Remove(w);
+			}
+			if (tmp_lst.Count != 0) {
+				sendWalls();
+			}
 		}
 
 		/// <summary>
@@ -190,27 +216,6 @@ namespace BouncingBall {
 				PointF I = fuck(this.ball.center, scale);
 				gfx.DrawLine(Pens.Black, A, I);
 			}
-			Invoke(new Action(() => {
-				if (lstWall.Count != 0) {
-					Wall w = lstWall[lstWall.Count - 1];
-					PointF A = w.getOrigine();
-					PointF B = w.getEnd();
-					PointF C = this.ball.center;
-
-					/*
-					PointF u = new PointF(A.X - B.X, A.Y - B.Y);
-					PointF AC = new PointF(A.X - C.X, A.Y - C.Y);
-
-					float numerateur = u.X * AC.Y - u.Y * AC.X;   // norme du vecteur v
-					float denominateur = (float)Math.Sqrt(u.X * u.X + u.Y * u.Y);  // norme de u
-					float CI = numerateur / denominateur;
-
-					numerateur = numerateur < 0 ? -numerateur : numerateur;
-					int dist = (int)Math.Sqrt(Math.Pow((double)(A.X - C.X), 2) + Math.Pow((double)(A.Y - C.Y), 2));
-					*/
-					this.lbl_angle.Text = string.Format("{0}", this.ball.direction);
-				}
-			}));
 		}
 		#endregion Painting / Drawing
 
