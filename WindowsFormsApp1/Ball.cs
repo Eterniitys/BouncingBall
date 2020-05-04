@@ -162,11 +162,11 @@ namespace BouncingBall {
 			if (center.X - radius < 0 || center.X + radius > room_width) {
 				direction = 180 - direction;
 			}
-			/*
+			
 			direction += 180;
 			direction %= 360;
 			direction -= 180;
-			/**/
+			
 			onBallMoved?.Invoke(center);
 		}
 

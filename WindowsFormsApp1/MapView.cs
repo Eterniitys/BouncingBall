@@ -95,7 +95,7 @@ namespace BouncingBall {
 		}
 
 		/// <summary>
-		/// Set a Map where a ball evolve, TODO handle connection of new tablet
+		/// Set a Map where a ball evolve, TODO try connection of new tablet
 		/// </summary>
 		/// <param name="t"></param>
 		public MapView(int room_width, int room_lenght) {
@@ -104,7 +104,6 @@ namespace BouncingBall {
 			this.scale = new PointF();
 			// - - - - - - - - - -
 			initBroker();
-			//initMqttClientAsync("NextBroker", "broker.hivemq.com");
 			// - - - - - - - - - -
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);

@@ -10,7 +10,7 @@ namespace BouncingBall {
 	public class Wall : GameObject {
 		private PointF p1;
 		private PointF p2;
-		public Rectangle rectangle;
+		public RectangleF rectangle;
 		public float angle { get; private set; }
 
 		private bool built = false;
@@ -22,7 +22,7 @@ namespace BouncingBall {
 		public Wall(float p1_x, float p1_y, float p2_x, float p2_y) {
 			this.p1 = new PointF(p1_x, p1_y);
 			this.p2 = new PointF(p2_x, p2_y);
-			this.rectangle = new Rectangle(0, -5, 1, 1);
+			this.rectangle = new RectangleF(0, -5, 1, 1);
 			processAngle();
 		}
 
@@ -30,7 +30,7 @@ namespace BouncingBall {
 			string[] coord = message.Split(';');
 			this.p1 = new PointF(float.Parse(coord[0]), float.Parse(coord[1]));
 			this.p2 = new PointF(float.Parse(coord[2]), float.Parse(coord[3]));
-			this.rectangle = new Rectangle(0, -5, 1, 1);
+			this.rectangle = new RectangleF();
 			processAngle();
 		}
 
@@ -42,17 +42,19 @@ namespace BouncingBall {
 			} else {
 				PointF scaledP1 = new PointF(this.p1.X * scale.X, this.p1.Y * scale.Y);
 				PointF scaledP2 = new PointF(this.p2.X * scale.X, this.p2.Y * scale.Y);
+				float tickness = 10 * scale.Y;
 				int scaledDist = (int)Math.Sqrt(Math.Pow((double)(scaledP1.X - scaledP2.X), 2) + Math.Pow((double)(scaledP1.Y - scaledP2.Y), 2));
 				if (scaledDist != 0) {
-					this.rectangle.Size = new Size(scaledDist, (int)(10 * scale.X));
+					this.rectangle.Location = new PointF(0,-tickness/2);
+					this.rectangle.Size = new Size(scaledDist, (int)(tickness));
 					gfx.TranslateTransform(scaledP1.X, scaledP1.Y);
 					gfx.RotateTransform(-angle);
 					gfx.FillRectangle(Brushes.Maroon, this.rectangle);
 					gfx.RotateTransform(angle);
 					gfx.TranslateTransform(-scaledP1.X, -scaledP1.Y);
 				}
-				gfx.FillEllipse(Brushes.Maroon, scaledP1.X - 5, scaledP1.Y - 5, 10, 10);
-				gfx.FillEllipse(Brushes.Maroon, scaledP2.X-5, scaledP2.Y-5, 10, 10);
+				gfx.FillEllipse(Brushes.Maroon, scaledP1.X - tickness / 2, scaledP1.Y - tickness / 2, tickness, tickness);
+				gfx.FillEllipse(Brushes.Maroon, scaledP2.X - tickness / 2, scaledP2.Y - tickness / 2, tickness, tickness);
 			}
 
 		}
@@ -64,8 +66,8 @@ namespace BouncingBall {
 			float angle = (float)(Math.Asin(sinus) * 180 / Math.PI);
 			angle = p1.X > p2.X ? angle < 0 ? -angle - 180 : 180 - angle : angle;
 			this.angle = angle;
-
 		}
+
 		internal void tranform(Matrix matrix) {
 			PointF[] pts = { this.p1, this.p2 };
 			matrix.TransformPoints(pts);
