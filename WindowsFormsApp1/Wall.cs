@@ -103,13 +103,17 @@ namespace BouncingBall {
 				float tickness = timeToLive * scale.Y;
 				tickness = tickness <= 1 ? 1 : tickness;
 				int scaledDist = (int)Math.Sqrt(Math.Pow((double)(scaledP1.X - scaledP2.X), 2) + Math.Pow((double)(scaledP1.Y - scaledP2.Y), 2));
+				double sinus = (double)(scaledP1.Y - scaledP2.Y) / scaledDist;
+				sinus = sinus > 1 ? 1 : sinus < -1 ? -1 : sinus;
+				float scaledAngle = (float)(Math.Asin(sinus) * 180 / Math.PI);
+				scaledAngle = scaledP1.X > scaledP2.X ? scaledAngle < 0 ? -scaledAngle - 180 : 180 - scaledAngle : scaledAngle;
 				if (scaledDist != 0) {
 					this.rectangle.Location = new PointF(0, -tickness / 2);
 					this.rectangle.Size = new Size(scaledDist, (int)(tickness));
 					gfx.TranslateTransform(scaledP1.X, scaledP1.Y);
-					gfx.RotateTransform(-angle);
+					gfx.RotateTransform(-scaledAngle);
 					gfx.FillRectangle(Brushes.Maroon, this.rectangle);
-					gfx.RotateTransform(angle);
+					gfx.RotateTransform(scaledAngle);
 					gfx.TranslateTransform(-scaledP1.X, -scaledP1.Y);
 				}
 				gfx.FillEllipse(Brushes.Maroon, scaledP1.X - tickness / 2, scaledP1.Y - tickness / 2, tickness, tickness);
@@ -207,7 +211,7 @@ namespace BouncingBall {
 		}
 
 		public override string ToString() {
-			return String.Format("{0};{1};{2};{3};{4:#.###}", origin.X, origin.Y, end.X, end.Y, timeToLive);
+			return String.Format("{0};{1};{2};{3};{4}", origin.X, origin.Y, end.X, end.Y, timeToLive);
 		}
 		#endregion Accessors
 	}
