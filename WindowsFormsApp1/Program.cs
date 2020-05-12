@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +19,9 @@ namespace BouncingBall
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			int room_width = 1600;
-			int room_lenght = 900;
+			var roomSettings = ConfigurationManager.AppSettings;
+			int room_width = int.Parse(roomSettings["iRoom_width"]);
+			int room_lenght = int.Parse(roomSettings["iRoom_lenght"]);
 
 			// Tablette principale
 			// Map de jeu

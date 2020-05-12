@@ -315,7 +315,7 @@ namespace BouncingBall {
 
 			} else {
 				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y);
+				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y , 5);
 			}
 			clickIsDown = true;
 		}

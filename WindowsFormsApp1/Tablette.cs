@@ -34,15 +34,6 @@ namespace BouncingBall {
 			this.format = format;
 		}
 
-		internal void refreshBall(PointF position, Ball.ImageID imageID) {
-			if (this.ball != null) {
-				this.ball.setPosition(position);
-				this.ball.setID(imageID);
-			} else {
-				throw new NotImplementedException();
-			}
-		}
-
 		internal void moveBy(int delta_x, int delta_y) {
 			this.position.X -= delta_x;
 			this.position.Y -= delta_y;

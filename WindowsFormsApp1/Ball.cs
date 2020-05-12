@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -68,12 +69,14 @@ namespace BouncingBall {
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
 		public Ball(int room_width, int room_lenght, float scale = 1) {
-			this.size = new SizeF(scale * 25F, scale * 25F); // a 10 centimeter diameter ball
+			var ballSettings = ConfigurationManager.AppSettings;
+			var diameter = float.Parse(ballSettings["fBalldiameter"]);
+			this.size = new SizeF(scale * diameter, scale * diameter);
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = 5; // TODO this value does need to not be hardcoded
-			Random rnd = new Random(); // 103 108
+			this.speed = int.Parse(ballSettings["iBallSpeed"]); // TODO this value does need to not be hardcoded
+			Random rnd = new Random();
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,
 				(float)rnd.NextDouble() * (room_lenght - this.size.Height) + this.size.Height / 2

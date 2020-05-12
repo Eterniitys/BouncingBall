@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -11,7 +12,12 @@ namespace BouncingBall {
 		/// <summary>
 		/// The default value of <see cref="timeToLive"/>
 		/// </summary>
-		private const float DEFAULT_TTL = 5F;
+		private static float DEFAULT_TTL {
+			get {
+				return float.Parse(ConfigurationManager.AppSettings["fTimeToLive"]);
+			}
+		}
+		
 
 		#region Variables
 		/// <summary>
@@ -46,11 +52,11 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="origin">The Origin of a Wall</param>
 		/// <param name="end">The End of a Wall</param>
-		/// <param name="timeToLive">the remaining time before vanish</param>
-		public Wall(PointF origin, PointF end, float timeToLive = DEFAULT_TTL) {
+		/// <param name="timeToLive">The remaining time in second it take for a Wall before vanish, if 0 or negative, use the default value</param>
+		public Wall(PointF origin, PointF end, float timeToLive = 0) {
 			this.origin = origin;
 			this.end = end;
-			this.timeToLive = timeToLive;
+			this.timeToLive = timeToLive <= 0 ? DEFAULT_TTL : timeToLive;
 			this.rectangle = new RectangleF();
 			processAngle();
 		}
@@ -61,10 +67,12 @@ namespace BouncingBall {
 		/// <param name="origin_y">The Y value of the origin</param>
 		/// <param name="end_x">The X value of the end</param>
 		/// <param name="end_y">The Y value of the end</param>
-		public Wall(float origin_x, float origin_y, float end_x, float end_y, float timeToLive = DEFAULT_TTL) {
+		/// <param name="timeToLive">The remaining time in second it take for a Wall before vanish, if 0 or negative, use the default value</param>
+		public Wall(float origin_x, float origin_y, float end_x, float end_y, float timeToLive = 0) {
 			this.origin = new PointF(origin_x, origin_y);
 			this.end = new PointF(end_x, end_y);
-			this.timeToLive = timeToLive;
+			//this.timeToLive = 0F;
+			this.timeToLive = timeToLive <= 0 ? DEFAULT_TTL : timeToLive;
 			this.rectangle = new RectangleF();
 			processAngle();
 		}
