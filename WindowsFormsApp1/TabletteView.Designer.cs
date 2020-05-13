@@ -1,4 +1,6 @@
-﻿namespace BouncingBall {
+using Emgu.CV.UI;
+
+namespace BouncingBall {
 	partial class TabletteView {
 
 		/// <summary>
@@ -36,7 +38,7 @@
 			// 
 			this.lbl_format.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lbl_format.AutoSize = true;
-			this.lbl_format.Location = new System.Drawing.Point(3, 277);
+			this.lbl_format.Location = new System.Drawing.Point(3, 306);
 			this.lbl_format.Name = "lbl_format";
 			this.lbl_format.Size = new System.Drawing.Size(109, 13);
 			this.lbl_format.TabIndex = 12;
@@ -49,7 +51,7 @@
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(532, 299);
+			this.pictureBox1.Size = new System.Drawing.Size(521, 328);
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
 			this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -76,7 +78,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(532, 299);
+			this.ClientSize = new System.Drawing.Size(521, 328);
 			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.lbl_format);
 			this.Controls.Add(this.pictureBox1);

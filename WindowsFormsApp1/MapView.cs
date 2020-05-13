@@ -108,10 +108,9 @@ namespace BouncingBall {
 						} else if (topic.EndsWith("angle")) {
 							this.lst_tab[id].setAngle(float.Parse(datas[0]));
 						}
-						/*
-						Invoke(new Action(() => {
-							this.lbl_angle.Text = message;
-						}));*/
+						/*Invoke(new Action(() => {
+							this.lbl_angle.Text = string.Format("{0} | {1}", id, ctp);
+						}));/**/
 					}
 				});
 
@@ -143,9 +142,6 @@ namespace BouncingBall {
 				message += "!" + w;
 			}
 			MqttWrapper.SendMqttMessageTo(this.broker, topic, message, true);
-			Invoke(new Action(() => {
-			this.lbl_angle.Text = message;
-			}));
 		}
 
 		#endregion MQTT protocol
