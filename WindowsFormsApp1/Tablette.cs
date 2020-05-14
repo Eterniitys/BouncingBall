@@ -28,6 +28,18 @@ namespace BouncingBall {
 		int markersRealLength = 25;
 		int markersSeparation = 30;
 
+		VectorOfPoint markersRealPos = new VectorOfPoint(new Point[] {
+			new Point(0,0),
+			new Point(233,-4),
+			new Point(468,-7),
+			new Point(5,256),
+			new Point(237,247),
+			new Point(467,234),
+			new Point(-6, 503),
+			new Point(238,490),
+			new Point(471,485),
+		});
+
 
 		private Dictionary _dict;
 		private Dictionary ArucoDictionary {
@@ -106,20 +118,20 @@ namespace BouncingBall {
 			this.format = format;
 
 			if (isMaster) {
-			_detectorParameters = DetectorParameters.GetDefault();
+				_detectorParameters = DetectorParameters.GetDefault();
 
-			try {
-				_capture = new VideoCapture();
-				if (!_capture.IsOpened) {
-					_capture = null;
-					throw new NullReferenceException("Unable to open video capture");
-				} else {
-					_capture.ImageGrabbed += processFrame;
-					_capture.Start();
+				try {
+					_capture = new VideoCapture();
+					if (!_capture.IsOpened) {
+						_capture = null;
+						throw new NullReferenceException("Unable to open video capture");
+					} else {
+						_capture.ImageGrabbed += processFrame;
+						_capture.Start();
+					}
+				} catch (NullReferenceException excpt) {
+					message = excpt.Message;
 				}
-			} catch (NullReferenceException excpt) {
-				message = excpt.Message;
-			}
 			}
 		}
 
@@ -149,36 +161,56 @@ namespace BouncingBall {
 					PointF[] corners_pos = new PointF[nb_detected];
 					double[] angles = new double[nb_detected];
 					for (int k = 0; k < nb_detected; k++) {
+
 						Point vector = new Point();
 						vector.X = (int)(corners[k][1].X - corners[k][0].X + corners[k][2].X - corners[k][3].X);
 						vector.Y = (int)(corners[k][1].Y - corners[k][0].Y + corners[k][2].Y - corners[k][3].Y);
-						corners_pos[k] = corners[k][1];
+						corners_pos[k] = corners[k][1]; // coin haut droit
+
+						// TODO correction des angles par angle de pose réel du marker
 						angles[k] = Math.Atan2(vector.Y, vector.X) * 180 / Math.PI;
 
+						// Trace la ligne horizontale pour chaque marqueur utilisé pour le calcule de l'angle de la camera
+						// ->
 						Point p = new Point((int)(corners[k][1].X), (int)(corners[k][1].Y));
 						CvInvoke.Line(_frameCopy, p, new Point(p.X + vector.X, p.Y + vector.Y), new MCvScalar(0, 255, 0));
+						// <-
 
-						int tmp_mLength = getNormfrom(vector, vector) / 2;
+						// détermine la longueur du coté de marqueur observé la plus longue
+						// -> sert au calcule du ratio
+						int tmp_mLength = getDist(vector, vector) / 2;
 						mLength = mLength < tmp_mLength ? tmp_mLength : mLength;
+						// <-
 					}
 
 					double ratio = mLength / (double)markersRealLength;
-					Point estimatedPos = new Point();
+					Point[] estimatedPosistion = new Point[nb_detected];
+
+					float[] weights = new float[nb_detected];
+					float sum = 0;
+
+					PointF finalPosition = new PointF(0,0);
 					for (int i = 0; i < nb_detected; i++) {
-						estimatedPos.X = (int)((capture_center.X - corners_pos[i].X) / ratio);
-						estimatedPos.Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
+						estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio + markersRealPos[ids[i]].X);
+						estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio + markersRealPos[ids[i]].Y);
+						weights[i] = 1f / getDist(estimatedPosistion[i], capture_center);
+						finalPosition.X += estimatedPosistion[i].X*weights[i];
+						finalPosition.Y += estimatedPosistion[i].Y*weights[i];
+						sum += weights[i];
 					}
-					if (nb_detected > 0) {
-						this.setPosition(estimatedPos);
-						this.setAngle(-(float)angles[0]);
-					}
-					//
+					finalPosition.X /= sum;
+					finalPosition.Y /= sum;
+						message = string.Format("{0}", finalPosition);
+
+
 					if (ids.Size > 0) {
+						// set the tablet properties
+						this.setPosition((int)finalPosition.X, (int)finalPosition.Y);
+						this.setAngle(-(float)angles[0]);
+						//
 						ArucoInvoke.RefineDetectedMarkers(_frameCopy, ArucoBoard, corners, ids, rejected, null, null, 10, 3, true, null, _detectorParameters);
 
 						ArucoInvoke.DrawDetectedMarkers(_frameCopy, corners, ids, new MCvScalar(0, 255, 0));
-						//ArucoInvoke.DrawDetectedMarkers(_frameCopy, rejected, new VectorOfInt(), new MCvScalar(0, 0, 255));
-
 					}
 				}
 				_frameCopy.CopyTo(diplayableframe);
@@ -187,7 +219,7 @@ namespace BouncingBall {
 			}
 		}
 
-		private int getNormfrom(Point p1, Point p2) {
+		private int getDist(Point p1, Point p2) {
 			return (int)Math.Sqrt(p1.X * p2.X + p1.Y * p2.Y);
 		}
 
@@ -239,6 +271,12 @@ namespace BouncingBall {
 		private void setPosition(Point pos) {
 			this.position = pos;
 			TabletPositionChanged?.Invoke(pos);
+		}
+
+		private void setPosition(int pos_x, int pos_y) {
+			this.position.X = pos_x;
+			this.position.Y = pos_y;
+			TabletPositionChanged?.Invoke(this.position);
 		}
 
 		/// <summary>

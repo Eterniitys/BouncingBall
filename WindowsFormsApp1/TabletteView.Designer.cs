@@ -31,7 +31,9 @@ namespace BouncingBall {
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.timer = new System.Windows.Forms.Timer(this.components);
 			this.lbl = new System.Windows.Forms.Label();
+			this.pictureBox2 = new Emgu.CV.UI.ImageBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// lbl_format
@@ -74,11 +76,22 @@ namespace BouncingBall {
 			this.lbl.TabIndex = 2;
 			this.lbl.Text = "label1";
 			// 
+			// pictureBox2
+			// 
+			this.pictureBox2.Enabled = false;
+			this.pictureBox2.Location = new System.Drawing.Point(6, 25);
+			this.pictureBox2.Name = "pictureBox2";
+			this.pictureBox2.Size = new System.Drawing.Size(288, 225);
+			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pictureBox2.TabIndex = 13;
+			this.pictureBox2.TabStop = false;
+			// 
 			// TabletteView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(521, 328);
+			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.lbl_format);
 			this.Controls.Add(this.pictureBox1);
@@ -86,6 +99,7 @@ namespace BouncingBall {
 			this.Text = "TabView";
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TabletteView_KeyUp);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -96,6 +110,7 @@ namespace BouncingBall {
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Timer timer;
 		private System.Windows.Forms.Label lbl;
+		private Emgu.CV.UI.ImageBox pictureBox2;
 	}
 }
 

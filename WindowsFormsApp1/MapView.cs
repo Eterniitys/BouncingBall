@@ -214,9 +214,5 @@ namespace BouncingBall {
 			}
 		}
 		#endregion Painting / Drawing
-
-		public void addWall(Wall wall) {
-			this.lstWall.Add(wall);
-		}
 	}
 }

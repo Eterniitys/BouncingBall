@@ -69,7 +69,7 @@ namespace BouncingBall {
 		public TabletteView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
-			this.tablet = new Tablet(0, 0, 0, ScreenFormat._24PC, true) {
+			this.tablet = new Tablet(0, 0, 0, ScreenFormat._12PC, true) {
 				ball = new Ball(room_width, room_lenght)
 			};
 			this.lstWall = new List<Wall>();
@@ -139,9 +139,8 @@ namespace BouncingBall {
 								this.lbl.Text = this.id;
 							}));
 						}
-					} else if (e.ApplicationMessage.Topic.Equals("tablet/id/1/pos")) {
+					} else if (e.ApplicationMessage.Topic.StartsWith("tablet/id/")) {
 						// TODO tablet shouldn't subcribe to 'tablet/id/*' topics
-					} else if (e.ApplicationMessage.Topic.Equals("tablet/id//pos")) {
 						// TODO shouldn't be a // identifier
 					} else {
 						Invoke(new Action(() => {
@@ -167,6 +166,14 @@ namespace BouncingBall {
 			foreach (Wall w in lstWall) {
 				w.tick(20);
 			}
+			updateCameraView();
+		}
+
+		internal void updateCameraView() {
+			this.pictureBox2.Image = this.tablet.diplayableframe;
+			Invoke(new Action(() => {
+				this.lbl.Text = this.tablet.message;
+			}));
 		}
 
 		/// <summary>
@@ -245,8 +252,7 @@ namespace BouncingBall {
 		private Mode mode = Mode.moving;
 
 		private void onMouseWheel(object sender, MouseEventArgs e) {
-			this.tablet.setAngle(this.tablet.getAngle() + e.Delta / 10);
-			//TabletAngleChanged?.Invoke(this.tablet.getAngle());
+			//this.tablet.setAngle(this.tablet.getAngle() + e.Delta / 10);
 		}
 
 		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
