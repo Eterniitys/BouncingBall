@@ -6,37 +6,36 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BouncingBall
-{
-	static class Program
-	{
+namespace BouncingBall {
+	static class Program {
 		/// <summary>
 		/// Point d'entrée principal de l'application.
 		/// </summary>
 		[STAThread]
-		static void Main()
-		{
+		static void Main() {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			var roomSettings = ConfigurationManager.AppSettings;
 			int room_width = int.Parse(roomSettings["iRoom_width"]);
 			int room_lenght = int.Parse(roomSettings["iRoom_lenght"]);
+			bool isBroker = bool.Parse(roomSettings["bIsBroker"]);
 
 			// Tablette principale
 			// Map de jeu
-			MapView map = new MapView(room_width, room_lenght);
+			if (isBroker) {
+				MapView map = new MapView(room_width, room_lenght);
+				Thread t = new Thread(() => RunMapView(map));
+				t.Start();
+			}
 			// Fenêtre de la premiére tablette instanciée/lancée
 			TabletView tablette = new TabletView(room_width, room_lenght);
-			Thread t = new Thread(() => RunTabView(tablette));
-			t.Start();
 			// Serveur lancé
-			Application.Run(map);
+			Application.Run(tablette);
 		}
 
-		private static void RunTabView(TabletView t)
-		{
-			Application.Run(t);
+		private static void RunMapView(MapView map) {
+			Application.Run(map);
 		}
 	}
 }

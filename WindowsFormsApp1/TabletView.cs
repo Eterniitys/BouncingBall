@@ -194,6 +194,7 @@ namespace BouncingBall {
 			// scaled pos / dimmension
 			int dim_x = (int)(this.tablet.getWidth() * scale.X);
 			int dim_y = (int)(this.tablet.getHeight() * scale.Y);
+
 			int x = (int)(this.tablet.getPosX() * scale.X);
 			int y = (int)(this.tablet.getPosY() * scale.Y);
 

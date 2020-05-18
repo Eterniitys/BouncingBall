@@ -248,7 +248,7 @@ namespace BouncingBall {
 							CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
 							// - - - - - -
 						}
-						finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
+						//finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
 					}
 
 
@@ -263,7 +263,7 @@ namespace BouncingBall {
 						ArucoInvoke.DrawDetectedMarkers(_frame, corners, ids, new MCvScalar(0, 255, 0));
 					} else {
 						// fix a weird error comming from 0(float) cast to 0(int) when markers aren't detected
-						this.setPosition(this.getPosition());
+						//this.setPosition(this.getPosition());
 					}
 				}
 				_frame.CopyTo(diplayableframe);
