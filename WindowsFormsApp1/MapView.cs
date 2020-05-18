@@ -92,7 +92,7 @@ namespace BouncingBall {
 					} else if (topic.StartsWith("tablet/id/")) {
 						string id = topic.Split('/')[2];
 						string[] datas = message.Split(';');
-						if (this.lst_tab.ContainsKey(id) && this.lst_tab[id] == null) {
+						if (this.lst_tab.ContainsKey(id) && this.lst_tab[id] == null && topic.EndsWith("pos")) {
 							Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (ScreenFormat)int.Parse(datas[2]));
 							this.lst_tab[id] = t;
 						} else if (topic.EndsWith("pos")) {
@@ -103,7 +103,7 @@ namespace BouncingBall {
 						}
 						Invoke(new Action(() => {
 							string text = "ids > ";
-							foreach(string ch in this.lst_tab.Keys) {
+							foreach (string ch in this.lst_tab.Keys) {
 								text += ch + " ; ";
 							}
 							this.lbl_angle.Text = string.Format("{0}", text);
@@ -113,12 +113,19 @@ namespace BouncingBall {
 
 			this.broker.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(
 			e => {
-				this.lst_tab.Add(e.ClientId, null);
+				lock (lst_tab) {
+					if (this.lst_tab.ContainsKey(e.ClientId)) {
+						this.lst_tab.Remove(e.ClientId);
+					}
+					this.lst_tab.Add(e.ClientId, null);
+				}
 			});
 
 			this.broker.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(
 			e => {
-				this.lst_tab.Remove(e.ClientId);
+				lock (lst_tab) {
+					this.lst_tab.Remove(e.ClientId);
+				}
 			});
 		}
 
@@ -177,29 +184,32 @@ namespace BouncingBall {
 			Graphics gfx = e.Graphics;
 			this.scale.X = (float)e.ClipRectangle.Width / room_width;
 			this.scale.Y = (float)e.ClipRectangle.Height / room_lenght;
-			foreach (Tablet tab in lst_tab.Values) {
-				if (tab != null) {
-					int dim_x = (int)(this.scale.X * tab.getWidth());
-					int dim_y = (int)(this.scale.Y * tab.getHeight());
-					int x = (int)(this.scale.X * tab.getPosX());
-					int y = (int)(this.scale.Y * tab.getPosY());
-					//
-					Pen blackPen = new Pen(Color.FromArgb(255, 0, 0, 0), 2);
-					Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
-					Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
-					//
-					gfx.DrawLine(redPen, 0, 0, x, y);
-					gfx.DrawRectangle(redPen, x - dim_x / 2, y - dim_y / 2, dim_x, dim_y);
-					// définition de l'origine de rotation
-					gfx.TranslateTransform(x, y);
-					gfx.RotateTransform(tab.getAngle());
-					// dessine
-					gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
-					// rétablie la position/rotation d'origine
-					gfx.RotateTransform(-tab.getAngle());
-					gfx.TranslateTransform(-x, -y);
+			lock (lst_tab) {
+				foreach (Tablet tab in lst_tab.Values) {
+					if (tab != null) {
+						int dim_x = (int)(this.scale.X * tab.getWidth());
+						int dim_y = (int)(this.scale.Y * tab.getHeight());
+						int x = (int)(this.scale.X * tab.getPosX());
+						int y = (int)(this.scale.Y * tab.getPosY());
+						//
+						Pen blackPen = new Pen(Color.FromArgb(255, 0, 0, 0), 2);
+						Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
+						Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
+						//
+						gfx.DrawLine(redPen, 0, 0, x, y);
+						gfx.DrawRectangle(redPen, x - dim_x / 2, y - dim_y / 2, dim_x, dim_y);
+						// définition de l'origine de rotation
+						gfx.TranslateTransform(x, y);
+						gfx.RotateTransform(tab.getAngle());
+						// dessine
+						gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
+						// rétablie la position/rotation d'origine
+						gfx.RotateTransform(-tab.getAngle());
+						gfx.TranslateTransform(-x, -y);
+					}
 				}
 			}
+
 			this.ball.draw(gfx, scale);
 			foreach (Wall w in lstWall) {
 				w.draw(gfx, scale);
