@@ -14,7 +14,7 @@ using System.Windows.Forms;
 using Emgu.CV.UI;
 
 namespace BouncingBall {
-	public partial class TabletteView : Form {
+	public partial class TabletView : Form {
 
 		#region Variables
 		/// <summary>
@@ -66,7 +66,7 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="room_width">The width of the playing area / room</param>
 		/// <param name="room_lenght">The lenght of the playing area / room</param>
-		public TabletteView(int room_width, int room_lenght) {
+		public TabletView(int room_width, int room_lenght) {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.tablet = new Tablet(0, 0, 0, ScreenFormat._12PC, true) {

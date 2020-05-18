@@ -1,7 +1,7 @@
 using Emgu.CV.UI;
 
 namespace BouncingBall {
-	partial class TabletteView {
+	partial class TabletView {
 
 		/// <summary>
 		/// Variable nécessaire au concepteur.

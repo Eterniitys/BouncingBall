@@ -207,9 +207,9 @@ namespace BouncingBall {
 			}
 			if (lstWall.Count != 0) {
 				Wall w = lstWall[lstWall.Count - 1];
-				Func<PointF, PointF, PointF> fuck = (PointF p, PointF s) => new PointF(p.X * s.X, p.Y * s.Y);
-				PointF A = fuck(w.getOrigine(), scale);
-				PointF I = fuck(this.ball.center, scale);
+				Func<PointF, PointF, PointF> func = (PointF p, PointF s) => new PointF(p.X * s.X, p.Y * s.Y);
+				PointF A = func(w.getOrigine(), scale);
+				PointF I = func(this.ball.center, scale);
 				gfx.DrawLine(Pens.Black, A, I);
 			}
 		}

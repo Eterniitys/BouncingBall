@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -56,8 +56,8 @@
     <Reference Include="Emgu.CV.World.Netstandard">
       <HintPath>..\..\..\..\..\..\Emgu\emgucv-windesktop 4.2.0.3662\bin\Emgu.CV.World.Netstandard.dll</HintPath>
     </Reference>
-    <Reference Include="MQTTnet, Version=3.0.9.0, Culture=neutral, PublicKeyToken=b69712f52770c0a7, processorArchitecture=MSIL">
-      <HintPath>..\packages\MQTTnet.3.0.9\lib\net461\MQTTnet.dll</HintPath>
+    <Reference Include="MQTTnet, Version=3.0.10.0, Culture=neutral, PublicKeyToken=b69712f52770c0a7, processorArchitecture=MSIL">
+      <HintPath>..\packages\MQTTnet.3.0.10\lib\net461\MQTTnet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -99,26 +99,26 @@
     <Compile Include="MqttWrapper.cs" />
     <Compile Include="Wall.cs" />
     <Compile Include="EnumFormat.cs" />
-    <Compile Include="Tablette.cs" />
+    <Compile Include="Tablet.cs" />
     <Compile Include="MapView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MapView.Designer.cs">
       <DependentUpon>MapView.cs</DependentUpon>
     </Compile>
-    <Compile Include="TabletteView.cs">
+    <Compile Include="TabletView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TabletteView.Designer.cs">
-      <DependentUpon>TabletteView.cs</DependentUpon>
+    <Compile Include="TabletView.Designer.cs">
+      <DependentUpon>TabletView.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MapView.resx">
       <DependentUpon>MapView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TabletteView.resx">
-      <DependentUpon>TabletteView.cs</DependentUpon>
+    <EmbeddedResource Include="TabletView.resx">
+      <DependentUpon>TabletView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -27,14 +27,14 @@ namespace BouncingBall
 			// Map de jeu
 			MapView map = new MapView(room_width, room_lenght);
 			// Fenêtre de la premiére tablette instanciée/lancée
-			TabletteView tablette = new TabletteView(room_width, room_lenght);
+			TabletView tablette = new TabletView(room_width, room_lenght);
 			Thread t = new Thread(() => RunTabView(tablette));
 			t.Start();
 			// Serveur lancé
 			Application.Run(map);
 		}
 
-		private static void RunTabView(TabletteView t)
+		private static void RunTabView(TabletView t)
 		{
 			Application.Run(t);
 		}
