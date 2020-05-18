@@ -69,13 +69,13 @@ namespace BouncingBall {
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
 		public Ball(int room_width, int room_lenght, float scale = 1) {
-			var ballSettings = ConfigurationManager.AppSettings;
-			var diameter = float.Parse(ballSettings["fBalldiameter"]);
+			var properties = Properties.Settings.Default;
+			var diameter = properties.iBallDiameter;
 			this.size = new SizeF(scale * diameter, scale * diameter);
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = int.Parse(ballSettings["iBallSpeed"]); // TODO this value does need to not be hardcoded
+			this.speed = properties.iBallSpeed; // TODO this value does need to not be hardcoded
 			Random rnd = new Random();
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,

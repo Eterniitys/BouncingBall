@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emgu.CV.UI;
+using System.Configuration;
 
 namespace BouncingBall {
 	public partial class TabletView : Form {
@@ -24,7 +25,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// The id of this player, used in MQTT
 		/// </summary>
-		private String id = "";
+		private string id = "";
 
 
 		/// <summary>
@@ -58,6 +59,9 @@ namespace BouncingBall {
 		/// The MQTT client
 		/// </summary>
 		private IMqttClient client;
+
+		private string brokerurl = Properties.Settings.Default.sBrokerUrl;
+		private string username = Properties.Settings.Default.sUsername;
 		#endregion Variables
 
 		#region Constructor
@@ -76,10 +80,10 @@ namespace BouncingBall {
 			this.matrix = new Matrix();
 			this.scale = new PointF();
 			// - - - - - - - - - -
-			initMqttClientAsync("Client1", "localhost");
+			initMqttClientAsync(username, brokerurl);
 			// - - - - - - - - - -
 			InitializeComponent();
-			this.lbl_format.Text = String.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
+			this.lbl_format.Text = string.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
 			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
 			this.tablet.TabletPositionChanged += new Tablet.TabletPositionChangedHandler(this.onPositionChanged);
 			this.tablet.TabletAngleChanged += new Tablet.TabletAngleChangedHandler(this.onAngleChanged);
@@ -132,13 +136,18 @@ namespace BouncingBall {
 							lstWall.Add(w);
 						}
 					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS])) {
-						string[] ids = message.Split(';');
-						if (this.id.Length == 0 && ids.Length > 1) {
-							this.id = ids[1];
+						var lstId = Properties.Settings.Default.sAvailableIds;
+						int idSelector = 0;
+						while(this.id.Length <= 0) {
+							this.id = lstId[idSelector];
+							if (message.Contains(this.id)) {
+								this.id = "";
+								idSelector++;
+							}
+						}
 							Invoke(new Action(() => {
 								this.lbl.Text = this.id;
 							}));
-						}
 					} else if (e.ApplicationMessage.Topic.StartsWith("tablet/id/")) {
 						// TODO tablet shouldn't subcribe to 'tablet/id/*' topics
 						// TODO shouldn't be a // identifier
@@ -154,7 +163,7 @@ namespace BouncingBall {
 				Invoke(new Action(() => {
 					this.lbl.Text = "Disconnected from Broker";
 				}));
-				MqttWrapper.connectClient(this.client, "Client1", "localhost");
+				MqttWrapper.connectClient(this.client, username, brokerurl);
 			});
 		}
 		#endregion
@@ -172,7 +181,7 @@ namespace BouncingBall {
 		internal void updateCameraView() {
 			this.pictureBox2.Image = this.tablet.diplayableframe;
 			Invoke(new Action(() => {
-				this.lbl.Text = this.tablet.message;
+				//this.lbl.Text = this.tablet.message;
 			}));
 		}
 

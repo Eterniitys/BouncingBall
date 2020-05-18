@@ -84,7 +84,7 @@ namespace BouncingBall {
 		public static void SetClientSubs(IMqttClient mqttClient) {
 			mqttClient.UseConnectedHandler(async e => {
 				foreach (string topic in getTopicList()) {
-					await mqttClient.SubscribeAsync(new TopicFilterBuilder().WithTopic(topic).Build());
+					await mqttClient.SubscribeAsync(new MqttTopicFilter() { Topic = topic });
 				}
 			});
 		}

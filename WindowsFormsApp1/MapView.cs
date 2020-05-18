@@ -49,7 +49,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// A formatted string containing already taken ids
 		/// </summary>
-		private static string availableId = "!;1;2;3;!";
+		private static string takenIds = "ids > ";
 		#endregion Variables
 
 		#region Constructor
@@ -81,7 +81,7 @@ namespace BouncingBall {
 			MqttWrapper.SendMqttMessageTo(
 				this.broker,
 				MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS],
-				availableId,
+				takenIds,
 				true);
 
 			// Call when a new message is received
@@ -102,16 +102,24 @@ namespace BouncingBall {
 						if (!this.lst_tab.ContainsKey(id)) {
 							Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (ScreenFormat)int.Parse(datas[2]));
 							this.lst_tab.Add(id, t);
+							takenIds += id + ";";
+							MqttWrapper.SendMqttMessageTo(
+								this.broker,
+								MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS],
+								takenIds,
+								true);
 						} else if (topic.EndsWith("pos")) {
 							this.lst_tab[id].setPosX(int.Parse(datas[0]));
 							this.lst_tab[id].setPosY(int.Parse(datas[1]));
 						} else if (topic.EndsWith("angle")) {
 							this.lst_tab[id].setAngle(float.Parse(datas[0]));
 						}
-						/*Invoke(new Action(() => {
-							this.lbl_angle.Text = string.Format("{0} | {1}", id, ctp);
-						}));/**/
 					}
+					try {
+						Invoke(new Action(() => {
+							this.lbl_angle.Text = string.Format("{0}", takenIds);
+						}));/**/
+					}catch(Exception) { };
 				});
 
 			// Call when a client connect
@@ -122,6 +130,10 @@ namespace BouncingBall {
 					//ConnectionStatus.Text = "Client disconnected fired";
 				});
 				*/
+			});
+
+			this.broker.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(e => {
+
 			});
 		}
 

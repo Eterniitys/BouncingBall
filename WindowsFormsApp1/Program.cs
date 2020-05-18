@@ -16,10 +16,10 @@ namespace BouncingBall {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			var roomSettings = ConfigurationManager.AppSettings;
-			int room_width = int.Parse(roomSettings["iRoom_width"]);
-			int room_lenght = int.Parse(roomSettings["iRoom_lenght"]);
-			bool isBroker = bool.Parse(roomSettings["bIsBroker"]);
+			var properties = Properties.Settings.Default;
+			int room_width = properties.iRoomWidth;
+			int room_lenght = properties.iRoomHeight;
+			bool isBroker = properties.bIsBroker;
 
 			// Tablette principale
 			// Map de jeu

@@ -69,9 +69,9 @@ namespace BouncingBall {
 
 		private DetectorParameters _detectorParameters;
 
-		private readonly int idCamera = int.Parse(ConfigurationManager.AppSettings["iIdCamera"]);
-		private readonly int cannyThresholdLow = int.Parse(ConfigurationManager.AppSettings["iCannyThresholdLow"]);
-		private readonly int cannyThresholdHight = int.Parse(ConfigurationManager.AppSettings["iCannyThresholdHight"]);
+		private readonly int idCamera = Properties.Settings.Default.iCameraId;
+		private readonly int cannyThresholdLow = Properties.Settings.Default.iCannyThresholdLow;
+		private readonly int cannyThresholdHight = Properties.Settings.Default.iCannyThresholdHight;
 
 		#endregion
 
@@ -245,7 +245,7 @@ namespace BouncingBall {
 							Point pt1 = new Point((int)(p.X + 1000 * (-b)), (int)(p.Y + 1000 * a));
 							Point pt2 = new Point((int)(p.X - 1000 * (-b)), (int)(p.Y - 1000 * a));
 
-							CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
+							//CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
 							// - - - - - -
 						}
 						//finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
