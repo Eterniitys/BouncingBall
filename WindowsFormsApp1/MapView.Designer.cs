@@ -51,9 +51,9 @@
 			this.lbl_angle.AutoSize = true;
 			this.lbl_angle.Location = new System.Drawing.Point(12, 9);
 			this.lbl_angle.Name = "lbl_angle";
-			this.lbl_angle.Size = new System.Drawing.Size(35, 13);
+			this.lbl_angle.Size = new System.Drawing.Size(111, 13);
 			this.lbl_angle.TabIndex = 1;
-			this.lbl_angle.Text = "label1";
+			this.lbl_angle.Text = "There is no player yet.";
 			// 
 			// MapView
 			// 

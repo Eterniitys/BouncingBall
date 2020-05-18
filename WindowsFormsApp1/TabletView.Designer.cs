@@ -72,9 +72,9 @@ namespace BouncingBall {
 			this.lbl.AutoSize = true;
 			this.lbl.Location = new System.Drawing.Point(3, 9);
 			this.lbl.Name = "lbl";
-			this.lbl.Size = new System.Drawing.Size(35, 13);
+			this.lbl.Size = new System.Drawing.Size(205, 13);
 			this.lbl.TabIndex = 2;
-			this.lbl.Text = "label1";
+			this.lbl.Text = "The application try to connect to a broker.";
 			// 
 			// pictureBox2
 			// 
@@ -86,7 +86,7 @@ namespace BouncingBall {
 			this.pictureBox2.TabIndex = 13;
 			this.pictureBox2.TabStop = false;
 			// 
-			// TabletteView
+			// TabletView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -95,7 +95,7 @@ namespace BouncingBall {
 			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.lbl_format);
 			this.Controls.Add(this.pictureBox1);
-			this.Name = "TabletteView";
+			this.Name = "TabletView";
 			this.Text = "TabView";
 			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TabletteView_KeyUp);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

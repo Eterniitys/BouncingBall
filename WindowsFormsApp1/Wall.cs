@@ -14,7 +14,7 @@ namespace BouncingBall {
 		/// </summary>
 		private static float DEFAULT_TTL {
 			get {
-				return float.Parse(ConfigurationManager.AppSettings["fTimeToLive"]);
+				return Properties.Settings.Default.fTimeToLive;
 			}
 		}
 		

@@ -61,7 +61,6 @@ namespace BouncingBall {
 		private IMqttClient client;
 
 		private string brokerurl = Properties.Settings.Default.sBrokerUrl;
-		private string username = Properties.Settings.Default.sUsername;
 		#endregion Variables
 
 		#region Constructor
@@ -80,7 +79,7 @@ namespace BouncingBall {
 			this.matrix = new Matrix();
 			this.scale = new PointF();
 			// - - - - - - - - - -
-			initMqttClientAsync(username, brokerurl);
+			initMqttClientAsync(brokerurl);
 			// - - - - - - - - - -
 			InitializeComponent();
 			this.lbl_format.Text = string.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
@@ -104,17 +103,37 @@ namespace BouncingBall {
 			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0}", angle));
 		}
 
-		private async void initMqttClientAsync(string username, string url) {
+		private async void initMqttClientAsync(string url) {
 			this.client = MqttWrapper.CreateClient();
 			MqttWrapper.SetClientSubs(this.client);
 
-			var options = new MqttClientOptionsBuilder()
-				.WithClientId(username)
-				.WithTcpServer(url)
-				.Build();
-			await this.client.ConnectAsync(options, System.Threading.CancellationToken.None);
+			var lstId = Properties.Settings.Default.sAvailableIds;
+			int idSelector = 0;
+			bool connected = false;
+			string userId;
+			while (!connected) {
+					userId = lstId[idSelector];
+				try {
+					var options = new MqttClientOptionsBuilder()
+						.WithClientId(userId)
+						.WithTcpServer(url)
+						.Build();
+					await this.client.ConnectAsync(options, System.Threading.CancellationToken.None);
+					this.id = userId;
+					connected = true;
+				} catch (Exception) {
+					idSelector++;
+					if (idSelector == lstId.Count) {
+						MessageBox.Show("There is no more available place in the lobby or there is no broker to connect with. \nPlease try again later");
+						System.Environment.Exit(1);
+					}
+				}
+			}
+
+			this.lbl.Text = this.id;
 
 			this.client.UseApplicationMessageReceivedHandler(e => {
+				try {
 				Invoke(new Action(() => {
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
@@ -135,20 +154,7 @@ namespace BouncingBall {
 							w.setBuilt();
 							lstWall.Add(w);
 						}
-					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_IDS])) {
-						var lstId = Properties.Settings.Default.sAvailableIds;
-						int idSelector = 0;
-						while(this.id.Length <= 0) {
-							this.id = lstId[idSelector];
-							if (message.Contains(this.id)) {
-								this.id = "";
-								idSelector++;
-							}
-						}
-							Invoke(new Action(() => {
-								this.lbl.Text = this.id;
-							}));
-					} else if (e.ApplicationMessage.Topic.StartsWith("tablet/id/")) {
+					}else if (e.ApplicationMessage.Topic.StartsWith("tablet/id/")) {
 						// TODO tablet shouldn't subcribe to 'tablet/id/*' topics
 						// TODO shouldn't be a // identifier
 					} else {
@@ -157,13 +163,16 @@ namespace BouncingBall {
 						}));/**/
 					}
 				}));
+				} catch {
+					MessageBox.Show("Disconnected");
+				}
 			});
 
 			this.client.UseDisconnectedHandler(async e => {
 				Invoke(new Action(() => {
 					this.lbl.Text = "Disconnected from Broker";
 				}));
-				MqttWrapper.connectClient(this.client, username, brokerurl);
+				MqttWrapper.connectClient(this.client, this.id, brokerurl);
 			});
 		}
 		#endregion

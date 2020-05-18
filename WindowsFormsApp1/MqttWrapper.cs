@@ -18,7 +18,6 @@ namespace BouncingBall {
 			BALL_POS,
 			NEW_WALL,
 			BUILD_WALL,
-			TABS_IDS,
 			TABS_ID_POS,
 			TABS_ID_ANG
 		}
@@ -32,7 +31,6 @@ namespace BouncingBall {
 				"ball/pos",
 				"wall/new",
 				"wall/build",
-				"tablet/id",
 				"tablet/id/+/pos",
 				"tablet/id/+/angle",
 			};
