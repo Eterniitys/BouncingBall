@@ -69,6 +69,7 @@ namespace BouncingBall {
 
 		private DetectorParameters _detectorParameters;
 
+		private readonly int idCamera = int.Parse(ConfigurationManager.AppSettings["iIdCamera"]);
 		private readonly int cannyThresholdLow = int.Parse(ConfigurationManager.AppSettings["iCannyThresholdLow"]);
 		private readonly int cannyThresholdHight = int.Parse(ConfigurationManager.AppSettings["iCannyThresholdHight"]);
 
@@ -124,7 +125,7 @@ namespace BouncingBall {
 				_detectorParameters = DetectorParameters.GetDefault();
 
 				try {
-					_capture = new VideoCapture();
+					_capture = new VideoCapture(idCamera);
 					if (!_capture.IsOpened) {
 						_capture = null;
 						throw new NullReferenceException("Unable to open video capture");
