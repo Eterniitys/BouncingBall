@@ -209,8 +209,13 @@ namespace BouncingBall {
 					double finalAngle = 0f;
 					for (int i = 0; i < nb_detected; i++) {
 						#region position weighting
-						estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio + markersRealPos[ids[i]].X);
-						estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio + markersRealPos[ids[i]].Y);
+						try {
+							estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio + markersRealPos[ids[i]].X);
+							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio + markersRealPos[ids[i]].Y);
+						} catch {
+							estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio);
+							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
+						}
 						weights[i] = 1f / getDist(estimatedPosistion[i], capture_center);
 						finalPosition.X += estimatedPosistion[i].X * weights[i];
 						finalPosition.Y += estimatedPosistion[i].Y * weights[i];

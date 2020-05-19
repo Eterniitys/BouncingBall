@@ -268,10 +268,10 @@ namespace BouncingBall {
 			moving
 		}
 
-		private Mode mode = Mode.moving;
+		private Mode mode = Mode.drawing;
 
 		private void onMouseWheel(object sender, MouseEventArgs e) {
-			//this.tablet.setAngle(this.tablet.getAngle() + e.Delta / 10);
+			this.tablet.setAngle(this.tablet.getAngle() + e.Delta / 10);
 		}
 
 		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
