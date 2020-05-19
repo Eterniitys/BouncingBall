@@ -32,6 +32,7 @@ namespace BouncingBall {
 			this.timer = new System.Windows.Forms.Timer(this.components);
 			this.lbl = new System.Windows.Forms.Label();
 			this.pictureBox2 = new Emgu.CV.UI.ImageBox();
+			this.useHough = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
@@ -86,11 +87,25 @@ namespace BouncingBall {
 			this.pictureBox2.TabIndex = 13;
 			this.pictureBox2.TabStop = false;
 			// 
+			// useHough
+			// 
+			this.useHough.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.useHough.AutoSize = true;
+			this.useHough.Location = new System.Drawing.Point(431, 12);
+			this.useHough.Name = "useHough";
+			this.useHough.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.useHough.Size = new System.Drawing.Size(78, 17);
+			this.useHough.TabIndex = 14;
+			this.useHough.Text = "Use hough";
+			this.useHough.UseVisualStyleBackColor = true;
+			this.useHough.CheckedChanged += new System.EventHandler(this.useHough_CheckedChanged);
+			// 
 			// TabletView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(521, 328);
+			this.Controls.Add(this.useHough);
 			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.lbl_format);
@@ -111,6 +126,7 @@ namespace BouncingBall {
 		private System.Windows.Forms.Timer timer;
 		private System.Windows.Forms.Label lbl;
 		private Emgu.CV.UI.ImageBox pictureBox2;
+		private System.Windows.Forms.CheckBox useHough;
 	}
 }
 

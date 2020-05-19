@@ -326,5 +326,9 @@ namespace BouncingBall {
 			}
 			clickIsDown = true;
 		}
+
+		private void useHough_CheckedChanged(object sender, EventArgs e) {
+			this.tablet.useHough = this.useHough.Checked;
+		}
 	}
 }

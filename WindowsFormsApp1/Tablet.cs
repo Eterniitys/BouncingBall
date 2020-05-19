@@ -20,9 +20,6 @@ namespace BouncingBall {
 
 		#region "TODO"
 		private VideoCapture _capture = null;
-		private bool _captureInProgress;
-		private bool _useThisFrame = false;
-		private bool _calibrated = false;
 
 		int markersX = 10;
 		int markersY = 10;
@@ -72,6 +69,7 @@ namespace BouncingBall {
 		private readonly int idCamera = Properties.Settings.Default.iCameraId;
 		private readonly int cannyThresholdLow = Properties.Settings.Default.iCannyThresholdLow;
 		private readonly int cannyThresholdHight = Properties.Settings.Default.iCannyThresholdHight;
+		public bool useHough { get; set; }
 
 		#endregion
 
@@ -248,7 +246,8 @@ namespace BouncingBall {
 							//CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
 							// - - - - - -
 						}
-						//finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
+						if (useHough)
+							finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
 					}
 
 
@@ -280,9 +279,9 @@ namespace BouncingBall {
 			for (int i = 0; i < houghAngles.Length; i++) {
 				//houghAngles[i] += 90;
 				possibilities[i * 4] = houghAngles[i];
-				possibilities[i * 4 + 1] = (houghAngles[i]+90);
-				possibilities[i * 4 + 2] = (houghAngles[i]+180) ;
-				possibilities[i * 4 + 3] = (houghAngles[i]+270);
+				possibilities[i * 4 + 1] = (houghAngles[i] + 90);
+				possibilities[i * 4 + 2] = (houghAngles[i] + 180);
+				possibilities[i * 4 + 3] = (houghAngles[i] + 270);
 				message = string.Format("{0} | {1} | {2} | {3}", possibilities[0], possibilities[1], possibilities[2], possibilities[3]);
 			}
 			double dist = angleDist(possibilities[0], arucoAngle);
