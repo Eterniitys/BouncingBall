@@ -93,23 +93,29 @@ namespace BouncingBall {
 					} else if (topic.StartsWith("tablet/")) {
 						string id = topic.Split('/')[1];
 						string[] datas = message.Split(';');
-						if (this.lstTab.ContainsKey(id) && this.lstTab[id] == null && topic.EndsWith("pos")) {
-							Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (EnumFormat)int.Parse(datas[2]));
-							this.lstTab[id] = t;
-						} else if (topic.EndsWith("pos")) {
-							this.lstTab[id].setPosX(int.Parse(datas[0]));
-							this.lstTab[id].setPosY(int.Parse(datas[1]));
-						} else if (topic.EndsWith("angle")) {
-							this.lstTab[id].setAngle(float.Parse(datas[0]));
+						if (this.lstTab.ContainsKey(id)) {
+							if (this.lstTab[id] == null && topic.EndsWith("pos")) {
+								Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (EnumFormat)int.Parse(datas[2]));
+								this.lstTab[id] = t;
+							} else if (topic.EndsWith("pos")) {
+								this.lstTab[id].setPosX(int.Parse(datas[0]));
+								this.lstTab[id].setPosY(int.Parse(datas[1]));
+							} else if (topic.EndsWith("angle")) {
+								this.lstTab[id].setAngle(float.Parse(datas[0]));
+							}
 						}
 					}
 					try {
 						Invoke(new Action(() => {
 							string text = "ids > ";
 							foreach (string ch in this.lstTab.Keys) {
-								text += ch + " ; ";
+								if (lstTab[ch] is Tablet t) {
+									text += string.Format("{0}_{1} ;", ch, t.getPosition());
+								} else {
+									text += string.Format("{0} pos:{1} ;", ch, "noDatas");
+								}
 							}
-							this.lbl_angle.Text = string.Format("{0}", text);
+							this.lbl_angle.Text = text;
 						}));
 					} catch {
 						Application.Exit();

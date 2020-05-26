@@ -93,7 +93,6 @@ namespace BouncingBall {
 			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tablet.format));
-
 		}
 
 		private void onAngleChanged(float angle) {
@@ -127,6 +126,7 @@ namespace BouncingBall {
 						System.Environment.Exit(1);
 					}
 				}
+				System.Threading.Thread.Sleep(2000);
 			}
 
 			this.lbl.Text = this.id;
