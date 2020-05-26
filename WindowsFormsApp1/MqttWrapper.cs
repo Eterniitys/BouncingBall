@@ -26,13 +26,25 @@ namespace BouncingBall {
 		/// Return a list of all used topics
 		/// </summary>
 		/// <returns></returns>
-		internal static string[] GetTopicList() {
+		internal static string[] GetFullTopicList() {
 			string[] lstTopics = {
 				"ball/pos",
 				"wall/new",
 				"wall/build",
 				"tablet/+/pos",
 				"tablet/+/angle",
+			};
+			return lstTopics;
+		}
+		/// <summary>
+		/// Return the list of topic which is subscribed by the client
+		/// </summary>
+		/// <returns></returns>
+		internal static string[] GetClientTopicList() {
+			string[] lstTopics = {
+				"ball/pos",
+				"wall/new",
+				"wall/build"
 			};
 			return lstTopics;
 		}
@@ -77,7 +89,7 @@ namespace BouncingBall {
 		/// <param name="mqttClient"></param>
 		public static void SetClientSubs(IMqttClient mqttClient) {
 			mqttClient.UseConnectedHandler(async e => {
-				foreach (string topic in GetTopicList()) {
+				foreach (string topic in GetClientTopicList()) {
 					await mqttClient.SubscribeAsync(new MqttTopicFilter() { Topic = topic });
 				}
 			});
@@ -113,7 +125,9 @@ namespace BouncingBall {
 				.WithRetainFlag(retainFlag)
 				.Build();
 			if (mqttClient.IsConnected) {
-				await mqttClient.PublishAsync(message, System.Threading.CancellationToken.None);
+				try {
+					await mqttClient.PublishAsync(message, System.Threading.CancellationToken.None);
+				} catch { }
 			}
 		}
 		/// <summary>

@@ -42,7 +42,7 @@ namespace BouncingBall {
 		/// Contains the processed scale size of the table within the room
 		/// </summary>
 		/// <remarks>
-		/// (TODO) Must be (pre)processed in full screen
+		/// (TODO) Must probably be (pre)processed in full screen
 		/// </remarks>
 		private PointF scale;
 		/// <summary>
@@ -56,9 +56,11 @@ namespace BouncingBall {
 		/// <summary>
 		/// The MQTT client
 		/// </summary>
-		private Ball ball;
-
 		private IMqttClient client;
+		/// <summary>
+		/// The ball
+		/// </summary>
+		private Ball ball;
 
 		private string brokerurl = Properties.Settings.Default.sBrokerUrl;
 		#endregion Variables
@@ -90,13 +92,13 @@ namespace BouncingBall {
 
 		#region MQTT protocol
 		private void onPositionChanged(Point position) {
-			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
+			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tablet.format));
 		}
 
 		private void onAngleChanged(float angle) {
-			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.TABS_ID_ANG];
+			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.TABS_ID_ANG];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0}", angle));
 		}
@@ -134,17 +136,18 @@ namespace BouncingBall {
 			this.client.UseApplicationMessageReceivedHandler(e => {
 				try {
 					Invoke(new Action(() => {
+						this.lbl.Text = this.id;
 						string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 							string[] coord = message.Split(';');
 							PointF p = new PointF(
 								float.Parse(coord[0]),
 								float.Parse(coord[1])
 								);
 							this.ball.center = p;
-						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
+						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 							// nothing
-						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
+						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
 							this.lstWall.Clear();
 							string[] walls = message.Split('!');
 							int wall_count = int.Parse(walls[0]);
@@ -156,8 +159,8 @@ namespace BouncingBall {
 						} else if (e.ApplicationMessage.Topic.StartsWith("tablet/")) {
 							// TODO tablet shouldn't subcribe to 'tablet/*' topics
 						} else {
-							Invoke(new Action(() => {
-								//this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
+							/*Invoke(new Action(() => {
+								this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
 							}));/**/
 						}
 					}));
@@ -289,7 +292,7 @@ namespace BouncingBall {
 					this.preBuilt = null;
 					wall.tranform(this.matrix);
 					MqttWrapper.SendMqttMessageTo(this.client,
-						MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
+						MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
 						String.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
 						);
 				}

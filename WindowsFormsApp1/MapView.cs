@@ -82,8 +82,8 @@ namespace BouncingBall {
 				e => {
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 					string topic = e.ApplicationMessage.Topic;
-					if (topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
-					} else if (topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
+					if (topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+					} else if (topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 						Wall w = new Wall(message);
 						if (!this.ball.isColliding(w)) {
 							this.lstWall.Add(w);
@@ -144,13 +144,13 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="pos"></param>
 		private void onBallMoved(PointF pos) {
-			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BALL_POS];
+			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS];
 			MqttWrapper.SendMqttMessageTo(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
 
 		public void sendWalls() {
 			string message = "";
-			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BUILD_WALL];
+			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BUILD_WALL];
 			message += lstWall.Count;
 			foreach (Wall w in lstWall) {
 				message += "!" + w;
