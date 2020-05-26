@@ -26,13 +26,13 @@ namespace BouncingBall {
 		/// Return a list of all used topics
 		/// </summary>
 		/// <returns></returns>
-		internal static string[] getTopicList() {
+		internal static string[] GetTopicList() {
 			string[] lstTopics = {
 				"ball/pos",
 				"wall/new",
 				"wall/build",
-				"tablet/id/+/pos",
-				"tablet/id/+/angle",
+				"tablet/+/pos",
+				"tablet/+/angle",
 			};
 			return lstTopics;
 		}
@@ -54,6 +54,7 @@ namespace BouncingBall {
 			var optionBuilder = new MqttServerOptionsBuilder()
 				.WithConnectionBacklog(100)
 				.WithDefaultEndpointPort(port);
+
 			await mqttServer.StartAsync(optionBuilder.Build());
 		}
 
@@ -65,12 +66,7 @@ namespace BouncingBall {
 			var factory = new MqttFactory();
 			IMqttClient mqttClient = factory.CreateMqttClient();
 
-			/* TODO
-			 * find the right signature 
-			 * then send it in parameters
-			 */
-			mqttClient.UseApplicationMessageReceivedHandler(e => {
-			});
+			mqttClient.UseApplicationMessageReceivedHandler(e => {});
 
 			return mqttClient;
 		}
@@ -81,7 +77,7 @@ namespace BouncingBall {
 		/// <param name="mqttClient"></param>
 		public static void SetClientSubs(IMqttClient mqttClient) {
 			mqttClient.UseConnectedHandler(async e => {
-				foreach (string topic in getTopicList()) {
+				foreach (string topic in GetTopicList()) {
 					await mqttClient.SubscribeAsync(new MqttTopicFilter() { Topic = topic });
 				}
 			});
@@ -94,7 +90,7 @@ namespace BouncingBall {
 		/// <param name="username"></param>
 		/// <param name="url"></param>
 		/// <param name="port"></param>
-		public static async void connectClient(IMqttClient mqttClient, string username, string url, int port = 1883) {
+		public static async void ConnectClient(IMqttClient mqttClient, string username, string url, int port = 1883) {
 			var options = new MqttClientOptionsBuilder()
 				.WithClientId(username)
 				.WithTcpServer(url)
@@ -121,7 +117,7 @@ namespace BouncingBall {
 			}
 		}
 		/// <summary>
-		/// Send a message in a t^pic
+		/// Send a message in a topic
 		/// </summary>
 		/// <param name="mqttBroker"></param>
 		/// <param name="topic">The choosen topic</param>

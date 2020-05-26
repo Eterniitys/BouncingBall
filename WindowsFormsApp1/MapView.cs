@@ -21,15 +21,15 @@ namespace BouncingBall {
 		/// <summary>
 		/// Width of the playing area in millimeters
 		/// </summary>
-		private int room_width;
+		private int roomWidth;
 		/// <summary>
 		/// lenght of the playing area in millimeters
 		/// </summary>
-		private int room_lenght;
+		private int roomLenght;
 		/// <summary>
 		/// List of all tablets in the game
 		/// </summary>
-		private Dictionary<String, Tablet> lst_tab;
+		private Dictionary<String, Tablet> lstTab;
 		/// <summary>
 		/// The ball
 		/// </summary>
@@ -57,15 +57,15 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="t"></param>
 		public MapView(int room_width, int room_lenght) {
-			this.room_width = room_width;
-			this.room_lenght = room_lenght;
+			this.roomWidth = room_width;
+			this.roomLenght = room_lenght;
 			this.scale = new PointF();
 			// - - - - - - - - - -
 			initBroker();
 			// - - - - - - - - - -
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
-			lst_tab = new Dictionary<String, Tablet>();
+			lstTab = new Dictionary<String, Tablet>();
 			this.lstWall = new List<Wall>();
 			// - - - - - - - - - -
 			InitializeComponent();
@@ -82,49 +82,53 @@ namespace BouncingBall {
 				e => {
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 					string topic = e.ApplicationMessage.Topic;
-					if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
-					} else if (topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
-						// TODO checké si le mur n'est pas sur la balle
+					if (topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+					} else if (topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 						Wall w = new Wall(message);
-						this.lstWall.Add(w);
-						w.setBuilt();
-						sendWalls();
-					} else if (topic.StartsWith("tablet/id/")) {
-						string id = topic.Split('/')[2];
-						string[] datas = message.Split(';');
-						if (this.lst_tab.ContainsKey(id) && this.lst_tab[id] == null && topic.EndsWith("pos")) {
-							Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (ScreenFormat)int.Parse(datas[2]));
-							this.lst_tab[id] = t;
-						} else if (topic.EndsWith("pos")) {
-							this.lst_tab[id].setPosX(int.Parse(datas[0]));
-							this.lst_tab[id].setPosY(int.Parse(datas[1]));
-						} else if (topic.EndsWith("angle")) {
-							this.lst_tab[id].setAngle(float.Parse(datas[0]));
+						if (!this.ball.isColliding(w)) {
+							this.lstWall.Add(w);
+							w.setBuilt();
 						}
+						sendWalls();
+					} else if (topic.StartsWith("tablet/")) {
+						string id = topic.Split('/')[1];
+						string[] datas = message.Split(';');
+						if (this.lstTab.ContainsKey(id) && this.lstTab[id] == null && topic.EndsWith("pos")) {
+							Tablet t = new Tablet(int.Parse(datas[0]), int.Parse(datas[1]), 0, (EnumFormat)int.Parse(datas[2]));
+							this.lstTab[id] = t;
+						} else if (topic.EndsWith("pos")) {
+							this.lstTab[id].setPosX(int.Parse(datas[0]));
+							this.lstTab[id].setPosY(int.Parse(datas[1]));
+						} else if (topic.EndsWith("angle")) {
+							this.lstTab[id].setAngle(float.Parse(datas[0]));
+						}
+					}
+					try {
 						Invoke(new Action(() => {
 							string text = "ids > ";
-							foreach (string ch in this.lst_tab.Keys) {
+							foreach (string ch in this.lstTab.Keys) {
 								text += ch + " ; ";
 							}
 							this.lbl_angle.Text = string.Format("{0}", text);
 						}));
+					} catch {
+						Application.Exit();
 					}
 				});
 
 			this.broker.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(
 			e => {
-				lock (lst_tab) {
-					if (this.lst_tab.ContainsKey(e.ClientId)) {
-						this.lst_tab.Remove(e.ClientId);
+				if (!this.lstTab.ContainsKey(e.ClientId)) {
+					lock (lstTab) {
+						this.lstTab.Add(e.ClientId, null);
 					}
-					this.lst_tab.Add(e.ClientId, null);
 				}
 			});
 
 			this.broker.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(
 			e => {
-				lock (lst_tab) {
-					this.lst_tab.Remove(e.ClientId);
+				lock (lstTab) {
+					this.lstTab.Remove(e.ClientId);
 				}
 			});
 		}
@@ -133,14 +137,14 @@ namespace BouncingBall {
 		/// Call when the ball move
 		/// </summary>
 		/// <param name="pos"></param>
-		public void onBallMoved(PointF pos) {
-			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS];
+		private void onBallMoved(PointF pos) {
+			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BALL_POS];
 			MqttWrapper.SendMqttMessageTo(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
 
 		public void sendWalls() {
 			string message = "";
-			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL];
+			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BUILD_WALL];
 			message += lstWall.Count;
 			foreach (Wall w in lstWall) {
 				message += "!" + w;
@@ -151,7 +155,6 @@ namespace BouncingBall {
 		#endregion MQTT protocol
 
 		#region Painting / Drawing
-
 		/// <summary>
 		/// Trigger a game loop
 		/// </summary>
@@ -162,7 +165,7 @@ namespace BouncingBall {
 			this.ball.move(lstWall.ToArray());
 			List<Wall> tmp_lst = new List<Wall>();
 			foreach (Wall w in lstWall) {
-				w.tick(20);
+				w.tick(Properties.Settings.Default.iGameTick);
 				if (w.timeToLive <= 0) {
 					tmp_lst.Add(w);
 				}
@@ -182,10 +185,10 @@ namespace BouncingBall {
 		/// <param name="e"></param>
 		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 			Graphics gfx = e.Graphics;
-			this.scale.X = (float)e.ClipRectangle.Width / room_width;
-			this.scale.Y = (float)e.ClipRectangle.Height / room_lenght;
-			lock (lst_tab) {
-				foreach (Tablet tab in lst_tab.Values) {
+			this.scale.X = (float)e.ClipRectangle.Width / roomWidth;
+			this.scale.Y = (float)e.ClipRectangle.Height / roomLenght;
+			lock (lstTab) {
+				foreach (Tablet tab in lstTab.Values) {
 					if (tab != null) {
 						int dim_x = (int)(this.scale.X * tab.getWidth());
 						int dim_y = (int)(this.scale.Y * tab.getHeight());

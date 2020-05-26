@@ -26,16 +26,14 @@ namespace BouncingBall {
 		/// The id of this player, used in MQTT
 		/// </summary>
 		private string id = "";
-
-
 		/// <summary>
 		/// The width of the playing area / room
 		/// </summary>
-		private int room_width;
+		private int roomWidth;
 		/// <summary>
 		/// The lenght of the playing area / room
 		/// </summary>
-		private int room_lenght;
+		private int roomLenght;
 		/// <summary>
 		/// The transformation matrix of the view in the room
 		/// </summary>
@@ -58,6 +56,8 @@ namespace BouncingBall {
 		/// <summary>
 		/// The MQTT client
 		/// </summary>
+		private Ball ball;
+
 		private IMqttClient client;
 
 		private string brokerurl = Properties.Settings.Default.sBrokerUrl;
@@ -70,11 +70,10 @@ namespace BouncingBall {
 		/// <param name="room_width">The width of the playing area / room</param>
 		/// <param name="room_lenght">The lenght of the playing area / room</param>
 		public TabletView(int room_width, int room_lenght) {
-			this.room_width = room_width;
-			this.room_lenght = room_lenght;
-			this.tablet = new Tablet(0, 0, 0, ScreenFormat._12PC, true) {
-				ball = new Ball(room_width, room_lenght)
-			};
+			this.roomWidth = room_width;
+			this.roomLenght = room_lenght;
+			this.tablet = new Tablet(0, 0, 0, EnumFormat._12PC, true);
+			this.ball = new Ball(room_width, room_lenght);
 			this.lstWall = new List<Wall>();
 			this.matrix = new Matrix();
 			this.scale = new PointF();
@@ -91,14 +90,14 @@ namespace BouncingBall {
 
 		#region MQTT protocol
 		private void onPositionChanged(Point position) {
-			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
+			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tablet.format));
 
 		}
 
 		private void onAngleChanged(float angle) {
-			string topic = MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.TABS_ID_ANG];
+			string topic = MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.TABS_ID_ANG];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
 			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0}", angle));
 		}
@@ -112,7 +111,7 @@ namespace BouncingBall {
 			bool connected = false;
 			string userId;
 			while (!connected) {
-					userId = lstId[idSelector];
+				userId = lstId[idSelector];
 				try {
 					var options = new MqttClientOptionsBuilder()
 						.WithClientId(userId)
@@ -134,45 +133,44 @@ namespace BouncingBall {
 
 			this.client.UseApplicationMessageReceivedHandler(e => {
 				try {
-				Invoke(new Action(() => {
-					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-					if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
-						string[] coord = message.Split(';');
-						PointF p = new PointF(
-							float.Parse(coord[0]),
-							float.Parse(coord[1])
-							);
-						this.tablet.ball.center = p;
-					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
-						// nothing
-					} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
-						this.lstWall.Clear();
-						string[] walls = message.Split('!');
-						int wall_count = int.Parse(walls[0]);
-						for (int i = 1; i <= wall_count; i++) {
-							Wall w = new Wall(walls[i]);
-							w.setBuilt();
-							lstWall.Add(w);
+					Invoke(new Action(() => {
+						string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+							string[] coord = message.Split(';');
+							PointF p = new PointF(
+								float.Parse(coord[0]),
+								float.Parse(coord[1])
+								);
+							this.ball.center = p;
+						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
+							// nothing
+						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
+							this.lstWall.Clear();
+							string[] walls = message.Split('!');
+							int wall_count = int.Parse(walls[0]);
+							for (int i = 1; i <= wall_count; i++) {
+								Wall w = new Wall(walls[i]);
+								w.setBuilt();
+								lstWall.Add(w);
+							}
+						} else if (e.ApplicationMessage.Topic.StartsWith("tablet/")) {
+							// TODO tablet shouldn't subcribe to 'tablet/*' topics
+						} else {
+							Invoke(new Action(() => {
+								//this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
+							}));/**/
 						}
-					}else if (e.ApplicationMessage.Topic.StartsWith("tablet/id/")) {
-						// TODO tablet shouldn't subcribe to 'tablet/id/*' topics
-						// TODO shouldn't be a // identifier
-					} else {
-						Invoke(new Action(() => {
-							this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
-						}));/**/
-					}
-				}));
+					}));
 				} catch {
-					MessageBox.Show("Disconnected");
+					Application.Exit();
 				}
 			});
 
-			this.client.UseDisconnectedHandler(async e => {
+			this.client.UseDisconnectedHandler(e => {
 				Invoke(new Action(() => {
 					this.lbl.Text = "Disconnected from Broker";
 				}));
-				MqttWrapper.connectClient(this.client, this.id, brokerurl);
+				MqttWrapper.ConnectClient(this.client, this.id, brokerurl);
 			});
 		}
 		#endregion
@@ -182,7 +180,7 @@ namespace BouncingBall {
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			foreach (Wall w in lstWall) {
-				w.tick(20);
+				w.tick(Properties.Settings.Default.iGameTick);
 			}
 			updateCameraView();
 		}
@@ -226,12 +224,12 @@ namespace BouncingBall {
 
 			#region Drawing room content
 			// Background
-			gfx.FillRectangle(Brushes.Bisque, 0, 0, room_width * scale.X, room_lenght * scale.Y);
+			gfx.FillRectangle(Brushes.Bisque, 0, 0, roomWidth * scale.X, roomLenght * scale.Y);
 			// Line between center screen end player
-			PointF relative_ball_pos = new PointF(this.tablet.ball.center.X * scale.X, this.tablet.ball.center.Y * scale.Y);
+			PointF relative_ball_pos = new PointF(this.ball.center.X * scale.X, this.ball.center.Y * scale.Y);
 			gfx.DrawLine(pen, relative_ball_pos, new Point(x, y));
 			// ball
-			this.tablet.ball.draw(gfx, scale);
+			this.ball.draw(gfx, scale);
 			// walls
 			foreach (Wall w in this.lstWall) {
 				w.draw(gfx, scale);
@@ -291,7 +289,7 @@ namespace BouncingBall {
 					this.preBuilt = null;
 					wall.tranform(this.matrix);
 					MqttWrapper.SendMqttMessageTo(this.client,
-						MqttWrapper.getTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
+						MqttWrapper.GetTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
 						String.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
 						);
 				}
@@ -322,7 +320,7 @@ namespace BouncingBall {
 
 			} else {
 				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y , 5);
+				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y, 5);
 			}
 			clickIsDown = true;
 		}

@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Sreen format available in <see cref="Format"/>
 	/// </summary>
-	public enum ScreenFormat : int
+	public enum EnumFormat : int
 	{
 		// 16/9
 		_5PC,
@@ -51,9 +51,9 @@
 		/// <summary> 
 		/// Return the dimension of a screen in a 2 members Array
 		/// </summary>
-		/// <param name="scf">A value available in <see cref="ScreenFormat"/></param>
+		/// <param name="scf">A value available in <see cref="EnumFormat"/></param>
 		/// <returns>IntArray containing {width, hight} of a screen</returns>
-		public static int[] GetFormat(ScreenFormat scf)
+		public static int[] GetFormat(EnumFormat scf)
 		{
 			return dimFormat[(int)scf];
 		}

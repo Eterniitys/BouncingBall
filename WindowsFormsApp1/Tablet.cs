@@ -23,7 +23,7 @@ namespace BouncingBall {
 
 		int markersX = 10;
 		int markersY = 10;
-		int markersRealLength = 25;
+		int markersRealLength = Properties.Settings.Default.iMarkerRealLength;
 		int markersSeparation = 30;
 
 		VectorOfPoint markersRealPos = new VectorOfPoint(new Point[] {
@@ -104,9 +104,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// 
 		/// </summary>
-		public ScreenFormat format { get; }
-
-		public Ball ball;
+		public EnumFormat format { get; }
 
 		#endregion Variables
 		/// <summary>
@@ -114,7 +112,7 @@ namespace BouncingBall {
 		/// </summary>
 		/// <param name="angle">The orientation on the tablet</param>
 		/// <param name="format">Define the format use to represent this tablet in the room</param>
-		public Tablet(int pos_x, int pos_y, float angle, ScreenFormat format, bool isMaster = false) {
+		public Tablet(int pos_x, int pos_y, float angle, EnumFormat format, bool isMaster = false) {
 			this.position = new Point(pos_x, pos_y);
 			this.angle = angle;
 			this.format = format;
@@ -231,35 +229,36 @@ namespace BouncingBall {
 
 					#endregion Markers detection / process position and angle
 
-					CvInvoke.Canny(_frameCopy, cannyEdges, cannyThresholdLow, cannyThresholdHight);
-					if (mLength != 0) {
-						CvInvoke.HoughLines(cannyEdges, lines, 1, Math.PI / 180, (int)(2 * mLength));
-						double[] houghAngles = new double[lines.Rows];
-						for (int i = 0; i < lines.Rows; i++) {
-							float theta = (float)lines.GetData().GetValue(new int[] { i, 0, 1 });
-							houghAngles[i] = -theta / Math.PI * 180;
-							// - - - - - - affichage de la ligne
-							float rho = (float)lines.GetData().GetValue(new int[] { i, 0, 0 });
-							float a = (float)Math.Cos(theta);
-							float b = (float)Math.Sin(theta);
+					#region Angle calculation with Hough
+					if (useHough) {
+						CvInvoke.Canny(_frameCopy, cannyEdges, cannyThresholdLow, cannyThresholdHight);
+						if (mLength != 0) {
+							CvInvoke.HoughLines(cannyEdges, lines, 1, Math.PI / 180, (int)(2 * mLength));
+							double[] houghAngles = new double[lines.Rows];
+							for (int i = 0; i < lines.Rows; i++) {
+								float theta = (float)lines.GetData().GetValue(new int[] { i, 0, 1 });
+								houghAngles[i] = -theta / Math.PI * 180;
+								// - - - - - - affichage de la ligne
+								float rho = (float)lines.GetData().GetValue(new int[] { i, 0, 0 });
+								float a = (float)Math.Cos(theta);
+								float b = (float)Math.Sin(theta);
 
-							PointF p = new PointF(a * rho, b * rho);
+								PointF p = new PointF(a * rho, b * rho);
 
-							Point pt1 = new Point((int)(p.X + 1000 * (-b)), (int)(p.Y + 1000 * a));
-							Point pt2 = new Point((int)(p.X - 1000 * (-b)), (int)(p.Y - 1000 * a));
+								Point pt1 = new Point((int)(p.X + 1000 * (-b)), (int)(p.Y + 1000 * a));
+								Point pt2 = new Point((int)(p.X - 1000 * (-b)), (int)(p.Y - 1000 * a));
 
-							//CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
-							// - - - - - -
-						}
-						if (useHough)
+								//CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
+								// - - - - - -
+							}
 							finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
+						}
 					}
-
-
+					#endregion
 
 					if (ids.Size > 0) {
-						this.setPosition((int)finalPosition.X, (int)finalPosition.Y);
 						// set the tablet properties
+						this.setPosition((int)finalPosition.X, (int)finalPosition.Y);
 						this.setAngle(-(float)finalAngle);
 						//
 						ArucoInvoke.RefineDetectedMarkers(_frameCopy, ArucoBoard, corners, ids, rejected, null, null, 10, 3, true, null, _detectorParameters);
@@ -282,7 +281,6 @@ namespace BouncingBall {
 			}
 			double[] possibilities = new double[houghAngles.Length * 4];
 			for (int i = 0; i < houghAngles.Length; i++) {
-				//houghAngles[i] += 90;
 				possibilities[i * 4] = houghAngles[i];
 				possibilities[i * 4 + 1] = (houghAngles[i] + 90);
 				possibilities[i * 4 + 2] = (houghAngles[i] + 180);

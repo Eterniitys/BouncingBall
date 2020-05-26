@@ -5,17 +5,6 @@
     <Setting Name="sBrokerUrl" Type="System.String" Scope="Application">
       <Value Profile="(Default)">localhost</Value>
     </Setting>
-    <Setting Name="sAvailableIds" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
-  &lt;string&gt;Charle&lt;/string&gt;
-  &lt;string&gt;Bob&lt;/string&gt;
-  &lt;string&gt;George&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
-    </Setting>
-    <Setting Name="sUsername" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Client1</Value>
-    </Setting>
     <Setting Name="bIsBroker" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -27,9 +16,6 @@
     </Setting>
     <Setting Name="iRoomHeight" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">400</Value>
-    </Setting>
-    <Setting Name="fTimeToLive" Type="System.Single" Scope="Application">
-      <Value Profile="(Default)">6</Value>
     </Setting>
     <Setting Name="iBallSpeed" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">5</Value>
@@ -45,6 +31,20 @@
     </Setting>
     <Setting Name="iBallDiameter" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">25</Value>
+    </Setting>
+    <Setting Name="sAvailableIds" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;Bob Lennon&lt;/string&gt;
+  &lt;string&gt;Batman&lt;/string&gt;
+  &lt;string&gt;Superman&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="iGameTick" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="fTimeToLive" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">6000</Value>
     </Setting>
   </Settings>
 </SettingsFile>

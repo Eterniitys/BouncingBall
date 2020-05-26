@@ -33,7 +33,7 @@
 			// timer
 			// 
 			this.timer.Enabled = true;
-			this.timer.Interval = 20;
+			this.timer.Interval = Properties.Settings.Default.iGameTick;
 			this.timer.Tick += new System.EventHandler(this.timer_Tick);
 			// 
 			// pictureBox1

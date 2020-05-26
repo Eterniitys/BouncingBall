@@ -34,27 +34,6 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsi=\"http://www.w3." +
-            "org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\r\n  <s" +
-            "tring>Charle</string>\r\n  <string>Bob</string>\r\n  <string>George</string>\r\n</Arra" +
-            "yOfString>")]
-        public global::System.Collections.Specialized.StringCollection sAvailableIds {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["sAvailableIds"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Client1")]
-        public string sUsername {
-            get {
-                return ((string)(this["sUsername"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool bIsBroker {
             get {
@@ -86,15 +65,6 @@ namespace BouncingBall.Properties {
         public int iRoomHeight {
             get {
                 return ((int)(this["iRoomHeight"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6")]
-        public float fTimeToLive {
-            get {
-                return ((float)(this["fTimeToLive"]));
             }
         }
         
@@ -140,6 +110,38 @@ namespace BouncingBall.Properties {
         public int iBallDiameter {
             get {
                 return ((int)(this["iBallDiameter"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Bob Lennon</string>
+  <string>Batman</string>
+  <string>Superman</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection sAvailableIds {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["sAvailableIds"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int iGameTick {
+            get {
+                return ((int)(this["iGameTick"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6000")]
+        public int fTimeToLive {
+            get {
+                return ((int)(this["fTimeToLive"]));
             }
         }
     }

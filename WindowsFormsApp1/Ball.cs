@@ -53,7 +53,6 @@ namespace BouncingBall {
 		/// <summary>
 		/// The angle which the ball is moving with
 		/// </summary>
-		//TODO set private
 		public int direction { get; set; }
 		/// <summary>
 		/// The speed which the ball is moving with
@@ -75,7 +74,7 @@ namespace BouncingBall {
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = properties.iBallSpeed; // TODO this value does need to not be hardcoded
+			this.speed = properties.iBallSpeed;
 			Random rnd = new Random();
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,
@@ -103,7 +102,10 @@ namespace BouncingBall {
 		public ImageID getID() {
 			return this.state;
 		}
-
+		/// <summary>
+		/// Set the center position of the ball
+		/// </summary>
+		/// <param name="pos"></param>
 		public void setPosition(PointF pos) {
 			this.center = pos;
 		}
@@ -152,7 +154,7 @@ namespace BouncingBall {
 				);
 			this.center = p;
 			borderBounce();
-			wallBounce(colliders);
+			bounceAgainst(colliders);
 		}
 
 		/// <summary>
@@ -178,7 +180,7 @@ namespace BouncingBall {
 		/// <summary>
 		/// Bounce the ball on the bars in the field.
 		/// </summary>
-		private void wallBounce(GameObject[] colliders) {
+		internal void bounceAgainst(GameObject[] colliders) {
 			bool hasCollided = false;
 
 			foreach (GameObject gameObject in colliders) {
@@ -204,6 +206,15 @@ namespace BouncingBall {
 				}
 			}
 			this.setID(hasCollided ? ImageID.BOUNCE : ImageID.CATCH);
+		}
+
+		internal bool isColliding(GameObject colliders) {
+				bool isColliding = false;
+				if (colliders is Wall wall) {
+					float minimalDist = (this.size.Width + wall.rectangle.Size.Height) / 2;
+					isColliding = wallCollision(wall, minimalDist);
+				}
+			return isColliding;
 		}
 
 		/// <summary>
