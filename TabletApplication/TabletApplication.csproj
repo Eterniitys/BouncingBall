@@ -139,8 +139,8 @@
     <None Include="Resources\ballBOUNCE.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WindowsFormsApp1\BouncingBall.csproj">
-      <Project>{79859d59-017f-40da-ae27-540b5c31edc0}</Project>
+    <ProjectReference Include="..\BouncingBall\BouncingBall.csproj">
+      <Project>{efea1fbd-5dcd-46a4-91da-2e599b14deeb}</Project>
       <Name>BouncingBall</Name>
     </ProjectReference>
   </ItemGroup>

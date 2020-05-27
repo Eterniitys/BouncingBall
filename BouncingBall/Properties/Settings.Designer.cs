@@ -23,125 +23,153 @@ namespace BouncingBall.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
         public string sBrokerUrl {
             get {
                 return ((string)(this["sBrokerUrl"]));
             }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool bIsBroker {
-            get {
-                return ((bool)(this["bIsBroker"]));
+            set {
+                this["sBrokerUrl"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int iCameraId {
             get {
                 return ((int)(this["iCameraId"]));
             }
+            set {
+                this["iCameraId"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("400")]
         public int iRoomWidth {
             get {
                 return ((int)(this["iRoomWidth"]));
             }
+            set {
+                this["iRoomWidth"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("400")]
         public int iRoomHeight {
             get {
                 return ((int)(this["iRoomHeight"]));
             }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int iBallSpeed {
-            get {
-                return ((int)(this["iBallSpeed"]));
+            set {
+                this["iRoomHeight"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("25")]
-        public int iMarkerRealLength {
+        [global::System.Configuration.DefaultSettingValueAttribute("6000")]
+        public int iTimeToLive {
             get {
-                return ((int)(this["iMarkerRealLength"]));
+                return ((int)(this["iTimeToLive"]));
+            }
+            set {
+                this["iTimeToLive"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int iCannyThresholdLow {
-            get {
-                return ((int)(this["iCannyThresholdLow"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("90")]
-        public int iCannyThresholdHight {
-            get {
-                return ((int)(this["iCannyThresholdHight"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("25")]
-        public int iBallDiameter {
-            get {
-                return ((int)(this["iBallDiameter"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-  <string>Bob Lennon</string>
-  <string>Batman</string>
-  <string>Superman</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection sAvailableIds {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["sAvailableIds"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public int iGameTick {
             get {
                 return ((int)(this["iGameTick"]));
             }
+            set {
+                this["iGameTick"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6000")]
-        public int iTimeToLive {
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int iBallSpeed {
             get {
-                return ((int)(this["iTimeToLive"]));
+                return ((int)(this["iBallSpeed"]));
+            }
+            set {
+                this["iBallSpeed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int iMarkerRealLength {
+            get {
+                return ((int)(this["iMarkerRealLength"]));
+            }
+            set {
+                this["iMarkerRealLength"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int iCannyThresholdLow {
+            get {
+                return ((int)(this["iCannyThresholdLow"]));
+            }
+            set {
+                this["iCannyThresholdLow"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("90")]
+        public int iCannyThresholdHight {
+            get {
+                return ((int)(this["iCannyThresholdHight"]));
+            }
+            set {
+                this["iCannyThresholdHight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>Spiderman</string>
+  <string>Batman</string>
+  <string>Superman</string>
+  <string>Bob Lenon</string>
+</ArrayOfString>")]
+        public global::System.Collections.Specialized.StringCollection sAvailableIds {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["sAvailableIds"]));
+            }
+            set {
+                this["sAvailableIds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int iBallDiameter {
+            get {
+                return ((int)(this["iBallDiameter"]));
+            }
+            set {
+                this["iBallDiameter"] = value;
             }
         }
     }

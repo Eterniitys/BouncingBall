@@ -1,3 +1,4 @@
+using BouncingBall.Properties;
 using Emgu.CV.UI;
 
 namespace TabletApplication {
@@ -65,7 +66,7 @@ namespace TabletApplication {
 			// timer
 			// 
 			this.timer.Enabled = true;
-			this.timer.Interval = Properties.Settings.Default.iGameTick;
+			this.timer.Interval = Settings.Default.iGameTick;
 			this.timer.Tick += new System.EventHandler(this.timer_Tick);
 			// 
 			// lbl

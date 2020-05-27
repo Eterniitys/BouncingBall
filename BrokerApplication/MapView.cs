@@ -48,9 +48,6 @@ namespace BrokerApplication {
 		/// The MQTT broker / server
 		/// </summary>
 		private IMqttServer broker;
-		/// <summary>
-		/// A formatted string containing already taken ids
-		/// </summary>
 		#endregion Variables
 
 		#region Constructor

@@ -16,16 +16,4 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tablet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Wall.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Resources\ballBOUNCE.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Resources\ballCATCH.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Resources\TrapBall_Icone.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Resources\TrapBallNet.png" />
-  </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using Emgu.CV.UI;
 using System.Configuration;
 using ObjectLibrary;
+using BouncingBall.Properties;
 
 namespace TabletApplication {
 	public partial class TabletView : Form {
@@ -63,7 +64,7 @@ namespace TabletApplication {
 		/// </summary>
 		private Ball ball;
 
-		private string brokerurl = Properties.Settings.Default.sBrokerUrl;
+		private string brokerurl = Settings.Default.sBrokerUrl;
 		#endregion Variables
 
 		#region Constructor
@@ -108,7 +109,7 @@ namespace TabletApplication {
 			this.client = MqttWrapper.CreateClient();
 			MqttWrapper.SetClientSubs(this.client);
 
-			var lstId = Properties.Settings.Default.sAvailableIds;
+			var lstId = Settings.Default.sAvailableIds;
 			int idSelector = 0;
 			bool connected = false;
 			string userId;
@@ -184,7 +185,7 @@ namespace TabletApplication {
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			foreach (Wall w in lstWall) {
-				w.tick(Properties.Settings.Default.iGameTick);
+				w.tick(Settings.Default.iGameTick);
 			}
 			updateCameraView();
 		}

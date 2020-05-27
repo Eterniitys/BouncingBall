@@ -6,14 +6,13 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BouncingBall;
-using BouncingBall.Properties;
 using Emgu.CV;
 using Emgu.CV.Aruco;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.UI;
 using Emgu.CV.Util;
+using BouncingBall.Properties;
 
 namespace ObjectLibrary {
 	public class Tablet {
