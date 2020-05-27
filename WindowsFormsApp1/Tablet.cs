@@ -206,26 +206,32 @@ namespace BouncingBall {
 					PointF finalPosition = new PointF(0, 0);
 					double finalAngle = 0f;
 					for (int i = 0; i < nb_detected; i++) {
-						#region position weighting
+						#region position / angle weighting
+						estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio);
+						estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
+						// taken in consideration the angle of the frame to calculate relative position of the marker
+						Matrix m = new Matrix();
+						m.Rotate(-(float)arucoAngles[i]);
+						Point[] pts = { estimatedPosistion[i] };
+						m.TransformPoints(pts);
+						estimatedPosistion[i] = pts[0];
+
 						try {
-							estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio + markersRealPos[ids[i]].X);
-							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio + markersRealPos[ids[i]].Y);
-						} catch {
-							estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio);
-							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
-						}
+							estimatedPosistion[i].X += markersRealPos[ids[i]].X;
+							estimatedPosistion[i].Y += markersRealPos[ids[i]].Y;
+						} catch { }
+
 						weights[i] = 1f / getDist(estimatedPosistion[i], capture_center);
-						finalPosition.X += estimatedPosistion[i].X * weights[i];
-						finalPosition.Y += estimatedPosistion[i].Y * weights[i];
-						#endregion position weighting
-						#region angle weighting
 						finalAngle += arucoAngles[i] * weights[i];
-						#endregion angle weighting
+						finalPosition.Y += estimatedPosistion[i].Y * weights[i];
+						finalPosition.X += estimatedPosistion[i].X * weights[i];
+
+						#endregion position / angle weighting
 						sum += weights[i];
 					}
+					finalAngle /= sum;
 					finalPosition.X /= sum;
 					finalPosition.Y /= sum;
-					finalAngle /= sum;
 
 					#endregion Markers detection / process position and angle
 
