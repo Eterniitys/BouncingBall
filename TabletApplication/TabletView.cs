@@ -13,8 +13,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Emgu.CV.UI;
 using System.Configuration;
+using ObjectLibrary;
 
-namespace BouncingBall {
+namespace TabletApplication {
 	public partial class TabletView : Form {
 
 		#region Variables

@@ -6,6 +6,8 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BouncingBall;
+using BouncingBall.Properties;
 using Emgu.CV;
 using Emgu.CV.Aruco;
 using Emgu.CV.CvEnum;
@@ -13,7 +15,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.UI;
 using Emgu.CV.Util;
 
-namespace BouncingBall {
+namespace ObjectLibrary {
 	public class Tablet {
 
 		public string message = "Nothing to say";
@@ -23,7 +25,7 @@ namespace BouncingBall {
 
 		int markersX = 10;
 		int markersY = 10;
-		int markersRealLength = Properties.Settings.Default.iMarkerRealLength;
+		int markersRealLength = Settings.Default.iMarkerRealLength;
 		int markersSeparation = 30;
 
 		VectorOfPoint markersRealPos = new VectorOfPoint(new Point[] {
@@ -66,9 +68,9 @@ namespace BouncingBall {
 
 		private DetectorParameters _detectorParameters;
 
-		private readonly int idCamera = Properties.Settings.Default.iCameraId;
-		private readonly int cannyThresholdLow = Properties.Settings.Default.iCannyThresholdLow;
-		private readonly int cannyThresholdHight = Properties.Settings.Default.iCannyThresholdHight;
+		private readonly int idCamera = Settings.Default.iCameraId;
+		private readonly int cannyThresholdLow = Settings.Default.iCannyThresholdLow;
+		private readonly int cannyThresholdHight = Settings.Default.iCannyThresholdHight;
 		public bool useHough { get; set; }
 
 		#endregion

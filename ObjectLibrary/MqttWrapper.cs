@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BouncingBall {
+namespace ObjectLibrary {
 	class MqttWrapper {
 		/// <summary>
 		/// reflect the topics list

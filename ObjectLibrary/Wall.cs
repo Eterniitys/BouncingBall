@@ -1,3 +1,4 @@
+using BouncingBall;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -6,15 +7,16 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BouncingBall.Properties;
 
-namespace BouncingBall {
+namespace ObjectLibrary {
 	public class Wall : GameObject {
 		/// <summary>
 		/// The default value of <see cref="timeToLive"/>
 		/// </summary>
 		private static int DEFAULT_TTL {
 			get {
-				return Properties.Settings.Default.fTimeToLive;
+				return Settings.Default.iTimeToLive;
 			}
 		}
 

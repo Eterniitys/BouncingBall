@@ -1,4 +1,6 @@
-﻿namespace BouncingBall {
+﻿using BouncingBall.Properties;
+
+namespace BrokerApplication {
 	partial class MapView {
 		/// <summary>
 		/// Required designer variable.
@@ -33,7 +35,7 @@
 			// timer
 			// 
 			this.timer.Enabled = true;
-			this.timer.Interval = Properties.Settings.Default.iGameTick;
+			this.timer.Interval = Settings.Default.iGameTick;
 			this.timer.Tick += new System.EventHandler(this.timer_Tick);
 			// 
 			// pictureBox1

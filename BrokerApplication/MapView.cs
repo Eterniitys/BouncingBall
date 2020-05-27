@@ -13,8 +13,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ObjectLibrary;
+using BouncingBall.Properties;
 
-namespace BouncingBall {
+namespace BrokerApplication {
 	public partial class MapView : Form {
 
 		#region Variables
@@ -171,7 +173,7 @@ namespace BouncingBall {
 			this.ball.move(lstWall.ToArray());
 			List<Wall> tmp_lst = new List<Wall>();
 			foreach (Wall w in lstWall) {
-				w.tick(Properties.Settings.Default.iGameTick);
+				w.tick(Settings.Default.iGameTick);
 				if (w.timeToLive <= 0) {
 					tmp_lst.Add(w);
 				}

@@ -5,7 +5,18 @@ VisualStudioVersion = 15.0.28307.1082
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncingBall", "WindowsFormsApp1\BouncingBall.csproj", "{79859D59-017F-40DA-AE27-540B5C31EDC0}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ObjectLibrary", "ObjectLibrary\ObjectLibrary.shproj", "{12197403-5365-45D2-8436-13B0D630888E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabletApplication", "TabletApplication\TabletApplication.csproj", "{16C52CE4-DAE8-4022-ABBE-5D082E362D2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokerApplication", "BrokerApplication\BrokerApplication.csproj", "{D1D40663-6544-4EEE-B5F8-0733D93CC171}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ObjectLibrary\ObjectLibrary.projitems*{12197403-5365-45d2-8436-13b0d630888e}*SharedItemsImports = 13
+		ObjectLibrary\ObjectLibrary.projitems*{16c52ce4-dae8-4022-abbe-5d082e362d2d}*SharedItemsImports = 4
+		ObjectLibrary\ObjectLibrary.projitems*{d1d40663-6544-4eee-b5f8-0733d93cc171}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -15,6 +26,14 @@ Global
 		{79859D59-017F-40DA-AE27-540B5C31EDC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79859D59-017F-40DA-AE27-540B5C31EDC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79859D59-017F-40DA-AE27-540B5C31EDC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16C52CE4-DAE8-4022-ABBE-5D082E362D2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16C52CE4-DAE8-4022-ABBE-5D082E362D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16C52CE4-DAE8-4022-ABBE-5D082E362D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16C52CE4-DAE8-4022-ABBE-5D082E362D2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1D40663-6544-4EEE-B5F8-0733D93CC171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1D40663-6544-4EEE-B5F8-0733D93CC171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1D40663-6544-4EEE-B5F8-0733D93CC171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1D40663-6544-4EEE-B5F8-0733D93CC171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

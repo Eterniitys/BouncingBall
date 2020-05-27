@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BouncingBall {
+namespace ObjectLibrary {
 	public abstract class GameObject {
 		/// <summary>
 		/// Move a <seealso cref="GameObject"/>

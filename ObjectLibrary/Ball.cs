@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BouncingBall.Properties;
+using ObjectLibrary;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
@@ -6,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BouncingBall {
+namespace ObjectLibrary {
 	public class Ball : GameObject {
 
 		public delegate void BallMovedHandler(PointF pos);
@@ -29,8 +31,8 @@ namespace BouncingBall {
 		/// Use in drawing function to draw the right picture depending on <see cref="state"/></see> value.
 		/// </summary>
 		private readonly static Bitmap[] lst_img = {
-				Properties.Resources.ballBOUNCE,
-				Properties.Resources.ballCATCH
+				BouncingBall.Properties.Resources.ballBOUNCE,
+				BouncingBall.Properties.Resources.ballCATCH
 			};
 
 		/// <summary>
@@ -68,13 +70,12 @@ namespace BouncingBall {
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
 		public Ball(int room_width, int room_lenght, float scale = 1) {
-			var properties = Properties.Settings.Default;
-			var diameter = properties.iBallDiameter;
+			var diameter = Settings.Default.iBallDiameter;
 			this.size = new SizeF(scale * diameter, scale * diameter);
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = properties.iBallSpeed;
+			this.speed = Settings.Default.iBallSpeed;
 			Random rnd = new Random();
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,

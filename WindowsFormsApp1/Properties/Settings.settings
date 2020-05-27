@@ -43,7 +43,7 @@
     <Setting Name="iGameTick" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">20</Value>
     </Setting>
-    <Setting Name="fTimeToLive" Type="System.Int32" Scope="Application">
+    <Setting Name="iTimeToLive" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">6000</Value>
     </Setting>
   </Settings>

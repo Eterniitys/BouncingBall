@@ -1,5 +1,4 @@
-﻿namespace BouncingBall
-{
+﻿namespace ObjectLibrary {
 	/// <summary>
 	/// Sreen format available in <see cref="Format"/>
 	/// </summary>

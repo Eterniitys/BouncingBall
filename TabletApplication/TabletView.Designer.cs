@@ -1,6 +1,6 @@
 using Emgu.CV.UI;
 
-namespace BouncingBall {
+namespace TabletApplication {
 	partial class TabletView {
 
 		/// <summary>
