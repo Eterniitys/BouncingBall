@@ -106,10 +106,10 @@ namespace BrokerApplication {
 					}
 					try {
 						Invoke(new Action(() => {
-							string text = "ids > ";
+							string text = "ids :";
 							foreach (string ch in this.lstTab.Keys) {
 								if (lstTab[ch] is Tablet t) {
-									text += string.Format("{0}__{2:#.##} ;", ch, t.getPosition(), t.getAngle());
+									text += string.Format("\n{0}_{1}_{2:#.##}", ch, t.getPosition(), t.getAngle());
 								} else {
 									text += string.Format("{0} pos:{1};", ch, "noDatas");
 								}

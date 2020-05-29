@@ -18,7 +18,7 @@ using System.IO;
 namespace ObjectLibrary {
 	public class Tablet {
 
-		public string message = "Nothing to say";
+		public string message = "";
 
 		#region "TODO" Comment
 		private VideoCapture _capture = null;
@@ -151,8 +151,9 @@ namespace ObjectLibrary {
 
 				CvInvoke.CvtColor(_frame, _frameCopy, ColorConversion.Bgr2Gray);
 
-				Mat cannyEdges = new Mat();
-				Mat lines = new Mat();
+				bool errorDetected = false;
+				using (Mat cannyEdges = new Mat())
+				using (Mat lines = new Mat())
 				using (VectorOfInt ids = new VectorOfInt())
 				using (VectorOfVectorOfPointF corners = new VectorOfVectorOfPointF())
 				using (VectorOfVectorOfPointF rejected = new VectorOfVectorOfPointF()) {
@@ -172,8 +173,14 @@ namespace ObjectLibrary {
 						vector.Y = (int)(corners[k][1].Y - corners[k][0].Y + corners[k][2].Y - corners[k][3].Y);
 						corners_pos[k] = corners[k][1]; // coin haut droit
 
-						arucoAngles[k] = (Math.Atan2(vector.Y, vector.X) * 180 / Math.PI + markersRealAngle[ids[k]]) ;
-						arucoAngles[k] = arucoAngles[k] > 180 ? arucoAngles[k] - 360 : arucoAngles[k] ;
+						try {
+							arucoAngles[k] = (Math.Atan2(vector.Y, vector.X) * 180 / Math.PI + markersRealAngle[ids[k]]);
+							arucoAngles[k] = arucoAngles[k] > 180 ? arucoAngles[k] - 360 : arucoAngles[k];
+						} catch {
+							arucoAngles[k] = Math.Atan2(vector.Y, vector.X) * 180 / Math.PI;
+							message = string.Format("This marker (id={0}) as no data in calibration file", ids[k]);
+							errorDetected = true;
+						}
 
 						// Trace la ligne horizontale pour chaque marqueur utilisé pour le calcule de l'angle de la camera
 						// - - - - - 
@@ -279,6 +286,8 @@ namespace ObjectLibrary {
 						historyCursor = (historyCursor + 1) % historySize;
 					}
 				}
+				if (!errorDetected && !Settings.Default.sAvailableIds.Contains(message))
+					message = "";
 				_frame.CopyTo(diplayableframe);
 			} else {
 				message = "VideoCapture was not created";
@@ -296,11 +305,11 @@ namespace ObjectLibrary {
 						line = sr.ReadLine();
 						string[] buffer = line.Split(' ');
 						markersRealPos.Add(int.Parse(buffer[0]), new Point(int.Parse(buffer[1]), int.Parse(buffer[2])));
-						markersRealAngle.Add(int.Parse(buffer[0]), int.Parse(buffer[3])-90);
+						markersRealAngle.Add(int.Parse(buffer[0]), int.Parse(buffer[3]) - 90);
 					}
 				}
 			} catch (IOException excpt) {
-				message = Settings.Default.sCalibrationFile+ " could not be read:\n" + excpt.Message;
+				message = Settings.Default.sCalibrationFile + " could not be read:\n" + excpt.Message;
 			}
 		}
 
@@ -325,7 +334,7 @@ namespace ObjectLibrary {
 				X = (float)angles.Average(a => Math.Cos(a * Math.PI / 180)),
 				Y = (float)angles.Average(a => Math.Sin(a * Math.PI / 180)),
 			};
-			return (float)(Math.Atan2(avgAngle.Y,avgAngle.X) * 180 / Math.PI);
+			return (float)(Math.Atan2(avgAngle.Y, avgAngle.X) * 180 / Math.PI);
 		}
 
 		private double processArucoHoughAngles(double arucoAngle, double[] houghAngles) {
@@ -338,7 +347,6 @@ namespace ObjectLibrary {
 				possibilities[i * 4 + 1] = (houghAngles[i] + 90);
 				possibilities[i * 4 + 2] = (houghAngles[i] + 180);
 				possibilities[i * 4 + 3] = (houghAngles[i] + 270);
-				message = string.Format("{0} | {1} | {2} | {3}", possibilities[0], possibilities[1], possibilities[2], possibilities[3]);
 			}
 			double dist = angleDist(possibilities[0], arucoAngle);
 			double min_angle = arucoAngle;

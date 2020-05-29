@@ -28,9 +28,7 @@ namespace TabletApplication {
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			BouncingBall.Properties.Settings settings1 = new BouncingBall.Properties.Settings();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TabletView));
-			this.lbl_format = new System.Windows.Forms.Label();
+			this.lbl_message = new System.Windows.Forms.Label();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.timer = new System.Windows.Forms.Timer(this.components);
 			this.lbl = new System.Windows.Forms.Label();
@@ -40,16 +38,16 @@ namespace TabletApplication {
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// lbl_format
+			// lbl_message
 			// 
-			this.lbl_format.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.lbl_format.AutoSize = true;
-			this.lbl_format.Location = new System.Drawing.Point(3, 306);
-			this.lbl_format.Name = "lbl_format";
-			this.lbl_format.Size = new System.Drawing.Size(109, 13);
-			this.lbl_format.TabIndex = 12;
-			this.lbl_format.Text = "largeur : {}, hauteur {}";
-			this.lbl_format.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.lbl_message.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.lbl_message.AutoSize = true;
+			this.lbl_message.Location = new System.Drawing.Point(3, 306);
+			this.lbl_message.Name = "lbl_message";
+			this.lbl_message.Size = new System.Drawing.Size(77, 13);
+			this.lbl_message.TabIndex = 12;
+			this.lbl_message.Text = "message_label";
+			this.lbl_message.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// pictureBox1
 			// 
@@ -68,21 +66,7 @@ namespace TabletApplication {
 			// timer
 			// 
 			this.timer.Enabled = true;
-			settings1.iBallDiameter = 25;
-			settings1.iBallSpeed = 5;
-			settings1.iCameraId = 0;
-			settings1.iCannyThresholdHight = 90;
-			settings1.iCannyThresholdLow = 30;
-			settings1.iGameTick = 20;
-			settings1.iMarkerRealLength = 25;
-			settings1.iRoomHeight = 400;
-			settings1.iRoomWidth = 400;
-			settings1.iTimeToLive = 6000;
-			settings1.sAvailableIds = ((System.Collections.Specialized.StringCollection)(resources.GetObject("settings1.sAvailableIds")));
-			settings1.sBrokerUrl = "localhost";
-			settings1.sCalibrationFile = "calibration.txt";
-			settings1.SettingsKey = "";
-			this.timer.Interval = settings1.iGameTick;
+			this.timer.Interval = 20;
 			this.timer.Tick += new System.EventHandler(this.timer_Tick);
 			// 
 			// lbl
@@ -124,7 +108,7 @@ namespace TabletApplication {
 			this.ClientSize = new System.Drawing.Size(521, 328);
 			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.pictureBox2);
-			this.Controls.Add(this.lbl_format);
+			this.Controls.Add(this.lbl_message);
 			this.Controls.Add(this.useHough);
 			this.Controls.Add(this.pictureBox1);
 			this.Name = "TabletView";
@@ -138,7 +122,7 @@ namespace TabletApplication {
 		}
 
 		#endregion
-		private System.Windows.Forms.Label lbl_format;
+		private System.Windows.Forms.Label lbl_message;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Timer timer;
 		private System.Windows.Forms.Label lbl;

@@ -85,10 +85,11 @@ namespace TabletApplication {
 			initMqttClientAsync(brokerurl);
 			// - - - - - - - - - -
 			InitializeComponent();
-			this.lbl_format.Text = string.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
+			this.lbl_message.Text = string.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
 			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
 			this.tablet.TabletPositionChanged += new Tablet.TabletPositionChangedHandler(this.onPositionChanged);
 			this.tablet.TabletAngleChanged += new Tablet.TabletAngleChangedHandler(this.onAngleChanged);
+			this.timer.Interval = Settings.Default.iGameTick;
 		}
 		#endregion Constructor
 
@@ -138,7 +139,6 @@ namespace TabletApplication {
 			this.client.UseApplicationMessageReceivedHandler(e => {
 				try {
 					Invoke(new Action(() => {
-						//this.lbl.Text = this.id;
 						string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 							string[] coord = message.Split(';');
@@ -158,12 +158,10 @@ namespace TabletApplication {
 								w.setBuilt();
 								lstWall.Add(w);
 							}
-						} else if (e.ApplicationMessage.Topic.StartsWith("tablet/")) {
-							// TODO tablet shouldn't subcribe to 'tablet/*' topics
 						} else {
-							/*Invoke(new Action(() => {
-								this.lbl.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
-							}));/**/
+							Invoke(new Action(() => {
+								this.lbl_message.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
+							}));
 						}
 					}));
 				} catch {
@@ -173,7 +171,7 @@ namespace TabletApplication {
 
 			this.client.UseDisconnectedHandler(e => {
 				Invoke(new Action(() => {
-					this.lbl.Text = "Disconnected from Broker";
+					this.lbl_message.Text = "Disconnected from Broker";
 				}));
 				try {
 					MqttWrapper.ConnectClient(this.client, this.id, brokerurl);
@@ -198,7 +196,7 @@ namespace TabletApplication {
 		internal void updateCameraView() {
 			this.pictureBox2.Image = this.tablet.diplayableframe;
 			Invoke(new Action(() => {
-				this.lbl.Text = this.tablet.message;
+				this.lbl_message.Text = this.tablet.message;
 			}));
 		}
 
@@ -300,7 +298,7 @@ namespace TabletApplication {
 					wall.tranform(this.matrix);
 					MqttWrapper.SendMqttMessageTo(this.client,
 						MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
-						String.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
+						string.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
 						);
 				}
 			}
