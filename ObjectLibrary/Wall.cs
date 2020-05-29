@@ -228,9 +228,9 @@ namespace ObjectLibrary {
 		/// Can be use directly as is in constructor
 		/// </summary>
 		/// <returns></returns>
+		#endregion Accessors
 		public override string ToString() {
 			return String.Format("{0};{1};{2};{3};{4}", origin.X, origin.Y, end.X, end.Y, timeToLive);
 		}
-		#endregion Accessors
 	}
 }

@@ -64,6 +64,8 @@ namespace TabletApplication {
 		/// </summary>
 		private Ball ball;
 
+		private Goal goal;
+
 		private string brokerurl = Settings.Default.sBrokerUrl;
 		#endregion Variables
 
@@ -76,7 +78,7 @@ namespace TabletApplication {
 		public TabletView(int room_width, int room_lenght) {
 			this.roomWidth = room_width;
 			this.roomLenght = room_lenght;
-			this.tablet = new Tablet(0, 0, 0, EnumFormat._12PC, true);
+			this.tablet = new Tablet(0, 0, 0, EnumFormat._10PC, true);
 			this.ball = new Ball(room_width, room_lenght);
 			this.lstWall = new List<Wall>();
 			this.matrix = new Matrix();
@@ -85,7 +87,6 @@ namespace TabletApplication {
 			initMqttClientAsync(brokerurl);
 			// - - - - - - - - - -
 			InitializeComponent();
-			this.lbl_message.Text = string.Format("Largeur : {0}, Hauteur {1}", tablet.getWidth(), tablet.getHeight());
 			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
 			this.tablet.TabletPositionChanged += new Tablet.TabletPositionChangedHandler(this.onPositionChanged);
 			this.tablet.TabletAngleChanged += new Tablet.TabletAngleChangedHandler(this.onAngleChanged);
@@ -158,6 +159,8 @@ namespace TabletApplication {
 								w.setBuilt();
 								lstWall.Add(w);
 							}
+						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS])) {
+							this.goal = new Goal(message);
 						} else {
 							Invoke(new Action(() => {
 								this.lbl_message.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
@@ -242,6 +245,8 @@ namespace TabletApplication {
 			foreach (Wall w in this.lstWall) {
 				w.draw(gfx, scale);
 			}
+			// goal
+			this.goal?.draw(gfx, scale);
 			#endregion Drawing room content
 
 			#region Drawing screen relative content

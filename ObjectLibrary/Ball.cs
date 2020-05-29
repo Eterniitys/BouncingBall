@@ -156,6 +156,7 @@ namespace ObjectLibrary {
 			this.center = p;
 			borderBounce();
 			bounceAgainst(colliders);
+			onBallMoved?.Invoke(center);
 		}
 
 		/// <summary>
@@ -174,8 +175,6 @@ namespace ObjectLibrary {
 			direction += 180;
 			direction %= 360;
 			direction -= 180;
-
-			onBallMoved?.Invoke(center);
 		}
 
 		/// <summary>

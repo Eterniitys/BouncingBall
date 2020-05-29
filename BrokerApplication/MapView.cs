@@ -48,6 +48,7 @@ namespace BrokerApplication {
 		/// The MQTT broker / server
 		/// </summary>
 		private IMqttServer broker;
+		private Goal goal;
 		#endregion Variables
 
 		#region Constructor
@@ -56,19 +57,25 @@ namespace BrokerApplication {
 		/// </summary>
 		/// <param name="t"></param>
 		public MapView(int room_width, int room_lenght) {
+			Random rd = new Random();
+
 			this.roomWidth = room_width;
 			this.roomLenght = room_lenght;
 			this.scale = new PointF();
-			// - - - - - - - - - -
+
 			initBroker();
-			// - - - - - - - - - -
+
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
-			lstTab = new Dictionary<String, Tablet>();
+
+			this.goal = new Goal((Goal.GlobalPos)rd.Next(3), rd.Next((int)(Math.Min(room_lenght, roomWidth) * 0.1), (int)(Math.Min(room_lenght, roomWidth) * 0.2)));
+
+			lstTab = new Dictionary<string, Tablet>();
 			this.lstWall = new List<Wall>();
 			// - - - - - - - - - -
 			InitializeComponent();
 		}
+
 		#endregion Constructor
 
 		#region MQTT protocol
@@ -167,7 +174,8 @@ namespace BrokerApplication {
 		/// <param name="e"></param>
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
-			this.ball.move(lstWall.ToArray());
+			GameObject[] obs = { this.goal};
+			this.ball.move((GameObject[])lstWall.ToArray().Concat(obs));
 			List<Wall> tmp_lst = new List<Wall>();
 			foreach (Wall w in lstWall) {
 				w.tick(Settings.Default.iGameTick);
@@ -181,6 +189,13 @@ namespace BrokerApplication {
 			if (tmp_lst.Count != 0) {
 				sendWalls();
 			}
+			UpdateGoal();
+		}
+
+		private void UpdateGoal() {
+			this.goal.move(null);
+			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS];
+			MqttWrapper.SendMqttMessageTo(this.broker, topic, this.goal.ToString(), true);
 		}
 
 		/// <summary>
@@ -218,10 +233,12 @@ namespace BrokerApplication {
 				}
 			}
 
-			this.ball.draw(gfx, scale);
-			foreach (Wall w in lstWall) {
+			foreach (Wall w in lstWall)
 				w.draw(gfx, scale);
-			}
+			this.goal.draw(gfx, scale);
+			this.ball.draw(gfx, scale);
+
+
 			if (lstWall.Count != 0) {
 				Wall w = lstWall[lstWall.Count - 1];
 				Func<PointF, PointF, PointF> func = (PointF p, PointF s) => new PointF(p.X * s.X, p.Y * s.Y);

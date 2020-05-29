@@ -18,6 +18,7 @@ namespace ObjectLibrary {
 			BALL_POS,
 			NEW_WALL,
 			BUILD_WALL,
+			GOAL_POS,
 			TABS_ID_POS,
 			TABS_ID_ANG
 		}
@@ -31,8 +32,9 @@ namespace ObjectLibrary {
 				"ball/pos",
 				"wall/new",
 				"wall/build",
+				"goal/pos",
 				"tablet/+/pos",
-				"tablet/+/angle",
+				"tablet/+/angle"
 			};
 			return lstTopics;
 		}
@@ -44,7 +46,8 @@ namespace ObjectLibrary {
 			string[] lstTopics = {
 				"ball/pos",
 				"wall/new",
-				"wall/build"
+				"wall/build",
+				"goal/pos"
 			};
 			return lstTopics;
 		}
