@@ -102,12 +102,12 @@ namespace ObjectLibrary {
 		/// <param name="username"></param>
 		/// <param name="url"></param>
 		/// <param name="port"></param>
-		public static async void ConnectClient(IMqttClient mqttClient, string username, string url, int port = 1883) {
+		public static async void ConnectClient(IMqttClient mqttClient, string username, string url, int port = 1883){
 			var options = new MqttClientOptionsBuilder()
 				.WithClientId(username)
 				.WithTcpServer(url)
 				.Build();
-			await mqttClient.ConnectAsync(options, System.Threading.CancellationToken.None);
+				var x = await mqttClient.ConnectAsync(options, System.Threading.CancellationToken.None);
 		}
 
 		/// <summary>

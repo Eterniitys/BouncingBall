@@ -19,7 +19,7 @@ namespace ObjectLibrary {
 
 		public string message = "Nothing to say";
 
-		#region "TODO"
+		#region "TODO" Comment
 		private VideoCapture _capture = null;
 
 		int markersX = 10;
@@ -70,6 +70,11 @@ namespace ObjectLibrary {
 		private readonly int idCamera = Settings.Default.iCameraId;
 		private readonly int cannyThresholdLow = Settings.Default.iCannyThresholdLow;
 		private readonly int cannyThresholdHight = Settings.Default.iCannyThresholdHight;
+
+		private readonly int historySize = 10;
+		private double[] angleHistory;
+		private PointF[] positionHistory;
+		private int historyCursor;
 		public bool useHough { get; set; }
 
 		#endregion
@@ -117,7 +122,9 @@ namespace ObjectLibrary {
 			this.position = new Point(pos_x, pos_y);
 			this.angle = angle;
 			this.format = format;
-
+			angleHistory = new double[historySize];
+			positionHistory = new PointF[historySize];
+			historyCursor = 0;
 			if (isMaster) {
 				_detectorParameters = DetectorParameters.GetDefault();
 
@@ -202,10 +209,10 @@ namespace ObjectLibrary {
 					Point[] estimatedPosistion = new Point[nb_detected];
 
 					float[] weights = new float[nb_detected];
-					float sum = 0;
 
-					PointF finalPosition = new PointF(0, 0);
-					double finalAngle = 0f;
+					float sum = 0;
+					positionHistory[historyCursor] = new PointF(0, 0);
+					angleHistory[historyCursor] = 0f;
 					for (int i = 0; i < nb_detected; i++) {
 						#region position / angle weighting
 						estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio);
@@ -223,16 +230,16 @@ namespace ObjectLibrary {
 						} catch { }
 
 						weights[i] = 1f / getDist(estimatedPosistion[i], capture_center);
-						finalAngle += arucoAngles[i] * weights[i];
-						finalPosition.Y += estimatedPosistion[i].Y * weights[i];
-						finalPosition.X += estimatedPosistion[i].X * weights[i];
+						angleHistory[historyCursor] += arucoAngles[i] * weights[i];
+						positionHistory[historyCursor].Y += estimatedPosistion[i].Y * weights[i];
+						positionHistory[historyCursor].X += estimatedPosistion[i].X * weights[i];
 
-						#endregion position / angle weighting
 						sum += weights[i];
+						#endregion position / angle weighting
 					}
-					finalAngle /= sum;
-					finalPosition.X /= sum;
-					finalPosition.Y /= sum;
+					angleHistory[historyCursor] /= sum;
+					positionHistory[historyCursor].X /= sum;
+					positionHistory[historyCursor].Y /= sum;
 
 					#endregion Markers detection / process position and angle
 
@@ -258,28 +265,53 @@ namespace ObjectLibrary {
 								//CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
 								// - - - - - -
 							}
-							finalAngle = processArucoHoughAngles(finalAngle, houghAngles);
+							angleHistory[historyCursor] = processArucoHoughAngles(angleHistory[historyCursor], houghAngles);
 						}
 					}
 					#endregion
 
 					if (ids.Size > 0) {
+
+						float finalAngle = anglesAvg(angleHistory);
+						Point finalPosition = positionAvg(positionHistory);
 						// set the tablet properties
-						this.setPosition((int)finalPosition.X, (int)finalPosition.Y);
-						this.setAngle(-(float)finalAngle);
+						this.setPosition(finalPosition.X, finalPosition.Y);
+						this.setAngle(-finalAngle);
 						//
 						ArucoInvoke.RefineDetectedMarkers(_frameCopy, ArucoBoard, corners, ids, rejected, null, null, 10, 3, true, null, _detectorParameters);
 
 						ArucoInvoke.DrawDetectedMarkers(_frame, corners, ids, new MCvScalar(0, 255, 0));
-					} else {
-						// fix a weird error comming from 0(float) cast to 0(int) when markers aren't detected
-						//this.setPosition(this.getPosition());
+
+						historyCursor = (historyCursor + 1) % historySize;
 					}
 				}
 				_frame.CopyTo(diplayableframe);
 			} else {
 				message = "VideoCapture was not created";
 			}
+		}
+		/// <summary>
+		/// Return the Average Point of an array
+		/// </summary>
+		/// <param name="Points"></param>
+		/// <returns></returns>
+		private Point positionAvg(PointF[] Points) {
+			return new Point {
+				X = (int)Math.Round(Points.Average(p => p.X)),
+				Y = (int)Math.Round(Points.Average(p => p.Y))
+			};
+		}
+		/// <summary>
+		/// Returning the average angle using the vector representation of an angle
+		/// </summary>
+		/// <param name="angles"></param>
+		/// <returns></returns>
+		private float anglesAvg(double[] angles) {
+			PointF avgAngle = new PointF {
+				X = (float)angles.Average(a => Math.Cos(a * Math.PI / 180)),
+				Y = (float)angles.Average(a => Math.Sin(a * Math.PI / 180)),
+			};
+			return (float)(Math.Atan2(avgAngle.Y,avgAngle.X) * 180 / Math.PI);
 		}
 
 		private double processArucoHoughAngles(double arucoAngle, double[] houghAngles) {

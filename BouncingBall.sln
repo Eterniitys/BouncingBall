@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1082
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ObjectLibraryold", "ObjectLibrary\ObjectLibraryold.shproj", "{12197403-5365-45D2-8436-13B0D630888E}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ObjectLibrary", "ObjectLibrary\ObjectLibrary.shproj", "{12197403-5365-45D2-8436-13B0D630888E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TabletApplication", "TabletApplication\TabletApplication.csproj", "{16C52CE4-DAE8-4022-ABBE-5D082E362D2D}"
 EndProject

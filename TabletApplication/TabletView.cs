@@ -175,7 +175,12 @@ namespace TabletApplication {
 				Invoke(new Action(() => {
 					this.lbl.Text = "Disconnected from Broker";
 				}));
-				MqttWrapper.ConnectClient(this.client, this.id, brokerurl);
+				try {
+					MqttWrapper.ConnectClient(this.client, this.id, brokerurl);
+				} finally {
+					MessageBox.Show("Can't reconnecte to broker. Connection lost");
+					Environment.Exit(1);
+				}
 			});
 		}
 		#endregion

@@ -117,7 +117,7 @@ namespace BrokerApplication {
 							this.lbl_angle.Text = text;
 						}));
 					} catch {
-						Application.Exit();
+						Environment.Exit(0);
 					}
 				});
 
