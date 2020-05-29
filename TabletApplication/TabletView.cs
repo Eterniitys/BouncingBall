@@ -138,7 +138,7 @@ namespace TabletApplication {
 			this.client.UseApplicationMessageReceivedHandler(e => {
 				try {
 					Invoke(new Action(() => {
-						this.lbl.Text = this.id;
+						//this.lbl.Text = this.id;
 						string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 							string[] coord = message.Split(';');
@@ -198,7 +198,7 @@ namespace TabletApplication {
 		internal void updateCameraView() {
 			this.pictureBox2.Image = this.tablet.diplayableframe;
 			Invoke(new Action(() => {
-				//this.lbl.Text = this.tablet.message;
+				this.lbl.Text = this.tablet.message;
 			}));
 		}
 

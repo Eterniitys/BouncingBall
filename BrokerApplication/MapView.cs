@@ -109,9 +109,9 @@ namespace BrokerApplication {
 							string text = "ids > ";
 							foreach (string ch in this.lstTab.Keys) {
 								if (lstTab[ch] is Tablet t) {
-									text += string.Format("{0}_{1} ;", ch, t.getPosition());
+									text += string.Format("{0}__{2:#.##} ;", ch, t.getPosition(), t.getAngle());
 								} else {
-									text += string.Format("{0} pos:{1} ;", ch, "noDatas");
+									text += string.Format("{0} pos:{1};", ch, "noDatas");
 								}
 							}
 							this.lbl_angle.Text = text;

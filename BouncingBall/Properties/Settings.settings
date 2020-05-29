@@ -44,5 +44,8 @@
     <Setting Name="iBallDiameter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">25</Value>
     </Setting>
+    <Setting Name="sCalibrationFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">calibration.txt</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -172,5 +172,17 @@ namespace BouncingBall.Properties {
                 this["iBallDiameter"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("calibration.txt")]
+        public string sCalibrationFile {
+            get {
+                return ((string)(this["sCalibrationFile"]));
+            }
+            set {
+                this["sCalibrationFile"] = value;
+            }
+        }
     }
 }

@@ -28,6 +28,8 @@ namespace TabletApplication {
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
+			BouncingBall.Properties.Settings settings1 = new BouncingBall.Properties.Settings();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TabletView));
 			this.lbl_format = new System.Windows.Forms.Label();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.timer = new System.Windows.Forms.Timer(this.components);
@@ -66,7 +68,21 @@ namespace TabletApplication {
 			// timer
 			// 
 			this.timer.Enabled = true;
-			this.timer.Interval = Settings.Default.iGameTick;
+			settings1.iBallDiameter = 25;
+			settings1.iBallSpeed = 5;
+			settings1.iCameraId = 0;
+			settings1.iCannyThresholdHight = 90;
+			settings1.iCannyThresholdLow = 30;
+			settings1.iGameTick = 20;
+			settings1.iMarkerRealLength = 25;
+			settings1.iRoomHeight = 400;
+			settings1.iRoomWidth = 400;
+			settings1.iTimeToLive = 6000;
+			settings1.sAvailableIds = ((System.Collections.Specialized.StringCollection)(resources.GetObject("settings1.sAvailableIds")));
+			settings1.sBrokerUrl = "localhost";
+			settings1.sCalibrationFile = "calibration.txt";
+			settings1.SettingsKey = "";
+			this.timer.Interval = settings1.iGameTick;
 			this.timer.Tick += new System.EventHandler(this.timer_Tick);
 			// 
 			// lbl
@@ -106,8 +122,8 @@ namespace TabletApplication {
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(521, 328);
-			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.lbl);
+			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.lbl_format);
 			this.Controls.Add(this.useHough);
 			this.Controls.Add(this.pictureBox1);

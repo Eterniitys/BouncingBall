@@ -13,6 +13,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.UI;
 using Emgu.CV.Util;
 using BouncingBall.Properties;
+using System.IO;
 
 namespace ObjectLibrary {
 	public class Tablet {
@@ -27,17 +28,8 @@ namespace ObjectLibrary {
 		int markersRealLength = Settings.Default.iMarkerRealLength;
 		int markersSeparation = 30;
 
-		VectorOfPoint markersRealPos = new VectorOfPoint(new Point[] {
-			new Point(0,0),
-			new Point(233,-4),
-			new Point(468,-7),
-			new Point(5,256),
-			new Point(237,247),
-			new Point(467,234),
-			new Point(-6, 503),
-			new Point(238,490),
-			new Point(471,485),
-		});
+		Dictionary<int, Point> markersRealPos;
+		Dictionary<int, int> markersRealAngle;
 
 
 		private Dictionary _dict;
@@ -135,6 +127,7 @@ namespace ObjectLibrary {
 						throw new NullReferenceException("Unable to open video capture");
 					} else {
 						_capture.ImageGrabbed += processFrame;
+						readCalibrationFile();
 						_capture.Start();
 					}
 				} catch (NullReferenceException excpt) {
@@ -142,6 +135,7 @@ namespace ObjectLibrary {
 				}
 			}
 		}
+
 
 		internal void moveBy(int delta_x, int delta_y) {
 			this.position.X -= delta_x;
@@ -178,8 +172,8 @@ namespace ObjectLibrary {
 						vector.Y = (int)(corners[k][1].Y - corners[k][0].Y + corners[k][2].Y - corners[k][3].Y);
 						corners_pos[k] = corners[k][1]; // coin haut droit
 
-						// TODO correction des angles par angle de pose réel du marker
-						arucoAngles[k] = Math.Atan2(vector.Y, vector.X) * 180 / Math.PI;
+						arucoAngles[k] = (Math.Atan2(vector.Y, vector.X) * 180 / Math.PI + markersRealAngle[ids[k]]) ;
+						arucoAngles[k] = arucoAngles[k] > 180 ? arucoAngles[k] - 360 : arucoAngles[k] ;
 
 						// Trace la ligne horizontale pour chaque marqueur utilisé pour le calcule de l'angle de la camera
 						// - - - - - 
@@ -290,6 +284,26 @@ namespace ObjectLibrary {
 				message = "VideoCapture was not created";
 			}
 		}
+		private void readCalibrationFile() {
+			markersRealPos = new Dictionary<int, Point>();
+			markersRealAngle = new Dictionary<int, int>();
+			try {
+				using (StreamReader sr = new StreamReader(Settings.Default.sCalibrationFile)) {
+					string line;
+					sr.ReadLine(); //header Line
+					sr.ReadLine(); //blank Line
+					while (sr.Peek() >= 0) {
+						line = sr.ReadLine();
+						string[] buffer = line.Split(' ');
+						markersRealPos.Add(int.Parse(buffer[0]), new Point(int.Parse(buffer[1]), int.Parse(buffer[2])));
+						markersRealAngle.Add(int.Parse(buffer[0]), int.Parse(buffer[3])-90);
+					}
+				}
+			} catch (IOException excpt) {
+				message = Settings.Default.sCalibrationFile+ " could not be read:\n" + excpt.Message;
+			}
+		}
+
 		/// <summary>
 		/// Return the Average Point of an array
 		/// </summary>
