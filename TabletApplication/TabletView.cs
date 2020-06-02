@@ -159,7 +159,7 @@ namespace TabletApplication {
 								w.setBuilt();
 								lstWall.Add(w);
 							}
-						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS])) {
+						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL])) {
 							this.goal = new Goal(message);
 						} else {
 							Invoke(new Action(() => {

@@ -201,7 +201,7 @@ namespace BrokerApplication {
 			GameObject[] go = { this.ball };
 			if (this.goal.collide(go)) {
 				this.goal.move(this.roomLenght, this.roomWidth);
-				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS];
+				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL];
 				MqttWrapper.SendMqttMessageTo(this.broker, topic, this.goal.ToString(), true);
 			}
 			this.lbl_goal.Text = string.Format("Goal : {0}", this.goal);

@@ -14,9 +14,6 @@ namespace ObjectLibrary {
 			EAST
 		}
 
-		public delegate void GoalUpdateHandler();
-		public event GoalUpdateHandler onGoalUpdate;
-
 		GlobalPos anchor { get; set; }
 		public Point center { get; set; }
 		public float radius { get; set; }
