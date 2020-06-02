@@ -14,7 +14,7 @@ namespace ObjectLibrary {
 		public delegate void BallMovedHandler(PointF pos);
 		public event BallMovedHandler onBallMoved;
 
-		#region Properties of a ball
+		#region ball properties
 		/// <summary>
 		/// All possible value of <see cref="state"/></see>
 		/// </summary>
@@ -51,7 +51,7 @@ namespace ObjectLibrary {
 		/// <summary>
 		/// The size of the ball
 		/// </summary>
-		private SizeF size;
+		public int radius { get; private set; }
 		/// <summary>
 		/// The angle which the ball is moving with
 		/// </summary>
@@ -70,16 +70,15 @@ namespace ObjectLibrary {
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
 		public Ball(int room_width, int room_lenght, float scale = 1) {
-			var diameter = Settings.Default.iBallDiameter;
-			this.size = new SizeF(scale * diameter, scale * diameter);
+			radius = Settings.Default.iBallDiameter / 2;
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
 			this.speed = Settings.Default.iBallSpeed;
 			Random rnd = new Random();
 			this.center = new PointF(
-				(float)rnd.NextDouble() * (room_width - this.size.Width) + this.size.Width / 2,
-				(float)rnd.NextDouble() * (room_lenght - this.size.Height) + this.size.Height / 2
+				(float)rnd.NextDouble() * (room_width - this.radius * 2) + this.radius,
+				(float)rnd.NextDouble() * (room_lenght - this.radius * 2) + this.radius
 				);
 			this.direction = rnd.Next(-180, 180);
 		}
@@ -124,12 +123,12 @@ namespace ObjectLibrary {
 		/// <param name="window_height">The drawing component height</param>
 		public override void draw(Graphics gfx, PointF scale) {
 			SizeF scaled_size = new SizeF(
-				this.size.Width * scale.X,
-				this.size.Height * scale.Y
+				this.radius * scale.X * 2,
+				this.radius * scale.Y * 2
 				);
 			PointF scaled_pos = new PointF(
-				(this.center.X - this.size.Width / 2) * scale.X,
-				(this.center.Y - this.size.Height / 2) * scale.Y
+				(this.center.X - this.radius) * scale.X,
+				(this.center.Y - this.radius) * scale.Y
 				);
 			RectangleF rect = new RectangleF(scaled_pos, scaled_size);
 			lock (lst_img) {
@@ -147,46 +146,28 @@ namespace ObjectLibrary {
 		/// <summary>
 		/// Move the ball in the field and manage its boucing on borders and bars.
 		/// </summary>
-		public override void move(GameObject[] colliders) {
+		public override void move() {
 			double radDir = (this.direction + 90) * (Math.PI / 180);
 			PointF p = new PointF(
 				this.center.X + (float)(Math.Sin(radDir) * speed),
 				this.center.Y + (float)(Math.Cos(radDir) * speed)
 				);
 			this.center = p;
-			borderBounce();
-			bounceAgainst(colliders);
 			onBallMoved?.Invoke(center);
-		}
-
-		/// <summary>
-		/// Bounce the ball on the borders
-		/// </summary>
-		private void borderBounce() {
-			float radius = this.size.Width / 2;
-			if (center.Y - radius < 0 || center.Y + radius > room_lenght) {
-				direction = -direction;
-			}
-
-			if (center.X - radius < 0 || center.X + radius > room_width) {
-				direction = 180 - direction;
-			}
-
-			direction += 180;
-			direction %= 360;
-			direction -= 180;
 		}
 
 		/// <summary>
 		/// Bounce the ball on the bars in the field.
 		/// </summary>
-		internal void bounceAgainst(GameObject[] colliders) {
+		public override bool collide(GameObject[] colliders) {
+			borderBounce();
+
 			bool hasCollided = false;
 
 			foreach (GameObject gameObject in colliders) {
 				bool isColliding = false;
 				if (gameObject is Wall wall) {
-					float minimalDist = (this.size.Width + wall.rectangle.Size.Height) / 2;
+					float minimalDist = this.radius + wall.rectangle.Size.Height / 2;
 					isColliding = wallCollision(wall, minimalDist);
 					if (isColliding) {
 						int alpha = direction;
@@ -206,14 +187,33 @@ namespace ObjectLibrary {
 				}
 			}
 			this.setID(hasCollided ? ImageID.BOUNCE : ImageID.CATCH);
+			return hasCollided;
 		}
 
+		/// <summary>
+		/// Bounce the ball on the borders
+		/// </summary>
+		private void borderBounce() {
+			if (center.Y - radius < 0 || center.Y + radius > room_lenght) {
+				direction = -direction;
+			}
+
+			if (center.X - radius < 0 || center.X + radius > room_width) {
+				direction = 180 - direction;
+			}
+
+			direction += 180;
+			direction %= 360;
+			direction -= 180;
+		}
+
+
 		internal bool isColliding(GameObject colliders) {
-				bool isColliding = false;
-				if (colliders is Wall wall) {
-					float minimalDist = (this.size.Width + wall.rectangle.Size.Height) / 2;
-					isColliding = wallCollision(wall, minimalDist);
-				}
+			bool isColliding = false;
+			if (colliders is Wall wall) {
+				float minimalDist = this.radius + wall.rectangle.Size.Height / 2;
+				isColliding = wallCollision(wall, minimalDist);
+			}
 			return isColliding;
 		}
 
@@ -272,5 +272,9 @@ namespace ObjectLibrary {
 			return d <= gap * gap;
 		}
 		#endregion
+
+		public override string ToString() {
+			return string.Format("[BALL]_pos={0}_dir={1}_rad={2}", this.center, this.direction, this.radius);
+		}
 	}
 }
