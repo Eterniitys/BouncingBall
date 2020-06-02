@@ -1,4 +1,4 @@
-﻿using BouncingBall.Properties;
+using BouncingBall.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -58,8 +58,13 @@ namespace ObjectLibrary {
 			gfx.DrawEllipse(Pens.Red, scaled_pos.X - scaledRadius.X, scaled_pos.Y - scaledRadius.Y, scaledRadius.X * 2, scaledRadius.Y * 2);
 		}
 
-		public override void move(GameObject[] colliders) {
-			// TODO could move along the room border
+		public override void move() {
+			Random rd = new Random();
+		}
+		public override bool collide(GameObject[] colliders) {
+		}
+		}
+			return false;
 		}
 
 		public override string ToString() {

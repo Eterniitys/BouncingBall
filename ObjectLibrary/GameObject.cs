@@ -11,7 +11,9 @@ namespace ObjectLibrary {
 		/// Move a <seealso cref="GameObject"/>
 		/// </summary>
 		/// <param name="colliders"></param>
-		public abstract void move(GameObject[] colliders);
+		public abstract void move();
+
+		public abstract bool collide(GameObject[] colliders);
 
 		/// <summary>
 		/// Draw a <seealso cref="GameObject"/>

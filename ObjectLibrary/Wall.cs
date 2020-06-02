@@ -158,8 +158,13 @@ namespace ObjectLibrary {
 		/// Inherited from <seealso cref="GameObject"/>. Do nothing.
 		/// </summary>
 		/// <param name="colliders"></param>
-		public override void move(GameObject[] colliders) {
+		public override void move() {
 			// A wall do not move
+		}
+
+		public override bool collide(GameObject[] colliders) {
+			// A wall do not collide (do not even move)
+			return false;
 		}
 		#endregion Paint / draw
 
