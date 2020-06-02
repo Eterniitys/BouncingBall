@@ -71,7 +71,10 @@ namespace ObjectLibrary {
 				this.anchor = (GlobalPos)rd.Next(3);
 			} while (oldAnchor == this.anchor);
 			this.center = getPointFromAnchor(anchor);
-			this.radius = rd.Next((int)(Math.Min(room_lenght, roomWidth) * 0.05), (int)(Math.Min(room_lenght, roomWidth) * 0.2));
+			this.radius = rd.Next((int)(
+				Math.Min(room_lenght, roomWidth) * Settings.Default.fMinGoalSize),
+				(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMaxGoalSize)
+				);
 		}
 
 		public override bool collide(GameObject[] colliders) {

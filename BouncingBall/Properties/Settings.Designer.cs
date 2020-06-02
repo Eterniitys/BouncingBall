@@ -184,5 +184,29 @@ namespace BouncingBall.Properties {
                 this["sCalibrationFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.15")]
+        public float fMaxGoalSize {
+            get {
+                return ((float)(this["fMaxGoalSize"]));
+            }
+            set {
+                this["fMaxGoalSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.05")]
+        public float fMinGoalSize {
+            get {
+                return ((float)(this["fMinGoalSize"]));
+            }
+            set {
+                this["fMinGoalSize"] = value;
+            }
+        }
     }
 }

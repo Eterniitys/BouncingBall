@@ -68,7 +68,12 @@ namespace BrokerApplication {
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
 
-			this.goal = new Goal((Goal.GlobalPos)rd.Next(3), rd.Next((int)(Math.Min(room_lenght, roomWidth) * 0.05), (int)(Math.Min(room_lenght, roomWidth) * 0.2)));
+			this.goal = new Goal((Goal.GlobalPos)rd.Next(3),
+				rd.Next(
+					(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMinGoalSize),
+					(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMaxGoalSize)
+					));
+			
 
 			lstTab = new Dictionary<string, Tablet>();
 			this.lstWall = new List<Wall>();
