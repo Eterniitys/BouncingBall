@@ -174,8 +174,8 @@ namespace BrokerApplication {
 		/// <param name="e"></param>
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
-			GameObject[] obs = { this.goal};
-			this.ball.move((GameObject[])lstWall.ToArray().Concat(obs));
+			this.ball.move();
+			this.ball.collide(lstWall.ToArray());
 			List<Wall> tmp_lst = new List<Wall>();
 			foreach (Wall w in lstWall) {
 				w.tick(Settings.Default.iGameTick);
@@ -189,13 +189,17 @@ namespace BrokerApplication {
 			if (tmp_lst.Count != 0) {
 				sendWalls();
 			}
-			UpdateGoal();
+			updateGoal();
 		}
 
-		private void UpdateGoal() {
-			this.goal.move(null);
-			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS];
-			MqttWrapper.SendMqttMessageTo(this.broker, topic, this.goal.ToString(), true);
+		private void updateGoal() {
+			GameObject[] go = { this.ball };
+			if (this.goal.collide(go)) {
+				this.goal.move();
+				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS];
+				MqttWrapper.SendMqttMessageTo(this.broker, topic, this.goal.ToString(), true);
+			}
+			this.lbl_goal.Text = string.Format("Goal : {0}\n{1}\n{2}", this.goal, this.goal.dist, this.ball);
 		}
 
 		/// <summary>

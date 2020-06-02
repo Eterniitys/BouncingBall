@@ -1,4 +1,4 @@
-using BouncingBall.Properties;
+﻿using BouncingBall.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,26 +18,34 @@ namespace ObjectLibrary {
 		public event GoalUpdateHandler onGoalUpdate;
 
 		GlobalPos anchor { get; set; }
-		Point center { get; }
-		float radius { get; }
+		public Point center { get; set; }
+		public float radius { get; }
+
+		public int dist = 0;
 
 		public Goal(GlobalPos gp, int radius) {
 			anchor = gp;
+			this.center = getPointFromAnchor(anchor);
+			this.radius = radius;
+		}
+
+		private Point getPointFromAnchor(GlobalPos gp) {
+			Point p = new Point();
 			switch (gp) {
 				case GlobalPos.NORTH:
-					this.center = new Point(Settings.Default.iRoomWidth / 2, 0);
+					p = new Point(Settings.Default.iRoomWidth / 2, 0);
 					break;
 				case GlobalPos.WEST:
-					this.center = new Point(0, Settings.Default.iRoomHeight / 2);
+					p = new Point(0, Settings.Default.iRoomHeight / 2);
 					break;
 				case GlobalPos.SOUTH:
-					this.center = new Point(Settings.Default.iRoomWidth / 2, Settings.Default.iRoomHeight);
+					p = new Point(Settings.Default.iRoomWidth / 2, Settings.Default.iRoomHeight);
 					break;
 				case GlobalPos.EAST:
-					this.center = new Point(Settings.Default.iRoomWidth, Settings.Default.iRoomHeight / 2);
+					p = new Point(Settings.Default.iRoomWidth, Settings.Default.iRoomHeight / 2);
 					break;
 			}
-			this.radius = radius;
+			return p;
 		}
 
 		public Goal(string text) {
@@ -60,15 +68,23 @@ namespace ObjectLibrary {
 
 		public override void move() {
 			Random rd = new Random();
+			this.anchor = (GlobalPos)rd.Next(3);
+			this.center = getPointFromAnchor(anchor);
 		}
+
 		public override bool collide(GameObject[] colliders) {
-		}
-		}
+			if (colliders[0] is Ball ball) {
+				dist = (int)(Math.Pow(this.center.X - ball.center.X,2) + Math.Pow(this.center.Y - ball.center.Y, 2) - Math.Pow(this.radius + ball.radius, 2));
+				if ((dist) < 0) {
+					return true;
+				}
+			}
 			return false;
 		}
 
 		public override string ToString() {
 			return string.Format("{0};{1};{2};{3}", center.X, center.Y, radius, anchor);
 		}
+
 	}
 }
