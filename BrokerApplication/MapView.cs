@@ -68,7 +68,7 @@ namespace BrokerApplication {
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
 
-			this.goal = new Goal((Goal.GlobalPos)rd.Next(3), rd.Next((int)(Math.Min(room_lenght, roomWidth) * 0.1), (int)(Math.Min(room_lenght, roomWidth) * 0.2)));
+			this.goal = new Goal((Goal.GlobalPos)rd.Next(3), rd.Next((int)(Math.Min(room_lenght, roomWidth) * 0.05), (int)(Math.Min(room_lenght, roomWidth) * 0.2)));
 
 			lstTab = new Dictionary<string, Tablet>();
 			this.lstWall = new List<Wall>();
@@ -174,7 +174,7 @@ namespace BrokerApplication {
 		/// <param name="e"></param>
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
-			this.ball.move();
+			this.ball.move(this.roomLenght, this.roomWidth);
 			this.ball.collide(lstWall.ToArray());
 			List<Wall> tmp_lst = new List<Wall>();
 			foreach (Wall w in lstWall) {
@@ -195,11 +195,11 @@ namespace BrokerApplication {
 		private void updateGoal() {
 			GameObject[] go = { this.ball };
 			if (this.goal.collide(go)) {
-				this.goal.move();
+				this.goal.move(this.roomLenght, this.roomWidth);
 				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL_POS];
 				MqttWrapper.SendMqttMessageTo(this.broker, topic, this.goal.ToString(), true);
 			}
-			this.lbl_goal.Text = string.Format("Goal : {0}\n{1}\n{2}", this.goal, this.goal.dist, this.ball);
+			this.lbl_goal.Text = string.Format("Goal : {0}", this.goal);
 		}
 
 		/// <summary>

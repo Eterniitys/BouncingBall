@@ -158,7 +158,7 @@ namespace ObjectLibrary {
 		/// Inherited from <seealso cref="GameObject"/>. Do nothing.
 		/// </summary>
 		/// <param name="colliders"></param>
-		public override void move() {
+		public override void move(int room_lenght, int roomWidth) {
 			// A wall do not move
 		}
 

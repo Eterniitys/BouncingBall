@@ -19,9 +19,7 @@ namespace ObjectLibrary {
 
 		GlobalPos anchor { get; set; }
 		public Point center { get; set; }
-		public float radius { get; }
-
-		public int dist = 0;
+		public float radius { get; set; }
 
 		public Goal(GlobalPos gp, int radius) {
 			anchor = gp;
@@ -66,16 +64,20 @@ namespace ObjectLibrary {
 			gfx.DrawEllipse(Pens.Red, scaled_pos.X - scaledRadius.X, scaled_pos.Y - scaledRadius.Y, scaledRadius.X * 2, scaledRadius.Y * 2);
 		}
 
-		public override void move() {
+		public override void move(int room_lenght, int roomWidth) {
 			Random rd = new Random();
-			this.anchor = (GlobalPos)rd.Next(3);
+			GlobalPos oldAnchor = this.anchor;
+			do {
+				this.anchor = (GlobalPos)rd.Next(3);
+			} while (oldAnchor == this.anchor);
 			this.center = getPointFromAnchor(anchor);
+			this.radius = rd.Next((int)(Math.Min(room_lenght, roomWidth) * 0.05), (int)(Math.Min(room_lenght, roomWidth) * 0.2));
 		}
 
 		public override bool collide(GameObject[] colliders) {
 			if (colliders[0] is Ball ball) {
-				dist = (int)(Math.Pow(this.center.X - ball.center.X,2) + Math.Pow(this.center.Y - ball.center.Y, 2) - Math.Pow(this.radius + ball.radius, 2));
-				if ((dist) < 0) {
+				var dist = (int)(Math.Pow(this.center.X - ball.center.X, 2) + Math.Pow(this.center.Y - ball.center.Y, 2) - Math.Pow(this.radius + ball.radius, 2));
+				if (dist < 0) {
 					return true;
 				}
 			}

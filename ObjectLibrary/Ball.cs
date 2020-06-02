@@ -146,7 +146,7 @@ namespace ObjectLibrary {
 		/// <summary>
 		/// Move the ball in the field and manage its boucing on borders and bars.
 		/// </summary>
-		public override void move() {
+		public override void move(int room_lenght, int roomWidth) {
 			double radDir = (this.direction + 90) * (Math.PI / 180);
 			PointF p = new PointF(
 				this.center.X + (float)(Math.Sin(radDir) * speed),

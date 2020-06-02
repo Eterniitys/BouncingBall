@@ -61,7 +61,7 @@ namespace BrokerApplication {
 			// lbl_goal
 			// 
 			this.lbl_goal.AutoSize = true;
-			this.lbl_goal.Location = new System.Drawing.Point(12, 245);
+			this.lbl_goal.Location = new System.Drawing.Point(12, 299);
 			this.lbl_goal.Name = "lbl_goal";
 			this.lbl_goal.Size = new System.Drawing.Size(32, 13);
 			this.lbl_goal.TabIndex = 2;
