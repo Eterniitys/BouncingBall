@@ -211,6 +211,7 @@ namespace BrokerApplication {
 				sendWalls();
 			}
 			updateGoal();
+			this.lbl_goal.Text = string.Format("Goal : {0}\nBall Owner : {1}", this.goal, this.ball.lastToHit);
 		}
 
 		private void updateGoal() {
@@ -219,7 +220,6 @@ namespace BrokerApplication {
 				this.goal.move(this.roomLenght, this.roomWidth);
 				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL];
 				MqttWrapper.SendMqttMessage(this.broker, topic, this.goal.ToString(), true);
-				this.lbl_goal.Text = string.Format("Goal : {0}\nBall Owner : {1}", this.goal, this.ball.lastToHit);
 			}
 		}
 

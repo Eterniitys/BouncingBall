@@ -62,7 +62,8 @@ namespace ObjectLibrary {
 				X = radius * scale.X,
 				Y = radius * scale.Y
 			};
-			gfx.DrawEllipse(Pens.Red, scaled_pos.X - scaledRadius.X, scaled_pos.Y - scaledRadius.Y, scaledRadius.X * 2, scaledRadius.Y * 2);
+			gfx.FillEllipse(Brushes.ForestGreen, scaled_pos.X - scaledRadius.X, scaled_pos.Y - scaledRadius.Y, scaledRadius.X * 2, scaledRadius.Y * 2);
+			gfx.DrawEllipse(Pens.Green, scaled_pos.X - scaledRadius.X, scaled_pos.Y - scaledRadius.Y, scaledRadius.X * 2, scaledRadius.Y * 2);
 		}
 
 		public override void move(int room_lenght, int roomWidth) {

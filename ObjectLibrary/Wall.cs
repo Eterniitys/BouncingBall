@@ -243,5 +243,12 @@ namespace ObjectLibrary {
 		public override string ToString() {
 			return string.Format("{0};{1};{2};{3};{4};{5}", origin.X, origin.Y, end.X, end.Y, ownerId, timeToLive);
 		}
+
+		internal void unscale(PointF scale) {
+			this.origin.X /= scale.X;
+			this.origin.Y /= scale.Y;
+			this.end.X /= scale.X;
+			this.end.Y /= scale.Y;
+		}
 	}
 }

@@ -286,8 +286,8 @@ namespace ObjectLibrary {
 						historyCursor = (historyCursor + 1) % historySize;
 					}
 				}
-				//if (!errorDetected && !Settings.Default.sAvailableIds.Contains(message))
-					//message = "";
+				if (!errorDetected && !Settings.Default.sAvailableIds.Contains(message))
+					message = "";
 				_frame.CopyTo(diplayableframe);
 			} else {
 				message = "VideoCapture was not created";

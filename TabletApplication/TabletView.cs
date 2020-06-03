@@ -88,7 +88,6 @@ namespace TabletApplication {
 			initMqttClientAsync(brokerurl);
 			// - - - - - - - - - -
 			InitializeComponent();
-			this.pictureBox1.MouseWheel += new MouseEventHandler(onMouseWheel);
 			this.tablet.TabletPositionChanged += new Tablet.TabletPositionChangedHandler(this.onPositionChanged);
 			this.tablet.TabletAngleChanged += new Tablet.TabletAngleChangedHandler(this.onAngleChanged);
 			this.timer.Interval = Settings.Default.iGameTick;
@@ -162,7 +161,7 @@ namespace TabletApplication {
 						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL])) {
 							this.lbl_message.Text = message;
 							this.goal = new Goal(message);
-							this.lbl.Text = this.id + "\nScore :" +this.score+ "\nGoal Direction :" + this.goal.anchor;
+							this.lbl.Text = this.id + "\nScore :" + this.score + "\nGoal Direction :" + this.goal.anchor;
 						} else if (e.ApplicationMessage.Topic.Contains(this.id)) {
 							if (e.ApplicationMessage.Topic.EndsWith("score")) {
 								this.score = message;
@@ -275,76 +274,29 @@ namespace TabletApplication {
 
 		#endregion Painting / Drawing
 
-		#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (controle with mouse)
-
-		private int prev_x = 0;
-		private int prev_y = 0;
-
-		private bool clickIsDown = false;
-
-		private enum Mode {
-			drawing,
-			moving
-		}
-
-		private Mode mode = Mode.drawing;
-
-		private void onMouseWheel(object sender, MouseEventArgs e) {
-			this.tablet.setAngle(this.tablet.getAngle() + e.Delta / 10);
-		}
-
-		private void TabletteView_KeyUp(object sender, KeyEventArgs e) {
-			if (e.KeyCode == Keys.T) {
-				mode = mode == Mode.moving ? Mode.drawing : Mode.moving;
-			}
-		}
-
-		#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (controle with mouse) (TODO)
-
+		#region Mouse detection
 		private void pictureBox1_MouseUp(object sender, MouseEventArgs e) {
-			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
-			if (mode == Mode.moving) {
-			} else {
-				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				if (this.preBuilt is Wall wall) {
-					this.preBuilt = null;
-					wall.tranform(this.matrix);
-					MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL], wall.ToString());
-				}
+			if (this.preBuilt is Wall wall) {
+				this.preBuilt = null;
+				wall.tranform(this.matrix);
+				wall.unscale(scale);
+				MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL], wall.ToString());
 			}
-			clickIsDown = false;
 		}
 
 		private void pictureBox1_MouseMove(object sender, MouseEventArgs e) {
-			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
-			if (clickIsDown && mode == Mode.moving) {
-				this.tablet.moveBy((e.X - this.tablet.getWidth() / 2) - prev_x, (e.Y - this.tablet.getHeight() / 2) - prev_y);
-				prev_x = e.X - this.tablet.getWidth() / 2;
-				prev_y = e.Y - this.tablet.getHeight() / 2;
-				onPositionChanged(this.tablet.getPosition());
-			} else {
-				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				if (this.preBuilt is Wall) {
-					((Wall)this.preBuilt).setEnd(e.X, e.Y);
-				}
+			if (this.preBuilt is Wall) {
+				((Wall)this.preBuilt).setEnd(e.X, e.Y);
 			}
 		}
 
 		private void pictureBox1_MouseDown(object sender, MouseEventArgs e) {
-			#region DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE
-			if (mode == Mode.moving) {
-				prev_x = e.X - this.tablet.getWidth() / 2;
-				prev_y = e.Y - this.tablet.getHeight() / 2;
-
-			} else {
-				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y, this.id);
-			}
-			clickIsDown = true;
+			this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y, this.id);
 		}
 
 		private void useHough_CheckedChanged(object sender, EventArgs e) {
 			this.tablet.useHough = this.useHough.Checked;
 		}
+		#endregion Mouse detection
 	}
 }
