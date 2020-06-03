@@ -14,14 +14,20 @@ namespace ObjectLibrary {
 			EAST
 		}
 
-		GlobalPos anchor { get; set; }
+		public GlobalPos anchor { get; set; }
 		public Point center { get; set; }
 		public float radius { get; set; }
 
-		public Goal(GlobalPos gp, int radius) {
-			anchor = gp;
-			this.center = getPointFromAnchor(anchor);
-			this.radius = radius;
+		public Goal(int room_lenght, int room_width) {
+			anchor = GlobalPos.NORTH;
+			this.move(room_lenght, room_width);
+		}
+
+		public Goal(string text) {
+			string[] buffer = text.Split(';');
+			this.center = new Point(int.Parse(buffer[0]), int.Parse(buffer[1]));
+			this.radius = float.Parse(buffer[2]);
+			this.anchor = (GlobalPos)int.Parse(buffer[3]);
 		}
 
 		private Point getPointFromAnchor(GlobalPos gp) {
@@ -43,11 +49,6 @@ namespace ObjectLibrary {
 			return p;
 		}
 
-		public Goal(string text) {
-			string[] buffer = text.Split(';');
-			this.center = new Point(int.Parse(buffer[0]), int.Parse(buffer[1]));
-			this.radius = float.Parse(buffer[2]);
-		}
 
 		public override void draw(Graphics gfx, PointF scale) {
 			PointF scaled_pos = new PointF(
@@ -85,7 +86,7 @@ namespace ObjectLibrary {
 		}
 
 		public override string ToString() {
-			return string.Format("{0};{1};{2};{3}", center.X, center.Y, radius, anchor);
+			return string.Format("{0};{1};{2};{3}", center.X, center.Y, radius, (int)anchor);
 		}
 
 	}

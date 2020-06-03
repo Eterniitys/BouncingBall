@@ -78,7 +78,7 @@ namespace TabletApplication {
 		public TabletView(int room_width, int room_lenght) {
 			this.roomWidth = room_width;
 			this.roomLenght = room_lenght;
-			this.tablet = new Tablet(0, 0, 0, EnumFormat._10PC, true);
+			this.tablet = new Tablet(0, 0, 0, EnumFormat._24PC, true);
 			this.ball = new Ball(room_width, room_lenght);
 			this.lstWall = new List<Wall>();
 			this.matrix = new Matrix();
@@ -141,6 +141,8 @@ namespace TabletApplication {
 				try {
 					Invoke(new Action(() => {
 						string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+
+
 						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 							string[] coord = message.Split(';');
 							PointF p = new PointF(
@@ -148,8 +150,6 @@ namespace TabletApplication {
 								float.Parse(coord[1])
 								);
 							this.ball.center = p;
-						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
-							// nothing
 						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BUILD_WALL])) {
 							this.lstWall.Clear();
 							string[] walls = message.Split('!');
@@ -160,11 +160,14 @@ namespace TabletApplication {
 								lstWall.Add(w);
 							}
 						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL])) {
+							this.lbl_message.Text = message;
 							this.goal = new Goal(message);
-						} else {
-							Invoke(new Action(() => {
-								this.lbl_message.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
-							}));
+							this.lbl.Text = this.id +" " + this.goal.anchor;
+						}else {
+							this.lbl_message.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
+						}
+						if (e.ApplicationMessage.Retain || e.ApplicationMessage.Topic.StartsWith("goal")) {
+							this.lbl_message.Text = message + (e.ApplicationMessage.Retain ? "\ntrue" : "\nfalse");
 						}
 					}));
 				} catch {
@@ -199,7 +202,7 @@ namespace TabletApplication {
 		internal void updateCameraView() {
 			this.pictureBox2.Image = this.tablet.diplayableframe;
 			Invoke(new Action(() => {
-				this.lbl_message.Text = this.tablet.message;
+				//this.lbl_message.Text = this.tablet.message;
 			}));
 		}
 

@@ -68,17 +68,15 @@ namespace BrokerApplication {
 			this.ball = new Ball(room_width, room_lenght, 1);
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
 
-			this.goal = new Goal((Goal.GlobalPos)rd.Next(3),
-				rd.Next(
-					(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMinGoalSize),
-					(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMaxGoalSize)
-					));
-			
+			this.goal = new Goal(room_lenght, roomWidth);
 
 			lstTab = new Dictionary<string, Tablet>();
 			this.lstWall = new List<Wall>();
 			// - - - - - - - - - -
 			InitializeComponent();
+
+			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL];
+			MqttWrapper.SendMqttMessage(this.broker, topic, this.goal.ToString(), true);
 		}
 
 		#endregion Constructor
@@ -121,9 +119,9 @@ namespace BrokerApplication {
 							string text = "ids :";
 							foreach (string ch in this.lstTab.Keys) {
 								if (lstTab[ch] is Tablet t) {
-									text += string.Format("\n{0}_{1}_{2:#.##}", ch, t.getPosition(), t.getAngle());
+									text += string.Format("\n{0} -> {1}_{2:#.##}", ch, t.getPosition(), t.getAngle());
 								} else {
-									text += string.Format("{0} pos:{1};", ch, "noDatas");
+									text += string.Format("\n{0} -> pos:noDatas;", ch);
 								}
 							}
 							this.lbl_angle.Text = text;
@@ -156,7 +154,7 @@ namespace BrokerApplication {
 		/// <param name="pos"></param>
 		private void onBallMoved(PointF pos) {
 			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS];
-			MqttWrapper.SendMqttMessageTo(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
+			MqttWrapper.SendMqttMessage(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
 		}
 
 		public void sendWalls() {
@@ -166,7 +164,7 @@ namespace BrokerApplication {
 			foreach (Wall w in lstWall) {
 				message += "!" + w;
 			}
-			MqttWrapper.SendMqttMessageTo(this.broker, topic, message, true);
+			MqttWrapper.SendMqttMessage(this.broker, topic, message, true);
 		}
 
 		#endregion MQTT protocol
@@ -202,9 +200,9 @@ namespace BrokerApplication {
 			if (this.goal.collide(go)) {
 				this.goal.move(this.roomLenght, this.roomWidth);
 				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL];
-				MqttWrapper.SendMqttMessageTo(this.broker, topic, this.goal.ToString(), true);
+				MqttWrapper.SendMqttMessage(this.broker, topic, this.goal.ToString(), true);
+				this.lbl_goal.Text = string.Format("Goal : {0}", this.goal);
 			}
-			this.lbl_goal.Text = string.Format("Goal : {0}", this.goal);
 		}
 
 		/// <summary>

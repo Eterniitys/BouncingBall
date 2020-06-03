@@ -2,6 +2,7 @@
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using MQTTnet.Client.Receiving;
+using MQTTnet.Protocol;
 using MQTTnet.Server;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,6 @@ namespace ObjectLibrary {
 		internal static string[] GetClientTopicList() {
 			string[] lstTopics = {
 				"ball/pos",
-				"wall/new",
 				"wall/build",
 				"goal"
 			};
@@ -81,7 +81,7 @@ namespace ObjectLibrary {
 			var factory = new MqttFactory();
 			IMqttClient mqttClient = factory.CreateMqttClient();
 
-			mqttClient.UseApplicationMessageReceivedHandler(e => {});
+			mqttClient.UseApplicationMessageReceivedHandler(e => { });
 
 			return mqttClient;
 		}
@@ -105,12 +105,12 @@ namespace ObjectLibrary {
 		/// <param name="username"></param>
 		/// <param name="url"></param>
 		/// <param name="port"></param>
-		public static async void ConnectClient(IMqttClient mqttClient, string username, string url, int port = 1883){
+		public static async void ConnectClient(IMqttClient mqttClient, string username, string url, int port = 1883) {
 			var options = new MqttClientOptionsBuilder()
 				.WithClientId(username)
 				.WithTcpServer(url)
 				.Build();
-				var x = await mqttClient.ConnectAsync(options, System.Threading.CancellationToken.None);
+			var x = await mqttClient.ConnectAsync(options, System.Threading.CancellationToken.None);
 		}
 
 		/// <summary>
@@ -121,15 +121,15 @@ namespace ObjectLibrary {
 		/// <param name="text">The message</param>
 		/// <param name="retainFlag">Set the retain flag</param>
 		public static async void SendMqttMessageTo(IMqttClient mqttClient, string topic, string text, bool retainFlag = false) {
-			var message = new MqttApplicationMessageBuilder()
+			MqttApplicationMessage message = new MqttApplicationMessageBuilder()
 				.WithTopic(topic)
 				.WithPayload(text)
-				.WithExactlyOnceQoS()
+				.WithAtMostOnceQoS()
 				.WithRetainFlag(retainFlag)
 				.Build();
 			if (mqttClient.IsConnected) {
 				try {
-					await mqttClient.PublishAsync(message, System.Threading.CancellationToken.None);
+					await mqttClient.PublishAsync(message);
 				} catch { }
 			}
 		}
@@ -140,14 +140,14 @@ namespace ObjectLibrary {
 		/// <param name="topic">The choosen topic</param>
 		/// <param name="text">The message</param>
 		/// <param name="retainFlag">Set the retain flag</param>
-		public static async void SendMqttMessageTo(IMqttServer mqttBroker, string topic, string text, bool retainFlag = false) {
-			var message = new MqttApplicationMessageBuilder()
+		public static async void SendMqttMessage(IMqttServer mqttBroker, string topic, string text, bool retainFlag = false) {
+			MqttApplicationMessage[] message = {new MqttApplicationMessageBuilder()
 				.WithTopic(topic)
 				.WithPayload(text)
-				.WithExactlyOnceQoS()
+				.WithAtLeastOnceQoS()
 				.WithRetainFlag(retainFlag)
-				.Build();
-				await mqttBroker.PublishAsync(message, System.Threading.CancellationToken.None);
+				.Build() };
+			await mqttBroker.PublishAsync(message);
 		}
 	}
 }

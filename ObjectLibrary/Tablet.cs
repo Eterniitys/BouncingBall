@@ -18,7 +18,7 @@ using System.IO;
 namespace ObjectLibrary {
 	public class Tablet {
 
-		public string message = "";
+		public string message;
 
 		#region "TODO" Comment
 		private VideoCapture _capture = null;
@@ -286,8 +286,8 @@ namespace ObjectLibrary {
 						historyCursor = (historyCursor + 1) % historySize;
 					}
 				}
-				if (!errorDetected && !Settings.Default.sAvailableIds.Contains(message))
-					message = "";
+				//if (!errorDetected && !Settings.Default.sAvailableIds.Contains(message))
+					//message = "";
 				_frame.CopyTo(diplayableframe);
 			} else {
 				message = "VideoCapture was not created";
