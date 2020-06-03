@@ -60,6 +60,8 @@ namespace ObjectLibrary {
 		/// The speed which the ball is moving with
 		/// </summary>
 		private int speed;
+
+		public string lastToHit;
 		#endregion
 
 		#region Constructor
@@ -183,6 +185,7 @@ namespace ObjectLibrary {
 					hasCollided |= isColliding;
 					if (isColliding) {
 						wall.tick(1000);
+						this.lastToHit = wall.ownerId;
 					}
 				}
 			}

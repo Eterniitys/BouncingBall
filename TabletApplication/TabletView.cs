@@ -65,6 +65,7 @@ namespace TabletApplication {
 		private Ball ball;
 
 		private Goal goal;
+		public string score;
 
 		private string brokerurl = Settings.Default.sBrokerUrl;
 		#endregion Variables
@@ -142,7 +143,6 @@ namespace TabletApplication {
 					Invoke(new Action(() => {
 						string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 
-
 						if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
 							string[] coord = message.Split(';');
 							PointF p = new PointF(
@@ -162,9 +162,15 @@ namespace TabletApplication {
 						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL])) {
 							this.lbl_message.Text = message;
 							this.goal = new Goal(message);
-							this.lbl.Text = this.id +" " + this.goal.anchor;
-						}else {
-							this.lbl_message.Text = "Can't handle message from " + e.ApplicationMessage.Topic;
+							this.lbl.Text = this.id + "\nScore :" +this.score+ "\nGoal Direction :" + this.goal.anchor;
+						} else if (e.ApplicationMessage.Topic.Contains(this.id)) {
+							if (e.ApplicationMessage.Topic.EndsWith("score")) {
+								this.score = message;
+							} else {
+								this.lbl_message.Text = "Can't handle message from dedicated topic : " + e.ApplicationMessage.Topic;
+							}
+						} else {
+							this.lbl_message.Text = "Can't handle message from : " + e.ApplicationMessage.Topic;
 						}
 						if (e.ApplicationMessage.Retain || e.ApplicationMessage.Topic.StartsWith("goal")) {
 							this.lbl_message.Text = message + (e.ApplicationMessage.Retain ? "\ntrue" : "\nfalse");
@@ -202,7 +208,7 @@ namespace TabletApplication {
 		internal void updateCameraView() {
 			this.pictureBox2.Image = this.tablet.diplayableframe;
 			Invoke(new Action(() => {
-				//this.lbl_message.Text = this.tablet.message;
+				this.lbl_message.Text = this.tablet.message;
 			}));
 		}
 
@@ -218,7 +224,6 @@ namespace TabletApplication {
 			this.matrix.Reset();
 			this.scale.X = 1 / ((float)this.tablet.getWidth() / e.ClipRectangle.Width);
 			this.scale.Y = 1 / ((float)this.tablet.getHeight() / e.ClipRectangle.Height);
-
 			// drawing pen
 			Pen pen = new Pen(Color.FromArgb(255, 150, 80, 120), 4);
 			// scaled pos / dimmension
@@ -239,8 +244,8 @@ namespace TabletApplication {
 			#region Drawing room content
 			// Background
 			gfx.FillRectangle(Brushes.Bisque, 0, 0, roomWidth * scale.X, roomLenght * scale.Y);
-			// Line between center screen end player
 			PointF relative_ball_pos = new PointF(this.ball.center.X * scale.X, this.ball.center.Y * scale.Y);
+			// Line between player center screen and ball
 			gfx.DrawLine(pen, relative_ball_pos, new Point(x, y));
 			// ball
 			this.ball.draw(gfx, scale);
@@ -304,10 +309,7 @@ namespace TabletApplication {
 				if (this.preBuilt is Wall wall) {
 					this.preBuilt = null;
 					wall.tranform(this.matrix);
-					MqttWrapper.SendMqttMessageTo(this.client,
-						MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL],
-						string.Format("{0};{1};{2};{3}", wall.getOrigine().X / scale.X, wall.getOrigine().Y / scale.Y, wall.getEnd().X / scale.X, wall.getEnd().Y / scale.Y)
-						);
+					MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL], wall.ToString());
 				}
 			}
 			clickIsDown = false;
@@ -336,7 +338,7 @@ namespace TabletApplication {
 
 			} else {
 				#endregion DEV TOOLS BELOW, SHOULD BE UNUSED IN RELEASE (TODO)
-				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y, 5);
+				this.preBuilt = new Wall(e.X, e.Y, e.X, e.Y, this.id);
 			}
 			clickIsDown = true;
 		}

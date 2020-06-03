@@ -21,7 +21,8 @@ namespace ObjectLibrary {
 			BUILD_WALL,
 			GOAL,
 			TABS_ID_POS,
-			TABS_ID_ANG
+			TABS_ID_ANG,
+			TABS_ID_SCORED
 		}
 
 		/// <summary>
@@ -35,7 +36,8 @@ namespace ObjectLibrary {
 				"wall/build",
 				"goal",
 				"tablet/+/pos",
-				"tablet/+/angle"
+				"tablet/+/angle",
+				"tablet/+/score"
 			};
 			return lstTopics;
 		}
@@ -47,7 +49,8 @@ namespace ObjectLibrary {
 			string[] lstTopics = {
 				"ball/pos",
 				"wall/build",
-				"goal"
+				"goal",
+				"tablet/+/score"
 			};
 			return lstTopics;
 		}
@@ -93,7 +96,13 @@ namespace ObjectLibrary {
 		public static void SetClientSubs(IMqttClient mqttClient) {
 			mqttClient.UseConnectedHandler(async e => {
 				foreach (string topic in GetClientTopicList()) {
-					await mqttClient.SubscribeAsync(new MqttTopicFilter() { Topic = topic });
+					if (topic.Contains("+")) {
+						string[] buf = topic.Split('+');
+						string altTopic = buf[0] + mqttClient.Options.ClientId + buf[1];
+						await mqttClient.SubscribeAsync(new MqttTopicFilter() { Topic = altTopic });
+					} else {
+						await mqttClient.SubscribeAsync(new MqttTopicFilter() { Topic = topic });
+					}
 				}
 			});
 		}

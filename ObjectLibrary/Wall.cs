@@ -45,6 +45,10 @@ namespace ObjectLibrary {
 		/// The rectangle representing the wall
 		/// </summary>
 		public RectangleF rectangle;
+		/// <summary>
+		/// The player's id who submit the wall
+		/// </summary>
+		public string ownerId { get; set; }
 		#endregion Variables
 
 		#region Constructors
@@ -54,9 +58,10 @@ namespace ObjectLibrary {
 		/// <param name="origin">The Origin of a Wall</param>
 		/// <param name="end">The End of a Wall</param>
 		/// <param name="timeToLive">The remaining time in second it take for a Wall before vanish, if 0 or negative, use the default value</param>
-		public Wall(PointF origin, PointF end, int timeToLive = 0) {
+		public Wall(PointF origin, PointF end, string ownerId = "", int timeToLive = 0) {
 			this.origin = origin;
 			this.end = end;
+			this.ownerId = ownerId;
 			this.timeToLive = timeToLive <= 0 ? DEFAULT_TTL : timeToLive;
 			this.rectangle = new RectangleF();
 			processAngle();
@@ -69,10 +74,10 @@ namespace ObjectLibrary {
 		/// <param name="end_x">The X value of the end</param>
 		/// <param name="end_y">The Y value of the end</param>
 		/// <param name="timeToLive">The remaining time in second it take for a Wall before vanish, if 0 or negative, use the default value</param>
-		public Wall(float origin_x, float origin_y, float end_x, float end_y, int timeToLive = 0) {
+		public Wall(float origin_x, float origin_y, float end_x, float end_y, string ownerId = "", int timeToLive = 0) {
 			this.origin = new PointF(origin_x, origin_y);
 			this.end = new PointF(end_x, end_y);
-			//this.timeToLive = 0F;
+			this.ownerId = ownerId;
 			this.timeToLive = timeToLive <= 0 ? DEFAULT_TTL : timeToLive;
 			this.rectangle = new RectangleF();
 			processAngle();
@@ -85,8 +90,9 @@ namespace ObjectLibrary {
 			string[] coord = message.Split(';');
 			this.origin = new PointF(float.Parse(coord[0]), float.Parse(coord[1]));
 			this.end = new PointF(float.Parse(coord[2]), float.Parse(coord[3]));
-			if (coord.Length == 5) {
-				this.timeToLive = int.Parse(coord[4]);
+			this.ownerId = coord[4];
+			if (coord.Length == 6) {
+				this.timeToLive = int.Parse(coord[5]);
 			} else {
 				this.timeToLive = DEFAULT_TTL;
 			}
@@ -109,7 +115,7 @@ namespace ObjectLibrary {
 			} else {
 				PointF scaledP1 = new PointF(this.origin.X * scale.X, this.origin.Y * scale.Y);
 				PointF scaledP2 = new PointF(this.end.X * scale.X, this.end.Y * scale.Y);
-				float tickness = (timeToLive/1000F) * scale.Y;
+				float tickness = (timeToLive / 1000F) * scale.Y;
 				tickness = tickness <= 1 ? 1 : tickness;
 				int scaledDist = (int)Math.Sqrt(Math.Pow((double)(scaledP1.X - scaledP2.X), 2) + Math.Pow((double)(scaledP1.Y - scaledP2.Y), 2));
 				double sinus = (double)(scaledP1.Y - scaledP2.Y) / scaledDist;
@@ -235,7 +241,7 @@ namespace ObjectLibrary {
 		/// <returns></returns>
 		#endregion Accessors
 		public override string ToString() {
-			return String.Format("{0};{1};{2};{3};{4}", origin.X, origin.Y, end.X, end.Y, timeToLive);
+			return string.Format("{0};{1};{2};{3};{4};{5}", origin.X, origin.Y, end.X, end.Y, ownerId, timeToLive);
 		}
 	}
 }

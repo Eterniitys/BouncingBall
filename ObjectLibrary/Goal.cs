@@ -7,6 +7,9 @@ using System.Text;
 namespace ObjectLibrary {
 	class Goal : GameObject {
 
+		public delegate void OnBallReachHandler(string id);
+		public event OnBallReachHandler onBallReach;
+
 		public enum GlobalPos {
 			NORTH,
 			WEST,
@@ -79,6 +82,8 @@ namespace ObjectLibrary {
 			if (colliders[0] is Ball ball) {
 				var dist = (int)(Math.Pow(this.center.X - ball.center.X, 2) + Math.Pow(this.center.Y - ball.center.Y, 2) - Math.Pow(this.radius + ball.radius, 2));
 				if (dist < 0) {
+					onBallReach?.Invoke(ball.lastToHit);
+					ball.lastToHit = null;
 					return true;
 				}
 			}

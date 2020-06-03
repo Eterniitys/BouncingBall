@@ -178,7 +178,7 @@ namespace ObjectLibrary {
 							arucoAngles[k] = arucoAngles[k] > 180 ? arucoAngles[k] - 360 : arucoAngles[k];
 						} catch {
 							arucoAngles[k] = Math.Atan2(vector.Y, vector.X) * 180 / Math.PI;
-							message = string.Format("This marker (id={0}) as no data in calibration file", ids[k]);
+							message = string.Format("This marker (id={0}) has no data in calibration file", ids[k]);
 							errorDetected = true;
 						}
 

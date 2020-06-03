@@ -32,6 +32,7 @@ namespace BrokerApplication {
 		/// List of all tablets in the game
 		/// </summary>
 		private Dictionary<String, Tablet> lstTab;
+		private Dictionary<String, int> lstScore;
 		/// <summary>
 		/// The ball
 		/// </summary>
@@ -69,8 +70,10 @@ namespace BrokerApplication {
 			this.ball.onBallMoved += new Ball.BallMovedHandler(onBallMoved);
 
 			this.goal = new Goal(room_lenght, roomWidth);
+			this.goal.onBallReach += onBallReachGoal;
 
 			lstTab = new Dictionary<string, Tablet>();
+			lstScore = new Dictionary<string, int>();
 			this.lstWall = new List<Wall>();
 			// - - - - - - - - - -
 			InitializeComponent();
@@ -92,6 +95,7 @@ namespace BrokerApplication {
 					string message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
 					string topic = e.ApplicationMessage.Topic;
 					if (topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS])) {
+						//nothing
 					} else if (topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL])) {
 						Wall w = new Wall(message);
 						if (!this.ball.isColliding(w)) {
@@ -118,8 +122,8 @@ namespace BrokerApplication {
 						Invoke(new Action(() => {
 							string text = "ids :";
 							foreach (string ch in this.lstTab.Keys) {
-								if (lstTab[ch] is Tablet t) {
-									text += string.Format("\n{0} -> {1}_{2:#.##}", ch, t.getPosition(), t.getAngle());
+							if (lstTab[ch] is Tablet t) {
+								text += string.Format("\n{0} -> score={1}", ch, lstScore[ch]);
 								} else {
 									text += string.Format("\n{0} -> pos:noDatas;", ch);
 								}
@@ -138,6 +142,9 @@ namespace BrokerApplication {
 						this.lstTab.Add(e.ClientId, null);
 					}
 				}
+				if (!this.lstScore.ContainsKey(e.ClientId)) {
+					this.lstScore.Add(e.ClientId, 0);
+				}
 			});
 
 			this.broker.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(
@@ -155,6 +162,17 @@ namespace BrokerApplication {
 		private void onBallMoved(PointF pos) {
 			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.BALL_POS];
 			MqttWrapper.SendMqttMessage(this.broker, topic, String.Format("{0:#.##};{1:#.##}", pos.X, pos.Y));
+
+		}
+
+		private void onBallReachGoal(string id) {
+			if (id != null) {
+				this.lstScore[id]++;
+				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.TABS_ID_SCORED];
+				string[] buf = topic.Split('+');
+				topic = buf[0] + id + buf[1];
+				MqttWrapper.SendMqttMessage(this.broker, topic, string.Format("{0}", this.lstScore[id]));
+			}
 		}
 
 		public void sendWalls() {
@@ -201,7 +219,7 @@ namespace BrokerApplication {
 				this.goal.move(this.roomLenght, this.roomWidth);
 				string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL];
 				MqttWrapper.SendMqttMessage(this.broker, topic, this.goal.ToString(), true);
-				this.lbl_goal.Text = string.Format("Goal : {0}", this.goal);
+				this.lbl_goal.Text = string.Format("Goal : {0}\nBall Owner : {1}", this.goal, this.ball.lastToHit);
 			}
 		}
 

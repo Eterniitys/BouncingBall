@@ -52,6 +52,8 @@ namespace BrokerApplication {
 			// lbl_angle
 			// 
 			this.lbl_angle.AutoSize = true;
+			this.lbl_angle.BackColor = System.Drawing.Color.Transparent;
+			this.lbl_angle.ForeColor = System.Drawing.Color.White;
 			this.lbl_angle.Location = new System.Drawing.Point(12, 9);
 			this.lbl_angle.Name = "lbl_angle";
 			this.lbl_angle.Size = new System.Drawing.Size(111, 13);
@@ -60,12 +62,18 @@ namespace BrokerApplication {
 			// 
 			// lbl_goal
 			// 
+			this.lbl_goal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lbl_goal.AutoSize = true;
-			this.lbl_goal.Location = new System.Drawing.Point(12, 299);
+			this.lbl_goal.BackColor = System.Drawing.Color.Transparent;
+			this.lbl_goal.ForeColor = System.Drawing.Color.White;
+			this.lbl_goal.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.lbl_goal.Location = new System.Drawing.Point(12, 282);
 			this.lbl_goal.Name = "lbl_goal";
-			this.lbl_goal.Size = new System.Drawing.Size(32, 13);
+			this.lbl_goal.Size = new System.Drawing.Size(49, 30);
 			this.lbl_goal.TabIndex = 2;
-			this.lbl_goal.Text = "Goal:";
+			this.lbl_goal.Text = "lbl_goal\r\n2";
+			this.lbl_goal.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.lbl_goal.UseCompatibleTextRendering = true;
 			// 
 			// MapView
 			// 
