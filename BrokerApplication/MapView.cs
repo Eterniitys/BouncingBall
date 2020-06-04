@@ -257,6 +257,7 @@ namespace BrokerApplication {
 						// rétablie la position/rotation d'origine
 						gfx.RotateTransform(-tab.getAngle());
 						gfx.TranslateTransform(-x, -y);
+
 					}
 				}
 			}

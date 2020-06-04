@@ -42,9 +42,10 @@ namespace TabletApplication {
 			// 
 			this.lbl_message.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.lbl_message.AutoSize = true;
-			this.lbl_message.Location = new System.Drawing.Point(3, 306);
+			this.lbl_message.Location = new System.Drawing.Point(7, 487);
+			this.lbl_message.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			this.lbl_message.Name = "lbl_message";
-			this.lbl_message.Size = new System.Drawing.Size(77, 13);
+			this.lbl_message.Size = new System.Drawing.Size(157, 25);
 			this.lbl_message.TabIndex = 12;
 			this.lbl_message.Text = "message_label";
 			this.lbl_message.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -54,8 +55,9 @@ namespace TabletApplication {
 			this.pictureBox1.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+			this.pictureBox1.Margin = new System.Windows.Forms.Padding(6);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(521, 328);
+			this.pictureBox1.Size = new System.Drawing.Size(1042, 631);
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
 			this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -72,18 +74,20 @@ namespace TabletApplication {
 			// lbl
 			// 
 			this.lbl.AutoSize = true;
-			this.lbl.Location = new System.Drawing.Point(3, 9);
+			this.lbl.Location = new System.Drawing.Point(6, 17);
+			this.lbl.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
 			this.lbl.Name = "lbl";
-			this.lbl.Size = new System.Drawing.Size(205, 13);
+			this.lbl.Size = new System.Drawing.Size(410, 25);
 			this.lbl.TabIndex = 2;
 			this.lbl.Text = "The application try to connect to a broker.";
 			// 
 			// pictureBox2
 			// 
 			this.pictureBox2.Enabled = false;
-			this.pictureBox2.Location = new System.Drawing.Point(6, 25);
+			this.pictureBox2.Location = new System.Drawing.Point(12, 48);
+			this.pictureBox2.Margin = new System.Windows.Forms.Padding(6);
 			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(288, 225);
+			this.pictureBox2.Size = new System.Drawing.Size(576, 433);
 			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureBox2.TabIndex = 13;
 			this.pictureBox2.TabStop = false;
@@ -92,10 +96,11 @@ namespace TabletApplication {
 			// 
 			this.useHough.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.useHough.AutoSize = true;
-			this.useHough.Location = new System.Drawing.Point(431, 12);
+			this.useHough.Location = new System.Drawing.Point(870, 23);
+			this.useHough.Margin = new System.Windows.Forms.Padding(6);
 			this.useHough.Name = "useHough";
 			this.useHough.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-			this.useHough.Size = new System.Drawing.Size(78, 17);
+			this.useHough.Size = new System.Drawing.Size(148, 29);
 			this.useHough.TabIndex = 14;
 			this.useHough.Text = "Use hough";
 			this.useHough.UseVisualStyleBackColor = true;
@@ -103,14 +108,15 @@ namespace TabletApplication {
 			// 
 			// TabletView
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(521, 328);
+			this.ClientSize = new System.Drawing.Size(1042, 631);
 			this.Controls.Add(this.lbl);
 			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.lbl_message);
 			this.Controls.Add(this.useHough);
 			this.Controls.Add(this.pictureBox1);
+			this.Margin = new System.Windows.Forms.Padding(6);
 			this.Name = "TabletView";
 			this.Text = "TabView";
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

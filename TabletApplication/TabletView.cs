@@ -159,7 +159,6 @@ namespace TabletApplication {
 								lstWall.Add(w);
 							}
 						} else if (e.ApplicationMessage.Topic.Equals(MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.GOAL])) {
-							this.lbl_message.Text = message;
 							this.goal = new Goal(message);
 							this.lbl.Text = this.id + "\nScore :" + this.score + "\nGoal Direction :" + this.goal.anchor;
 						} else if (e.ApplicationMessage.Topic.Contains(this.id)) {

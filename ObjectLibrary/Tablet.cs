@@ -143,6 +143,7 @@ namespace ObjectLibrary {
 		}
 
 		private void processFrame(object sender, EventArgs arg) {
+			
 			if (_capture != null && _capture.Ptr != IntPtr.Zero) {
 				_capture.Retrieve(_frame, 0);
 
@@ -151,7 +152,6 @@ namespace ObjectLibrary {
 
 				CvInvoke.CvtColor(_frame, _frameCopy, ColorConversion.Bgr2Gray);
 
-				bool errorDetected = false;
 				using (Mat cannyEdges = new Mat())
 				using (Mat lines = new Mat())
 				using (VectorOfInt ids = new VectorOfInt())
@@ -166,6 +166,8 @@ namespace ObjectLibrary {
 
 					PointF[] corners_pos = new PointF[nb_detected];
 					double[] arucoAngles = new double[nb_detected];
+					List<int> ignoredIds = new List<int>();
+					string txt = "";
 					for (int k = 0; k < nb_detected; k++) {
 
 						Point vector = new Point();
@@ -173,14 +175,16 @@ namespace ObjectLibrary {
 						vector.Y = (int)(corners[k][1].Y - corners[k][0].Y + corners[k][2].Y - corners[k][3].Y);
 						corners_pos[k] = corners[k][1]; // coin haut droit
 
+						// Use to ignore unreferenced markers
 						try {
 							arucoAngles[k] = (Math.Atan2(vector.Y, vector.X) * 180 / Math.PI + markersRealAngle[ids[k]]);
 							arucoAngles[k] = arucoAngles[k] > 180 ? arucoAngles[k] - 360 : arucoAngles[k];
 						} catch {
 							arucoAngles[k] = Math.Atan2(vector.Y, vector.X) * 180 / Math.PI;
-							message = string.Format("This marker (id={0}) has no data in calibration file", ids[k]);
-							errorDetected = true;
+							ignoredIds.Add(ids[k]);
+							txt += string.Format("\nThis marker (id={0}) has no data in calibration file", ids[k]);
 						}
+							txt += string.Format("\n{0} -> {1}", ids[k], arucoAngles[k]);
 
 						// Trace la ligne horizontale pour chaque marqueur utilisé pour le calcule de l'angle de la camera
 						// - - - - - 
@@ -194,7 +198,7 @@ namespace ObjectLibrary {
 						mLength = mLength < tmp_mLength ? tmp_mLength : mLength;
 						// <-
 					}
-
+					message = txt;
 					// cross at center image
 					CvInvoke.Line(_frame,
 						new Point(capture_center.X - 10, capture_center.Y),
@@ -211,37 +215,37 @@ namespace ObjectLibrary {
 
 					float[] weights = new float[nb_detected];
 
-					float sum = 0;
-					positionHistory[historyCursor] = new PointF(0, 0);
-					angleHistory[historyCursor] = 0f;
-					for (int i = 0; i < nb_detected; i++) {
-						#region position / angle weighting
-						estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio);
-						estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
-						// taken in consideration the angle of the frame to calculate relative position of the marker
-						Matrix m = new Matrix();
-						m.Rotate(-(float)arucoAngles[i]);
-						Point[] pts = { estimatedPosistion[i] };
-						m.TransformPoints(pts);
-						estimatedPosistion[i] = pts[0];
+					if (ignoredIds.Count < nb_detected) {
+						float sum = 0;
+						positionHistory[historyCursor] = new PointF(0, 0);
+						angleHistory[historyCursor] = 0f;
+						for (int i = 0; i < nb_detected; i++) {
+							#region position / angle weighting
+							estimatedPosistion[i].X = -(int)((capture_center.X - corners_pos[i].X) / ratio);
+							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
+							// taken in consideration the angle of the frame to calculate relative position of the marker
+							Matrix m = new Matrix();
+							m.Rotate(-(float)arucoAngles[i]);
+							Point[] pts = { estimatedPosistion[i] };
+							m.TransformPoints(pts);
+							estimatedPosistion[i] = pts[0];
 
-						try {
-							estimatedPosistion[i].X += markersRealPos[ids[i]].X;
-							estimatedPosistion[i].Y += markersRealPos[ids[i]].Y;
-						} catch { }
+							if (!ignoredIds.Contains(ids[i])) {
+								estimatedPosistion[i].X += markersRealPos[ids[i]].X;
+								estimatedPosistion[i].Y += markersRealPos[ids[i]].Y;
+								weights[i] = 1f / (float)Math.Pow(getDist(estimatedPosistion[i], capture_center),2);
+								angleHistory[historyCursor] += arucoAngles[i] * weights[i];
+								positionHistory[historyCursor].Y += estimatedPosistion[i].Y * weights[i];
+								positionHistory[historyCursor].X += estimatedPosistion[i].X * weights[i];
+								sum += weights[i];
+							}
 
-						weights[i] = 1f / getDist(estimatedPosistion[i], capture_center);
-						angleHistory[historyCursor] += arucoAngles[i] * weights[i];
-						positionHistory[historyCursor].Y += estimatedPosistion[i].Y * weights[i];
-						positionHistory[historyCursor].X += estimatedPosistion[i].X * weights[i];
-
-						sum += weights[i];
-						#endregion position / angle weighting
+							#endregion position / angle weighting
+						}
+						angleHistory[historyCursor] /= sum;
+						positionHistory[historyCursor].X /= sum;
+						positionHistory[historyCursor].Y /= sum;
 					}
-					angleHistory[historyCursor] /= sum;
-					positionHistory[historyCursor].X /= sum;
-					positionHistory[historyCursor].Y /= sum;
-
 					#endregion Markers detection / process position and angle
 
 					#region Angle calculation with Hough
@@ -273,7 +277,7 @@ namespace ObjectLibrary {
 
 					if (ids.Size > 0) {
 
-						float finalAngle = anglesAvg(angleHistory);
+						float finalAngle = -anglesAvg(angleHistory);
 						Point finalPosition = positionAvg(positionHistory);
 						// set the tablet properties
 						this.setPosition(finalPosition.X, finalPosition.Y);
@@ -286,8 +290,6 @@ namespace ObjectLibrary {
 						historyCursor = (historyCursor + 1) % historySize;
 					}
 				}
-				if (!errorDetected && !Settings.Default.sAvailableIds.Contains(message))
-					message = "";
 				_frame.CopyTo(diplayableframe);
 			} else {
 				message = "VideoCapture was not created";

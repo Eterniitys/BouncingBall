@@ -37,7 +37,7 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int iCameraId {
             get {
                 return ((int)(this["iCameraId"]));
@@ -49,7 +49,7 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        [global::System.Configuration.DefaultSettingValueAttribute("6600")]
         public int iRoomWidth {
             get {
                 return ((int)(this["iRoomWidth"]));
@@ -61,7 +61,7 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5400")]
         public int iRoomHeight {
             get {
                 return ((int)(this["iRoomHeight"]));
@@ -109,7 +109,7 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("82")]
         public int iMarkerRealLength {
             get {
                 return ((int)(this["iMarkerRealLength"]));
@@ -163,7 +163,7 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
         public int iBallDiameter {
             get {
                 return ((int)(this["iBallDiameter"]));
