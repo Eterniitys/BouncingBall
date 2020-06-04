@@ -98,13 +98,13 @@ namespace TabletApplication {
 		private void onPositionChanged(Point position) {
 			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.TABS_ID_POS];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
-			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tablet.format));
+			MqttWrapper.SendMqttMessage(this.client, topic, string.Format("{0};{1};{2}", position.X, position.Y, (int)this.tablet.format));
 		}
 
 		private void onAngleChanged(float angle) {
 			string topic = MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.TABS_ID_ANG];
 			topic = topic.Split('+')[0] + this.id + topic.Split('+')[1];
-			MqttWrapper.SendMqttMessageTo(this.client, topic, string.Format("{0}", angle));
+			MqttWrapper.SendMqttMessage(this.client, topic, string.Format("{0}", angle));
 		}
 
 		private async void initMqttClientAsync(string url) {
@@ -280,7 +280,7 @@ namespace TabletApplication {
 				this.preBuilt = null;
 				wall.tranform(this.matrix);
 				wall.unscale(scale);
-				MqttWrapper.SendMqttMessageTo(this.client, MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL], wall.ToString());
+				MqttWrapper.SendMqttMessage(this.client, MqttWrapper.GetFullTopicList()[(int)MqttWrapper.Topic.NEW_WALL], wall.ToString());
 			}
 		}
 

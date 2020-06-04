@@ -32,6 +32,9 @@ namespace BrokerApplication {
 		/// List of all tablets in the game
 		/// </summary>
 		private Dictionary<String, Tablet> lstTab;
+		/// <summary>
+		/// List of tablets identifier associated to score
+		/// </summary>
 		private Dictionary<String, int> lstScore;
 		/// <summary>
 		/// The ball
@@ -122,8 +125,8 @@ namespace BrokerApplication {
 						Invoke(new Action(() => {
 							string text = "ids :";
 							foreach (string ch in this.lstTab.Keys) {
-							if (lstTab[ch] is Tablet t) {
-								text += string.Format("\n{0} -> score={1}", ch, lstScore[ch]);
+								if (lstTab[ch] is Tablet t) {
+									text += string.Format("\n{0} -> score={1}", ch, lstScore[ch]);
 								} else {
 									text += string.Format("\n{0} -> pos:noDatas;", ch);
 								}

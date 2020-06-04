@@ -140,7 +140,7 @@ namespace ObjectLibrary {
 		/// <summary>
 		/// Process the angle made by <see cref="origin"/> and <see cref="end"/>
 		/// </summary>
-		public void processAngle() {
+		private void processAngle() {
 			int dist = (int)Math.Sqrt(Math.Pow((double)(origin.X - end.X), 2) + Math.Pow((double)(origin.Y - end.Y), 2));
 			double sinus = (double)(origin.Y - end.Y) / dist;
 			sinus = sinus > 1 ? 1 : sinus < -1 ? -1 : sinus;
@@ -153,7 +153,7 @@ namespace ObjectLibrary {
 		/// Apply the matrix to <see cref="origin"/> and <see cref="end"/>
 		/// </summary>
 		/// <param name="matrix"></param>
-		internal void tranform(Matrix matrix) {
+		public void tranform(Matrix matrix) {
 			PointF[] pts = { this.origin, this.end };
 			matrix.TransformPoints(pts);
 			this.origin = pts[0];
@@ -178,7 +178,7 @@ namespace ObjectLibrary {
 		/// Reduce the <see cref="timeToLive"/> by <paramref name="time"/>
 		/// </summary>
 		/// <param name="time">the time took away from <see cref="timeToLive"/> in milliseconds</param>
-		internal void tick(int time) {
+		public void tick(int time) {
 			this.timeToLive -= time;
 		}
 

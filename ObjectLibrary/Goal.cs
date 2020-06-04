@@ -33,7 +33,7 @@ namespace ObjectLibrary {
 			this.anchor = (GlobalPos)int.Parse(buffer[3]);
 		}
 
-		private Point getPointFromAnchor(GlobalPos gp) {
+		private Point getCenterFromAnchor(GlobalPos gp) {
 			Point p = new Point();
 			switch (gp) {
 				case GlobalPos.NORTH:
@@ -72,7 +72,7 @@ namespace ObjectLibrary {
 			do {
 				this.anchor = (GlobalPos)rd.Next(3);
 			} while (oldAnchor == this.anchor);
-			this.center = getPointFromAnchor(anchor);
+			this.center = getCenterFromAnchor(anchor);
 			this.radius = rd.Next((int)(
 				Math.Min(room_lenght, roomWidth) * Settings.Default.fMinGoalSize),
 				(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMaxGoalSize)

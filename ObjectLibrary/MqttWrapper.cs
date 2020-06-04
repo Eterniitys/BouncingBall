@@ -129,7 +129,7 @@ namespace ObjectLibrary {
 		/// <param name="topic">The choosen topic</param>
 		/// <param name="text">The message</param>
 		/// <param name="retainFlag">Set the retain flag</param>
-		public static async void SendMqttMessageTo(IMqttClient mqttClient, string topic, string text, bool retainFlag = false) {
+		public static async void SendMqttMessage(IMqttClient mqttClient, string topic, string text, bool retainFlag = false) {
 			MqttApplicationMessage message = new MqttApplicationMessageBuilder()
 				.WithTopic(topic)
 				.WithPayload(text)
