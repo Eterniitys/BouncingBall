@@ -202,7 +202,7 @@ namespace BrokerApplication {
 			this.ball.collide(lstWall.ToArray());
 			List<Wall> tmp_lst = new List<Wall>();
 			foreach (Wall w in lstWall) {
-				w.tick(Settings.Default.iGameTick);
+				w.tick(int.Parse(PropertyReader.getProperty("iGameTick")));
 				if (w.timeToLive <= 0) {
 					tmp_lst.Add(w);
 				}

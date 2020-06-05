@@ -16,7 +16,7 @@ namespace ObjectLibrary {
 		/// </summary>
 		private static int DEFAULT_TTL {
 			get {
-				return Settings.Default.iTimeToLive;
+				return int.Parse(PropertyReader.getProperty("iTimeToLive"));
 			}
 		}
 

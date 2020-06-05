@@ -20,6 +20,10 @@ namespace ObjectLibrary {
 		public GlobalPos anchor { get; set; }
 		public Point center { get; set; }
 		public float radius { get; set; }
+		private readonly int roomWidth = int.Parse(PropertyReader.getProperty("iRoomWidth"));
+		private readonly int roomLenght = int.Parse(PropertyReader.getProperty("iRoomHeight"));
+		private readonly float minGoalSize = float.Parse(PropertyReader.getProperty("fMinGoalSize").Replace('.',','));
+		private readonly float maxGoalSize = float.Parse(PropertyReader.getProperty("fMaxGoalSize").Replace('.', ','));
 
 		public Goal(int room_lenght, int room_width) {
 			anchor = GlobalPos.NORTH;
@@ -37,16 +41,16 @@ namespace ObjectLibrary {
 			Point p = new Point();
 			switch (gp) {
 				case GlobalPos.NORTH:
-					p = new Point(Settings.Default.iRoomWidth / 2, 0);
+					p = new Point(roomWidth / 2, 0);
 					break;
 				case GlobalPos.WEST:
-					p = new Point(0, Settings.Default.iRoomHeight / 2);
+					p = new Point(0, roomLenght / 2);
 					break;
 				case GlobalPos.SOUTH:
-					p = new Point(Settings.Default.iRoomWidth / 2, Settings.Default.iRoomHeight);
+					p = new Point(roomWidth / 2, roomLenght);
 					break;
 				case GlobalPos.EAST:
-					p = new Point(Settings.Default.iRoomWidth, Settings.Default.iRoomHeight / 2);
+					p = new Point(roomWidth, roomLenght / 2);
 					break;
 			}
 			return p;
@@ -74,8 +78,8 @@ namespace ObjectLibrary {
 			} while (oldAnchor == this.anchor);
 			this.center = getCenterFromAnchor(anchor);
 			this.radius = rd.Next((int)(
-				Math.Min(room_lenght, roomWidth) * Settings.Default.fMinGoalSize),
-				(int)(Math.Min(room_lenght, roomWidth) * Settings.Default.fMaxGoalSize)
+				Math.Min(room_lenght, roomWidth) * minGoalSize),
+				(int)(Math.Min(room_lenght, roomWidth) * maxGoalSize)
 				);
 		}
 

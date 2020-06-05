@@ -111,7 +111,7 @@ namespace TabletApplication {
 			this.client = MqttWrapper.CreateClient();
 			MqttWrapper.SetClientSubs(this.client);
 
-			var lstId = Settings.Default.sAvailableIds;
+			string[] lstId = PropertyReader.getPropertyAsArray("sAvailableIds");
 			int idSelector = 0;
 			bool connected = false;
 			string userId;
@@ -127,7 +127,7 @@ namespace TabletApplication {
 					connected = true;
 				} catch (Exception) {
 					idSelector++;
-					if (idSelector == lstId.Count) {
+					if (idSelector == lstId.Length) {
 						MessageBox.Show("There is no more available place in the lobby or there is no broker to connect with. \nPlease try again later");
 						System.Environment.Exit(1);
 					}

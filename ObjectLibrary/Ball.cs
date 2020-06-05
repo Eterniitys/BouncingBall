@@ -14,7 +14,7 @@ namespace ObjectLibrary {
 		public delegate void BallMovedHandler(PointF pos);
 		public event BallMovedHandler onBallMoved;
 
-		#region ball properties
+		#region Ball properties
 		/// <summary>
 		/// All possible value of <see cref="state"/></see>
 		/// </summary>
@@ -51,15 +51,15 @@ namespace ObjectLibrary {
 		/// <summary>
 		/// The size of the ball
 		/// </summary>
-		public int radius { get; private set; }
+		public readonly int radius = int.Parse(PropertyReader.getProperty("iBallDiameter")) / 2;
 		/// <summary>
 		/// The angle which the ball is moving with
 		/// </summary>
 		public int direction { get; set; }
 		/// <summary>
 		/// The speed which the ball is moving with
-		/// </summary>
-		private int speed;
+		/// </summary> 
+		public readonly int speed = int.Parse(PropertyReader.getProperty("iBallSpeed"));
 
 		public string lastToHit;
 		#endregion
@@ -72,11 +72,9 @@ namespace ObjectLibrary {
 		/// <param name="room_lenght">The lenght of the represented room in millimeters</param>
 		/// <param name="scale">Used to scale the ball size</param>
 		public Ball(int room_width, int room_lenght, float scale = 1) {
-			radius = Settings.Default.iBallDiameter / 2;
 			this.room_width = room_width;
 			this.room_lenght = room_lenght;
 			this.state = ImageID.CATCH;
-			this.speed = Settings.Default.iBallSpeed;
 			Random rnd = new Random();
 			this.center = new PointF(
 				(float)rnd.NextDouble() * (room_width - this.radius * 2) + this.radius,

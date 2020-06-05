@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,9 +15,8 @@ namespace TabletApplication {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			var properties = BouncingBall.Properties.Settings.Default;
-			int room_width = properties.iRoomWidth;
-			int room_lenght = properties.iRoomHeight;
+			int room_width = int.Parse(PropertyReader.getProperty("iRoomWidth"));
+			int room_lenght = int.Parse(PropertyReader.getProperty("iRoomHeight"));
 
 			TabletView tablet = new TabletView(room_width, room_lenght);
 

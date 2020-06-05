@@ -15,8 +15,8 @@ namespace BrokerApplication {
 		static void Main() {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			int room_width = Settings.Default.iRoomWidth;
-			int room_lenght = Settings.Default.iRoomHeight;
+			int room_width = int.Parse(ObjectLibrary.PropertyReader.getProperty("iRoomWidth"));
+			int room_lenght = int.Parse(ObjectLibrary.PropertyReader.getProperty("iRoomHeight"));
 			Application.Run(new MapView(room_width,room_lenght));
 		}
 	}

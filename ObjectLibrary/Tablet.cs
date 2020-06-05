@@ -25,7 +25,7 @@ namespace ObjectLibrary {
 
 		int markersX = 10;
 		int markersY = 10;
-		int markersRealLength = Settings.Default.iMarkerRealLength;
+		int markersRealLength = int.Parse(PropertyReader.getProperty("iMarkerRealLength"));
 		int markersSeparation = 30;
 
 		Dictionary<int, Point> markersRealPos;
@@ -59,9 +59,10 @@ namespace ObjectLibrary {
 
 		private DetectorParameters _detectorParameters;
 
-		private readonly int idCamera = Settings.Default.iCameraId;
-		private readonly int cannyThresholdLow = Settings.Default.iCannyThresholdLow;
-		private readonly int cannyThresholdHight = Settings.Default.iCannyThresholdHight;
+		private readonly int idCamera = int.Parse(PropertyReader.getProperty("iCameraId"));
+		private readonly int cannyThresholdLow = int.Parse(PropertyReader.getProperty("iCannyThresholdLow"));
+		private readonly int cannyThresholdHight = int.Parse(PropertyReader.getProperty("iCannyThresholdHight"));
+		private readonly string calibrationFile = PropertyReader.getProperty("sCalibrationFile");
 
 		private readonly int historySize = 10;
 		private double[] angleHistory;
@@ -267,7 +268,7 @@ namespace ObjectLibrary {
 								Point pt1 = new Point((int)(p.X + 1000 * (-b)), (int)(p.Y + 1000 * a));
 								Point pt2 = new Point((int)(p.X - 1000 * (-b)), (int)(p.Y - 1000 * a));
 
-								//CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
+								CvInvoke.Line(_frame, pt1, pt2, new MCvScalar(255, 0, 0), 1, LineType.AntiAlias);
 								// - - - - - -
 							}
 							angleHistory[historyCursor] = processArucoHoughAngles(angleHistory[historyCursor], houghAngles);
@@ -295,11 +296,12 @@ namespace ObjectLibrary {
 				message = "VideoCapture was not created";
 			}
 		}
+
 		private void readCalibrationFile() {
 			markersRealPos = new Dictionary<int, Point>();
 			markersRealAngle = new Dictionary<int, int>();
 			try {
-				using (StreamReader sr = new StreamReader(Settings.Default.sCalibrationFile)) {
+				using (StreamReader sr = new StreamReader(calibrationFile)) {
 					string line;
 					sr.ReadLine(); //header Line
 					sr.ReadLine(); //blank Line
@@ -311,7 +313,7 @@ namespace ObjectLibrary {
 					}
 				}
 			} catch (IOException excpt) {
-				message = Settings.Default.sCalibrationFile + " could not be read:\n" + excpt.Message;
+				message = calibrationFile + " could not be read:\n" + excpt.Message;
 			}
 		}
 

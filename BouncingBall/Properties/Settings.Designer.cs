@@ -37,37 +37,13 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int iCameraId {
             get {
                 return ((int)(this["iCameraId"]));
             }
             set {
                 this["iCameraId"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6600")]
-        public int iRoomWidth {
-            get {
-                return ((int)(this["iRoomWidth"]));
-            }
-            set {
-                this["iRoomWidth"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5400")]
-        public int iRoomHeight {
-            get {
-                return ((int)(this["iRoomHeight"]));
-            }
-            set {
-                this["iRoomHeight"] = value;
             }
         }
         
@@ -104,18 +80,6 @@ namespace BouncingBall.Properties {
             }
             set {
                 this["iBallSpeed"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("82")]
-        public int iMarkerRealLength {
-            get {
-                return ((int)(this["iMarkerRealLength"]));
-            }
-            set {
-                this["iMarkerRealLength"] = value;
             }
         }
         
@@ -163,18 +127,6 @@ namespace BouncingBall.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
-        public int iBallDiameter {
-            get {
-                return ((int)(this["iBallDiameter"]));
-            }
-            set {
-                this["iBallDiameter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("calibration.txt")]
         public string sCalibrationFile {
             get {
@@ -206,6 +158,54 @@ namespace BouncingBall.Properties {
             }
             set {
                 this["fMinGoalSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        public int iRoomWidth {
+            get {
+                return ((int)(this["iRoomWidth"]));
+            }
+            set {
+                this["iRoomWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        public int iRoomHeight {
+            get {
+                return ((int)(this["iRoomHeight"]));
+            }
+            set {
+                this["iRoomHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int iMarkerRealLength {
+            get {
+                return ((int)(this["iMarkerRealLength"]));
+            }
+            set {
+                this["iMarkerRealLength"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int iBallDiameter {
+            get {
+                return ((int)(this["iBallDiameter"]));
+            }
+            set {
+                this["iBallDiameter"] = value;
             }
         }
     }
