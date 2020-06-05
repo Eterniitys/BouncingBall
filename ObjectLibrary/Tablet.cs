@@ -222,7 +222,7 @@ namespace ObjectLibrary {
 						angleHistory[historyCursor] = 0f;
 						for (int i = 0; i < nb_detected; i++) {
 							#region position / angle weighting
-							estimatedPosistion[i].X = -(int)((capture_center.X - corners_pos[i].X) / ratio);
+							estimatedPosistion[i].X = -(int)((corners_pos[i].X - capture_center.X) / ratio);
 							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
 							// taken in consideration the angle of the frame to calculate relative position of the marker
 							Matrix m = new Matrix();
