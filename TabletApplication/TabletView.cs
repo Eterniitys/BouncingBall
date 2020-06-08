@@ -67,7 +67,9 @@ namespace TabletApplication {
 		private Goal goal;
 		public string score;
 
-		private string brokerurl = Settings.Default.sBrokerUrl;
+		private bool isFrontCamera = bool.Parse(PropertyReader.getProperty("bIsFrontCamera"));
+		private string brokerUrl = PropertyReader.getProperty("sBrokerUrl");
+		private readonly int gameTick = int.Parse(PropertyReader.getProperty("iGameTick"));
 		#endregion Variables
 
 		#region Constructor
@@ -79,18 +81,18 @@ namespace TabletApplication {
 		public TabletView(int room_width, int room_lenght) {
 			this.roomWidth = room_width;
 			this.roomLenght = room_lenght;
-			this.tablet = new Tablet(0, 0, 0, EnumFormat._24PC, true);
+			this.tablet = new Tablet(0, 0, 0, EnumFormat._10PC, true);
 			this.ball = new Ball(room_width, room_lenght);
 			this.lstWall = new List<Wall>();
 			this.matrix = new Matrix();
 			this.scale = new PointF();
 			// - - - - - - - - - -
-			initMqttClientAsync(brokerurl);
+			initMqttClientAsync(brokerUrl);
 			// - - - - - - - - - -
 			InitializeComponent();
 			this.tablet.TabletPositionChanged += new Tablet.TabletPositionChangedHandler(this.onPositionChanged);
 			this.tablet.TabletAngleChanged += new Tablet.TabletAngleChangedHandler(this.onAngleChanged);
-			this.timer.Interval = Settings.Default.iGameTick;
+			this.timer.Interval = gameTick;
 		}
 		#endregion Constructor
 
@@ -184,7 +186,7 @@ namespace TabletApplication {
 					this.lbl_message.Text = "Disconnected from Broker";
 				}));
 				try {
-					MqttWrapper.ConnectClient(this.client, this.id, brokerurl);
+					MqttWrapper.ConnectClient(this.client, this.id, brokerUrl);
 				} finally {
 					MessageBox.Show("Can't reconnecte to broker. Connection lost");
 					Environment.Exit(1);
@@ -198,7 +200,7 @@ namespace TabletApplication {
 		private void timer_Tick(object sender, EventArgs e) {
 			this.pictureBox1.Invalidate();
 			foreach (Wall w in lstWall) {
-				w.tick(Settings.Default.iGameTick);
+				w.tick(gameTick);
 			}
 			updateCameraView();
 		}
@@ -217,6 +219,8 @@ namespace TabletApplication {
 		/// <param name="e"></param>
 		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 
+			int inverter = isFrontCamera ? 1: -1;
+
 			#region Setting up drawing vars
 			Graphics gfx = e.Graphics;
 			this.matrix.Reset();
@@ -224,19 +228,20 @@ namespace TabletApplication {
 			this.scale.Y = 1 / ((float)this.tablet.getHeight() / e.ClipRectangle.Height);
 			// drawing pen
 			Pen pen = new Pen(Color.FromArgb(255, 150, 80, 120), 4);
+
 			// scaled pos / dimmension
 			int dim_x = (int)(this.tablet.getWidth() * scale.X);
 			int dim_y = (int)(this.tablet.getHeight() * scale.Y);
-
 			int x = (int)(this.tablet.getPosX() * scale.X);
 			int y = (int)(this.tablet.getPosY() * scale.Y);
 
 			// rotate arround tablet center
 			this.matrix.Translate(-(x - dim_x / 2), -(y - dim_y / 2));
 			this.matrix.Translate(x, y);
-			this.matrix.Rotate(-this.tablet.getAngle());
+			this.matrix.Rotate(inverter*this.tablet.getAngle());
 			this.matrix.Translate(-x, -y);
 			gfx.Transform = this.matrix;
+
 			#endregion Setting up drawing vars
 
 			#region Drawing room content

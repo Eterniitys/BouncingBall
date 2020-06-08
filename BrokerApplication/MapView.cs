@@ -247,12 +247,12 @@ namespace BrokerApplication {
 						Pen redPen = new Pen(Color.FromArgb(255, 255, 0, 0), 2);
 						Pen bluePen = new Pen(Color.FromArgb(255, 0, 0, 255), 10);
 						//
-						gfx.DrawLine(redPen, 0, 0, x, y);
-						gfx.DrawRectangle(redPen, x - dim_x / 2, y - dim_y / 2, dim_x, dim_y);
 						// définition de l'origine de rotation
 						gfx.TranslateTransform(x, y);
 						gfx.RotateTransform(tab.getAngle());
 						// dessine
+						gfx.DrawLine(redPen, -5, 0, 5, 0);
+						gfx.DrawLine(redPen, 0, -5, 0, 5);
 						gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
 						// rétablie la position/rotation d'origine
 						gfx.RotateTransform(-tab.getAngle());

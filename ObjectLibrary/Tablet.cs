@@ -185,7 +185,7 @@ namespace ObjectLibrary {
 							ignoredIds.Add(ids[k]);
 							txt += string.Format("\nThis marker (id={0}) has no data in calibration file", ids[k]);
 						}
-							txt += string.Format("\n{0} -> {1}", ids[k], arucoAngles[k]);
+							//txt += string.Format("\n{0} -> {1}", ids[k], arucoAngles[k]);
 
 						// Trace la ligne horizontale pour chaque marqueur utilisé pour le calcule de l'angle de la camera
 						// - - - - - 
@@ -278,7 +278,7 @@ namespace ObjectLibrary {
 
 					if (ids.Size > 0) {
 
-						float finalAngle = -anglesAvg(angleHistory);
+						float finalAngle = anglesAvg(angleHistory);
 						Point finalPosition = positionAvg(positionHistory);
 						// set the tablet properties
 						this.setPosition(finalPosition.X, finalPosition.Y);

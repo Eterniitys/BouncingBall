@@ -208,5 +208,17 @@ namespace BouncingBall.Properties {
                 this["iBallDiameter"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool bIsFrontCamera {
+            get {
+                return ((bool)(this["bIsFrontCamera"]));
+            }
+            set {
+                this["bIsFrontCamera"] = value;
+            }
+        }
     }
 }
