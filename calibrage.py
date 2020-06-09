@@ -1,20 +1,34 @@
-# program that generates a text file of marker positions, which will be used in with_calibration.py
-# to write the file, press "c" when you see new markers with the camera, enter the current position of the camera,
-# then do it again for every marker you want to add to the file
-# when it is finished, pres "s" to save the data in a text file
-# the file format is : id x y angle
+# This script generates a calibration text file marker containing positions and angles
+# which will be used by the ClientApplication
+# to calibrate markers, press "c" aiming at a known point
+# Every markers recognized in the picture will be calibrated according to the aimed point, you have to manually enter it position
+# then repeat for each unknown marker that you want to add in the file
+# when you have finish, press "s" to save the data in a text file
 
 import numpy as np
 import cv2
 from cv2 import aruco
 import re
 
-# corrections depending on the axis you chose and the way you calculate angles
+print ("# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #")
+print ("This script generates a calibration text file marker containing positions and angles")
+print ("which will be used by the ClientApplication")
+print ("to calibrate markers, press \"c\" aiming at a known point")
+print ("Every markers recognized in the picture will be calibrated according to the aimed point, you have to manually enter it position")
+print ("then repeat for each unknown marker that you want to add in the file")
+print ("when you have finish, press \"s\" to save the data in a text file")
+print (" - - - - - - - - - - - - - - - - - - - - - - ")
+print ("\tc - calibrate using this frame")
+print ("\ts - register the file (will destroy any previouly generated file)")
+print ("\tq - quit")
+print ("# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #")
+
+# corrections according to the chosen axis and the camera orientation
 mirrorX = -1
 mirrorY = 1
 
-# id of the camera used, usually 0 is for PC's webcam et 1 for external camera
-cameraId = 1
+# used camera identifier, usually 0 is for the PC webcam et 1 for external webcam
+cameraId = 0
 
 # calibration file name
 calibrationFile = "calibration.txt"
@@ -29,7 +43,7 @@ def mirrorCorrection(pos):
     return np.array([mirrorX * x, mirrorY * y])
 
 def drawStates(img, dict, ids, pos):
-    # draws a green diamond when a marker is already registered, else a red cross on a corner of a marker
+    # draws a green diamond when a marker is already registered, else a red cross on a marker corner 
 
     if ids is None :
         return img
@@ -37,7 +51,7 @@ def drawStates(img, dict, ids, pos):
         id=id[0]
         x,y = int(p[0]),int(p[1])
         if id in dict:
-            # is the marker is already registered it belongs to the dictionary
+            # if the marker is already registered and belongs to the dictionary
             img = cv2.drawMarker(img,(x,y),color= (0,255,0),markerType=cv2.MARKER_DIAMOND,markerSize=20,thickness=3)
         else:
             img = cv2.drawMarker(img,(x,y),color= (0,0,255),markerType=cv2.MARKER_TILTED_CROSS,markerSize=20,thickness=3)
@@ -53,7 +67,7 @@ def calibrate(dict, ids, markersPxPos, cameraMmPos, centrePxPos, mmPerPx, angles
         dict[id] = (pos,angle)
     return dict
 
-def askCameraPosition(msg="Enter camera position in mm as x,y : "):
+def askCameraPosition(msg="Enter camera position in mm as 'x,y' : "):
     pos=input(msg)
     datas = re.match(r"-?[0-9]+,-?[0-9]+",pos)
     if datas:
@@ -62,7 +76,7 @@ def askCameraPosition(msg="Enter camera position in mm as x,y : "):
         x, y = int(x), int(y)
         return(x,y)
     else:
-        return askCameraPosition("Mauvais format, il faut écrire x,y : ")
+        return askCameraPosition("Bad format. You have to enter 'x,y'\n")
 
 def saveCalibration(dictionary, path):
     # writes on a text file the datas of the dictionary
@@ -77,12 +91,13 @@ def saveCalibration(dictionary, path):
     print("File saved")
 
 
+
 cap = cv2.VideoCapture(cameraId)
 w = cap.get(3)
 h = cap.get(4)
 centre = np.array([w // 2, h // 2]) # centre de l'image
 
-# dictionary of position and angle for each marker
+# property dictionary, each marker position/angle
 markersPositions = {}
 # marker id (int) : (position ([int,int]), angle (int))
 
@@ -95,7 +110,7 @@ n = arucoDict.bytesList.size
 anglesMarkers = np.zeros(n)
 
 while(True):
-    # Capture frame par frame
+    # Each loop is a frame
     ret, frame = cap.read()
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -123,7 +138,7 @@ while(True):
     except:
         pass
 
-    # draws detected ARuco markers
+    # draws detected Aruco markers
     frameDisplayed = aruco.drawDetectedMarkers(frame.copy(), corners, ids)
 
     # draws a circle in the middle on the image, it is better to target a precise point with the camera

@@ -249,13 +249,13 @@ namespace BrokerApplication {
 						//
 						// définition de l'origine de rotation
 						gfx.TranslateTransform(x, y);
-						gfx.RotateTransform(tab.getAngle());
+						gfx.RotateTransform(-tab.getAngle());
 						// dessine
 						gfx.DrawLine(redPen, -5, 0, 5, 0);
 						gfx.DrawLine(redPen, 0, -5, 0, 5);
 						gfx.DrawRectangle(blackPen, -dim_x / 2, -dim_y / 2, dim_x, dim_y);
 						// rétablie la position/rotation d'origine
-						gfx.RotateTransform(-tab.getAngle());
+						gfx.RotateTransform(tab.getAngle());
 						gfx.TranslateTransform(-x, -y);
 
 					}

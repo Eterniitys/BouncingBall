@@ -168,24 +168,24 @@ namespace ObjectLibrary {
 					PointF[] corners_pos = new PointF[nb_detected];
 					double[] arucoAngles = new double[nb_detected];
 					List<int> ignoredIds = new List<int>();
-					string txt = "";
+					string txt = string.Format("{0}",this.getPosition());
 					for (int k = 0; k < nb_detected; k++) {
 
 						Point vector = new Point();
-						vector.X = (int)(corners[k][1].X - corners[k][0].X + corners[k][2].X - corners[k][3].X);
-						vector.Y = (int)(corners[k][1].Y - corners[k][0].Y + corners[k][2].Y - corners[k][3].Y);
+						vector.X = (int)(corners[k][0].X - corners[k][3].X + corners[k][1].X - corners[k][2].X);
+						vector.Y = (int)(corners[k][0].Y - corners[k][3].Y + corners[k][1].Y - corners[k][2].Y);
 						corners_pos[k] = corners[k][1]; // coin haut droit
 
 						// Use to ignore unreferenced markers
 						try {
-							arucoAngles[k] = (Math.Atan2(vector.Y, vector.X) * 180 / Math.PI + markersRealAngle[ids[k]]);
+							arucoAngles[k] = (Math.Atan2(-vector.Y, vector.X) * 180 / Math.PI - markersRealAngle[ids[k]]);
 							arucoAngles[k] = arucoAngles[k] > 180 ? arucoAngles[k] - 360 : arucoAngles[k];
 						} catch {
-							arucoAngles[k] = Math.Atan2(vector.Y, vector.X) * 180 / Math.PI;
+							//arucoAngles[k] = Math.Atan2(-vector.Y, vector.X) * 180 / Math.PI;
 							ignoredIds.Add(ids[k]);
 							txt += string.Format("\nThis marker (id={0}) has no data in calibration file", ids[k]);
 						}
-							//txt += string.Format("\n{0} -> {1}", ids[k], arucoAngles[k]);
+						//txt += string.Format("\n{0} -> {1}", ids[k], arucoAngles[k]);
 
 						// Trace la ligne horizontale pour chaque marqueur utilisé pour le calcule de l'angle de la camera
 						// - - - - - 
@@ -222,22 +222,24 @@ namespace ObjectLibrary {
 						angleHistory[historyCursor] = 0f;
 						for (int i = 0; i < nb_detected; i++) {
 							#region position / angle weighting
-							estimatedPosistion[i].X = -(int)((corners_pos[i].X - capture_center.X) / ratio);
+							estimatedPosistion[i].X = (int)((capture_center.X - corners_pos[i].X) / ratio);
 							estimatedPosistion[i].Y = (int)((capture_center.Y - corners_pos[i].Y) / ratio);
 							// taken in consideration the angle of the frame to calculate relative position of the marker
 							Matrix m = new Matrix();
-							m.Rotate(-(float)arucoAngles[i]);
+							m.Rotate((float)arucoAngles[i]);
 							Point[] pts = { estimatedPosistion[i] };
 							m.TransformPoints(pts);
+							//TODO set a variable 
+							pts[0].X = -pts[0].X;
 							estimatedPosistion[i] = pts[0];
 
 							if (!ignoredIds.Contains(ids[i])) {
 								estimatedPosistion[i].X += markersRealPos[ids[i]].X;
 								estimatedPosistion[i].Y += markersRealPos[ids[i]].Y;
-								weights[i] = 1f / (float)Math.Pow(getDist(estimatedPosistion[i], capture_center),2);
+								weights[i] = 1;// 1f / (float)Math.Pow(getDist(estimatedPosistion[i], capture_center),2);
 								angleHistory[historyCursor] += arucoAngles[i] * weights[i];
-								positionHistory[historyCursor].Y += estimatedPosistion[i].Y * weights[i];
 								positionHistory[historyCursor].X += estimatedPosistion[i].X * weights[i];
+								positionHistory[historyCursor].Y += estimatedPosistion[i].Y * weights[i];
 								sum += weights[i];
 							}
 
@@ -282,7 +284,7 @@ namespace ObjectLibrary {
 						Point finalPosition = positionAvg(positionHistory);
 						// set the tablet properties
 						this.setPosition(finalPosition.X, finalPosition.Y);
-						this.setAngle(-finalAngle);
+						this.setAngle(finalAngle);
 						//
 						ArucoInvoke.RefineDetectedMarkers(_frameCopy, ArucoBoard, corners, ids, rejected, null, null, 10, 3, true, null, _detectorParameters);
 
@@ -309,7 +311,7 @@ namespace ObjectLibrary {
 						line = sr.ReadLine();
 						string[] buffer = line.Split(' ');
 						markersRealPos.Add(int.Parse(buffer[0]), new Point(int.Parse(buffer[1]), int.Parse(buffer[2])));
-						markersRealAngle.Add(int.Parse(buffer[0]), int.Parse(buffer[3]) - 90);
+						markersRealAngle.Add(int.Parse(buffer[0]), int.Parse(buffer[3]));
 					}
 				}
 			} catch (IOException excpt) {

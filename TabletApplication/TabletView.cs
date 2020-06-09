@@ -15,6 +15,7 @@ using Emgu.CV.UI;
 using System.Configuration;
 using ObjectLibrary;
 using BouncingBall.Properties;
+using System.IO;
 
 namespace TabletApplication {
 	public partial class TabletView : Form {
@@ -66,6 +67,7 @@ namespace TabletApplication {
 
 		private Goal goal;
 		public string score;
+		public int logTimer;
 
 		private bool isFrontCamera = bool.Parse(PropertyReader.getProperty("bIsFrontCamera"));
 		private string brokerUrl = PropertyReader.getProperty("sBrokerUrl");
@@ -79,9 +81,10 @@ namespace TabletApplication {
 		/// <param name="room_width">The width of the playing area / room</param>
 		/// <param name="room_lenght">The lenght of the playing area / room</param>
 		public TabletView(int room_width, int room_lenght) {
+			this.logTimer = 0;
 			this.roomWidth = room_width;
 			this.roomLenght = room_lenght;
-			this.tablet = new Tablet(0, 0, 0, EnumFormat._10PC, true);
+			this.tablet = new Tablet(0, 0, 0, EnumFormat._24PC, true);
 			this.ball = new Ball(room_width, room_lenght);
 			this.lstWall = new List<Wall>();
 			this.matrix = new Matrix();
@@ -202,7 +205,22 @@ namespace TabletApplication {
 			foreach (Wall w in lstWall) {
 				w.tick(gameTick);
 			}
+			this.logTimer += gameTick;
+			if (logTimer >= 1000) {
+				writeLog();
+				logTimer = 0;
+			}
 			updateCameraView();
+		}
+
+		private void writeLog() {
+			using (StreamWriter sr = File.AppendText("position_log.csv")) {
+				sr.WriteLine(
+					"{0};{1};{2};{3:#.#}", DateTime.Now,
+					this.tablet.getPosition().X,
+					this.tablet.getPosition().Y,
+					this.tablet.getAngle());
+			}
 		}
 
 		internal void updateCameraView() {
@@ -219,7 +237,7 @@ namespace TabletApplication {
 		/// <param name="e"></param>
 		private void pictureBox1_Paint(object sender, PaintEventArgs e) {
 
-			int inverter = isFrontCamera ? 1: -1;
+			int inverter = isFrontCamera ? 1 : -1;
 
 			#region Setting up drawing vars
 			Graphics gfx = e.Graphics;
@@ -238,7 +256,7 @@ namespace TabletApplication {
 			// rotate arround tablet center
 			this.matrix.Translate(-(x - dim_x / 2), -(y - dim_y / 2));
 			this.matrix.Translate(x, y);
-			this.matrix.Rotate(inverter*this.tablet.getAngle());
+			this.matrix.Rotate(inverter * this.tablet.getAngle());
 			this.matrix.Translate(-x, -y);
 			gfx.Transform = this.matrix;
 
